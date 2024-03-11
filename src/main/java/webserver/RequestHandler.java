@@ -34,8 +34,8 @@ public class RequestHandler implements Runnable {
             String filePath = br.readLine();
 
             logger.debug("request line : {}", filePath);
-            String url = filePath.split(BLANK)[URL_INDEX];
-            byte[] body = readAllBytes(BASE_PATH + url);
+            String url = filePath.split(BLANK)[URL_INDEX]; // html Url 추출
+            byte[] body = readAllBytes(BASE_PATH + url); // 바이트 배열로 변환
 
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
@@ -48,10 +48,10 @@ public class RequestHandler implements Runnable {
     private byte[] readAllBytes(String filePath) throws IOException {
         File file = new File(filePath);
         try (FileInputStream inputStream = new FileInputStream(file)) {
-            byte[] buffer = new byte[(int) file.length()];
+            byte[] buffer = new byte[(int) file.length()]; // 파일 길이만큼 바이트 배열 생성
             int bytesRead = inputStream.read(buffer); // 파일 내용 읽기
 
-            if (bytesRead != file.length()) {
+            if (bytesRead != file.length()) { // 잘못 변환된 경우 예외 처리
                 throw new IOException();
             }
             return buffer;
