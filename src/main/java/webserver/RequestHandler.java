@@ -1,5 +1,6 @@
 package webserver;
 
+import FileUtils.FileExtractor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -14,9 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
-    private static final String BLANK = "\s+";
     private static final String BASE_PATH = "./src/main/resources/static";
-    private static final int URL_INDEX = 1;
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -34,7 +33,7 @@ public class RequestHandler implements Runnable {
             String filePath = br.readLine();
 
             logger.debug("request line : {}", filePath);
-            String url = filePath.split(BLANK)[URL_INDEX]; // html Url 추출
+            String url = FileExtractor.extractUrl(filePath);
             byte[] body = readAllBytes(BASE_PATH + url); // 바이트 배열로 변환
 
             DataOutputStream dos = new DataOutputStream(out);
