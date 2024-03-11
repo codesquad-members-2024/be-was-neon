@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String RESOURCE_PATH = System.getProperty("user.dir") + "/src/main/resources/static";
+    private static final String RESOURCE_PATH = "./src/main/resources/static";
 
     private Socket connection;
 
