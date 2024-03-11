@@ -40,8 +40,11 @@ public class RequestHandler implements Runnable {
                 File file = new File("src/main/resources/static" + url);
 
                 if (fileType.equals("png")) {
-                    response200Header(dos ,10000 , "image/png");
-                    responseBody(dos, responseBodyImg(file, fileType));
+//                    responseBody(dos, responseBodyImg(file, fileType));
+                    responseBodyFile(dos , file , "image/png");
+                }
+                else if (fileType.equals("svg")) {
+                    responseBodyFile(dos , file , "image/svg+xml");
                 }
                 else if(fileType.equals("css")){
                     responseBodyFile(dos , file , "text/css");
@@ -88,6 +91,7 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+        response200Header(dos ,body.length , "image/png");
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent , String contentType) {
