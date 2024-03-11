@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final String RESOURCE_PATH = "./src/main/resources/static";
+    private static final String HTML_EXTENSION = ".html";
+    private static final int BUFFER_SIZE = 1024;
 
     private Socket connection;
 
@@ -30,18 +32,18 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             DataOutputStream dos = new DataOutputStream(out);
 
             String line = reader.readLine();
-            String request = requestParse(line);
-            while (!line.isEmpty()) {
-                if (request.endsWith(".html")) {
+            while (line != null && !line.isEmpty()) {
+                String request = requestParse(line);
+
+                if (request.endsWith(HTML_EXTENSION)) {
                     responseHtml(dos, RESOURCE_PATH + request);
                 }
+
                 line = reader.readLine();
-                request = requestParse(line);
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -74,15 +76,15 @@ public class RequestHandler implements Runnable {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ) {
             int bytesRead;
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[BUFFER_SIZE];
 
             // HTML 파일을 읽어 ByteArrayOutputStream에 쓰기
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) { // 더 이상 읽지 못하면 -1을 반환 -> 루프 종료
+                byteArrayOutputStream.write(buffer, 0, bytesRead); // buffer 배열의 0번째부터 읽은 바이트 수 만큼 작성
             }
 
             // ByteArrayOutputStream의 내용을 바이트 배열로 가져오기
-            byte[] fileBytes = byteArrayOutputStream.toByteArray();
+            byte[] fileBytes = byteArrayOutputStream.toByteArray();  // 모든 html 내용이 쓰여져 있음 (메모리에 올라온 상태)
 
             // DataOutputStream으로 변환하여 반환
             response200Header(dos, fileBytes.length);
