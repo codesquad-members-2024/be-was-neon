@@ -9,6 +9,8 @@
 - [X] HTTP Request 내용 출력
 - [X] 파일의 내용을 바이트 배열로 반환하는 기능을 JDK의 nio를 사용하지 않고 구현
 - [X] Java Thread 기반의 기존 프로젝트를 Concurrent 패키지를 사용하도록 변경
+- [X] URl 추출 기능 FileExtractorTest 클래스의 static 메소드로 분리
+- [X] FileExtractorTest 클래스 Test 추가
 - [X] 코드로 표현할 수 없었던 내용은 주석 달기
 
 <br><br><br>
