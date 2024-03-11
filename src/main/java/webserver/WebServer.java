@@ -31,9 +31,10 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                CompletableFuture<Void> requestFuture = CompletableFuture.runAsync(new RequestHandler(connection), executor);
-                requestFuture.join();
+                CompletableFuture.runAsync(new RequestHandler(connection), executor);
             }
+        } finally {
+            executor.shutdown(); // 서버 종료 시 스레드 풀 종료
         }
     }
 }
