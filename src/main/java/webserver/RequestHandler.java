@@ -23,6 +23,7 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
             String line = br.readLine();
             logger.debug(line);
             String[] startLine = line.split(" ");
@@ -33,18 +34,8 @@ public class RequestHandler implements Runnable {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
 
-            String filePath;
-            if (startLine[1].contains(".")) {
-                filePath = STATIC_PATH + startLine[1];
-            } else {
-                filePath = STATIC_PATH + startLine[1] + "/index.html";
-            }
-
-            File file = new File(filePath);
-            byte[] body = new byte[(int) file.length()];
-            try (FileInputStream fis = new FileInputStream(file)) {
-                fis.read(body);
-            }
+            String filePath = getFilePath(startLine[1]);
+            byte[] body = getBody(filePath);
 
             String[] splitFilePath = filePath.split("/");
             String fileName = splitFilePath[splitFilePath.length - 1];
@@ -55,6 +46,25 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private byte[] getBody(String filePath) throws IOException {
+        File file = new File(filePath);
+        byte[] body = new byte[(int) file.length()];
+        try (FileInputStream fis = new FileInputStream(file)) {
+            fis.read(body);
+        }
+        return body;
+    }
+
+    private String getFilePath(String target) {
+        String filePath;
+        if (target.contains(".")) {
+            filePath = STATIC_PATH + target;
+        } else {
+            filePath = STATIC_PATH + target + "/index.html";
+        }
+        return filePath;
     }
 
     private String getContentType(String type) {
