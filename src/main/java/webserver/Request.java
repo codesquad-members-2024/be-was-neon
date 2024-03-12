@@ -87,7 +87,8 @@ public class Request {
 
     public String getLog(){
         StringJoiner sj = new StringJoiner(" ");
-        sj.add(reqDetail);
+        sj.add(reqDetail.toUpperCase());
+        sj.add(" : ");
         sj.add(url);
 
         return sj.toString();
