@@ -26,15 +26,23 @@ public class RequestHandler implements Runnable {
 
             String line = br.readLine();
             String[] split = line.split(" ");
-            String path = split[1];
+            String uri = split[1];
+
+            File file = new File("./src/main/resources/static");
+
+            if(uri.equals("/index.html")) {
+                file = new File("./src/main/resources/static" + uri);
+            }
+
+//            요청을 모두 받는다
             while (!line.isEmpty()) {
                 logger.debug("request : {}", line);
                 line = br.readLine();
             }
-
-            File file = new File("src/main/resources/static" + path);
+            file = new File("./src/main/resources/static" + uri);
             FileInputStream fis = new FileInputStream(file);
             byte[] body = fis.readAllBytes();
+
 
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -47,6 +55,7 @@ public class RequestHandler implements Runnable {
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+        String type = "";
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
