@@ -9,7 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static webserver.ResponseStatus.*;
+
 public class Response {
+    private Response(){}
     public static String sendResponse(DataOutputStream dos, Request request) throws IOException {
         if (request.getReqDetail().equals("createUser")) {
             createUser(dos, request.getParams());
@@ -23,16 +26,18 @@ public class Response {
     static void createUser(DataOutputStream dos, List<String> params) throws IOException {
         User user = User.makeUser(params);
         Database.addUser(user);
-        response302(dos);
+        sendResponseHeader(dos, FOUND , FileType.NONE , 0);
     }
 
     static void responseGetFile(DataOutputStream dos, String url, FileType fileType) throws IOException {
         try {
             byte[] body = getFileBytes(url);
-            response200Header(dos, body.length, fileType.getContentType());
-            responseBody(dos, body);
+            sendResponseHeader(dos, OK, fileType, body.length);
+            dos.write(body);
+            dos.flush();
         } catch (IOException | NullPointerException noSuchFile) { // 해당 경로의 파일이 없을 때
-            response404(dos);
+            sendResponseHeader(dos , NotFound , FileType.TXT , NotFound.getMessage().length());
+            dos.writeBytes(NotFound.getMessage());
         }
     }
 
@@ -41,36 +46,19 @@ public class Response {
         byte[] bytes = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(bytes);
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("noSuchFile");
         }
         return bytes;
     }
 
-    private static void responseBody(DataOutputStream dos, byte[] body) throws IOException {
-        dos.write(body, 0, body.length);
-        dos.flush();
-    }
-
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) throws IOException {
-        dos.writeBytes("HTTP/1.1 200 OK \r\n");
-        dos.writeBytes("Content-Type: " + contentType + "\r\n");
-        dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-        dos.writeBytes("\r\n");
-    }
-
-    private static void response302(DataOutputStream dos) throws IOException {
-        dos.writeBytes("HTTP/1.1 302 Found \r\n");
-        dos.writeBytes("Location:" + "/index.html");
-        dos.writeBytes("\r\n");
-    }
-
-    private static void response404(DataOutputStream dos) throws IOException {
-        String errorMessage = "404 Not Found";
-        dos.writeBytes("HTTP/1.1 404 Not Found\r\n");
-        dos.writeBytes("Content-Type: text/plain\r\n");
-        dos.writeBytes("Content-Length: " + errorMessage.length() + "\r\n");
-        dos.writeBytes("\r\n");
-        dos.writeBytes(errorMessage); // body
+    private static void sendResponseHeader(DataOutputStream dos, ResponseStatus status, FileType contentType, int contentLength) throws IOException {
+        dos.writeBytes("HTTP/1.1 " + status.getMessage() + "\r\n");
+        if(status == FOUND) dos.writeBytes("Location:" + "/index.html"); // 이부분 파라미터로 사용하지 못해 고민
+        else {
+            dos.writeBytes("Content-Type: " + contentType.getContentType() + "\r\n");
+            dos.writeBytes("Content-Length: " + contentLength + "\r\n");
+            dos.writeBytes("\r\n");
+        }
     }
 }
