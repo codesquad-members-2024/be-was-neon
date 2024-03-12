@@ -51,13 +51,13 @@ public class RequestHandler implements Runnable {
     }
 
     private User parseUser(String requestPath) {
-        Map<String, String> userInfo = ParameterParser.getUserInfo(validateCreateUserPath(requestPath));
+        Map<String, String> userInfo = ParameterParser.getUserParams(validateCreateUserPath(requestPath));
         return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
     }
 
     private String validateCreateUserPath(String createUserPath) {
         String[] pathAndInfo = createUserPath.split("\\?");
-        if (!pathAndInfo[0].equals("/user/create")) {
+        if (pathAndInfo.length != 2 || !pathAndInfo[0].equals("/user/create")) {
             throw new IllegalArgumentException("INVALID PATH");
         }
         return pathAndInfo[1];
