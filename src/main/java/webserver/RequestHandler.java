@@ -39,7 +39,7 @@ public class RequestHandler implements Runnable {
             }
             else if(createUserHeader.matcher(requestHeader).matches()){
                 log.info("create request " + requestHeader);
-                createUser(requestHeader);
+                createUser(dos , requestHeader);
             }
             else if(getFileHeader.matcher(requestHeader).matches()){
                 log.info("getFile request : " + requestHeader);
@@ -53,7 +53,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private static void createUser(String requestHeader) {
+    private static void createUser(DataOutputStream dos , String requestHeader) throws IOException {
         // create User 메서드
         Pattern param = Pattern.compile("=\\w+(%40\\w+\\.com)?");
         Matcher matcher = param.matcher(requestHeader);
@@ -71,16 +71,17 @@ public class RequestHandler implements Runnable {
         User user = new User(id , password , nickname , email);
         Database.addUser(user);
 
+        responseGetFile(dos, "GET /index.html".split(" "));
         log.info("created : " + Database.findUserById(id).toString());
     }
 
-    private void responseRegistration(DataOutputStream dos) throws IOException {
+    private static void responseRegistration(DataOutputStream dos) throws IOException {
         byte[] body = responseBodyFile("/registration/index.html");
         response200Header(dos, body.length , FileType.HTML.getContentType());
         responseBody(dos,body);
     }
 
-    private void responseGetFile(DataOutputStream dos, String[] request) throws IOException {
+    private static void responseGetFile(DataOutputStream dos, String[] request) throws IOException {
         // 리퀘스트를 파싱해 타입, 요청한 파일 경로 , 파일 확장자 얻음
         String requestType = request[0];
         String url = request[1];
@@ -97,7 +98,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private byte[] responseBodyFile(String url) throws IOException {
+    private static byte[] responseBodyFile(String url) throws IOException {
         File file = new File("src/main/resources/static" + url);
         byte[] bytes = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -106,7 +107,7 @@ public class RequestHandler implements Runnable {
         return bytes;
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
+    private static void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
@@ -115,7 +116,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
+    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + contentType + "\r\n");
