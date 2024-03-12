@@ -24,7 +24,12 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = br.readLine();
             String fileName = getFileName(line);
-
+            // InputStream 의 로그를 콘솔에 출력해 줍니다.
+            logger.debug(line);
+            while(!line.isEmpty()){
+                line = br.readLine();
+                logger.debug(line);
+            }
             // html 파일을 모두 읽어와 Bytes 로 변환해준다.
             byte[] file = Files.readAllBytes(new File("./src/main/resources/static/" + fileName).toPath());
             DataOutputStream dos = new DataOutputStream(out);
