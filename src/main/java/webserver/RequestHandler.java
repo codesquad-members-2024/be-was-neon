@@ -10,6 +10,7 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
+    private String firstPath; // 첫 번째 요청된 경로(index.html)를 저장할 변수
 
     public RequestHandler(Socket connectionSocket) {
 
@@ -26,11 +27,16 @@ public class RequestHandler implements Runnable {
             String line = br.readLine();
             logger.debug("request line: {}", line);
 
+            // 요청된 URL
             String path = PathParser.extractPathFromRequestLine(line);
-            logger.debug("Extracted path: {}", path);
-            System.out.println(path);
+            if ("/index.html".equals(path)) {
+                if (firstPath == null) {
+                    firstPath = path;
+                    logger.debug("Extracted path: {}", firstPath);
+                }
+            }
 
-            while(!line.equals("")){
+            while(!line.isEmpty()){
                 line = br.readLine();
                 logger.debug("header: {}", line);
             }
