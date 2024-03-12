@@ -37,7 +37,7 @@ public class Response {
     }
 
     private static byte[] getFileBytes(String url) throws IOException {
-        File file = new File("src/main/resources/static" + url);
+        File file = new File("../resources/static" + url); // Response 클래스 기준 상대 경로
         byte[] bytes = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(bytes);
