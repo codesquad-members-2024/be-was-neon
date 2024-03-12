@@ -1,6 +1,6 @@
 package webserver;
 
-import FileUtils.FileExtractor;
+import utils.FileExtractor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;

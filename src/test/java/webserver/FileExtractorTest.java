@@ -2,7 +2,7 @@ package webserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import FileUtils.FileExtractor;
+import utils.FileExtractor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

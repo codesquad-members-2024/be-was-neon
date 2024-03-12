@@ -1,4 +1,4 @@
-package FileUtils;
+package utils;
 
 public class FileExtractor {
     private static final String BLANK = "\s+";
