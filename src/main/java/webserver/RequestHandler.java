@@ -29,7 +29,6 @@ public class RequestHandler implements Runnable {
             }
 
 
-
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);

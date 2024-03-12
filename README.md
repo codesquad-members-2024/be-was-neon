@@ -7,3 +7,5 @@
     - 어떻게 흘러가지?
     - 어떤 요청이 들어오는지 Handler에서 받아보자
         - BufferedReader로 한 줄씩 찍어본다.
+- 디버거
+    - Skipped breakpoint at webserver.RequestHandler:19 because of stepping in another thread<br> 디버깅을 하는데 저런 오류가 나면서 슉 지나간다 뭐지?
