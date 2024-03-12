@@ -7,6 +7,7 @@
 
 # idea 폴더
 .idea
+.idea/*
 
 # User-specific stuff
 .idea/**/workspace.xml
