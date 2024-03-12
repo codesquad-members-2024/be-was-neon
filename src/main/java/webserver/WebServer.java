@@ -20,19 +20,20 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
-        // 스레드 풀을 생성한다.
-        ExecutorService executorService = Executors.newCachedThreadPool(); // 추가
-        //ExecutorService executorService = Executors.newFixedThreadPool(100); // 추가
-
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
 
+            // 스레드 풀 생성.
+            ExecutorService executorService = Executors.newFixedThreadPool(100); // 추가
+
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executorService.submit(new RequestHandler(connection)); // 추가
+                executorService.execute(new RequestHandler(connection));
             }
+
+            executorService.shutdown();
         }
     }
 }
