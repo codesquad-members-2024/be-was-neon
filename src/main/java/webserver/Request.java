@@ -55,7 +55,7 @@ public class Request {
             // valueOf(~.toUpperCase()) 로 파일타입 Enum 에서 타입 찾아 지정
             String[] type = request.url.split("\\.");
             request.fileType = FileType.valueOf(type[type.length-1].toUpperCase());
-        } catch (ArrayIndexOutOfBoundsException justPath) {
+        } catch (IllegalArgumentException justPath) {
             // 파일이 아니라 경로라면 그 경로의 index.html 을 요청한 것으로 간주
             request.url = request.url + "/index.html";
             request.fileType = FileType.HTML;
