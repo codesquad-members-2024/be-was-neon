@@ -3,8 +3,8 @@ package webserver;
 import static utils.RequestHeaderParser.*;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +40,7 @@ public class RequestHandler implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             DataOutputStream dos = new DataOutputStream(out);
 
+            //TODO: 통째로 받아서 convert 하기
             String line = reader.readLine();
             while (line != null && !line.isEmpty()) {
                 String request = requestParse(line);
@@ -97,24 +98,14 @@ public class RequestHandler implements Runnable {
     }
 
     private void responseHtml(DataOutputStream dos, String path) {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(path);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ) {
-            int bytesRead;
-            byte[] buffer = new byte[BUFFER_SIZE];
+        File file = new File(path);
+        try (FileInputStream fis = new FileInputStream(file)) { // FileInputStream을 사용하여 파일 열기
+            byte[] byteArray = new byte[(int) file.length()]; // 파일의 크기만큼의 바이트 배열 생성
 
-            // HTML 파일을 읽어 ByteArrayOutputStream에 쓰기
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) { // 더 이상 읽지 못하면 -1을 반환 -> 루프 종료
-                byteArrayOutputStream.write(buffer, 0, bytesRead); // buffer 배열의 0번째부터 읽은 바이트 수 만큼 작성
-            }
+            fis.read(byteArray); // 파일 내용을 바이트 배열에 읽어들임
 
-            // ByteArrayOutputStream의 내용을 바이트 배열로 가져오기
-            byte[] fileBytes = byteArrayOutputStream.toByteArray();  // 모든 html 내용이 쓰여져 있음 (메모리에 올라온 상태)
-
-            // DataOutputStream으로 변환하여 반환
-            response200Header(dos, fileBytes.length);
-            responseBody(dos, fileBytes);
+            response200Header(dos, byteArray.length);
+            responseBody(dos, byteArray);
         } catch (IOException e) {
             e.printStackTrace();
         }
