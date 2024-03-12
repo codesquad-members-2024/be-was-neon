@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
@@ -23,14 +24,21 @@ public class RequestHandler implements Runnable {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-            String line;
-            while (!(line = br.readLine()).isEmpty()) {
-                System.out.println(line);
+            String line = br.readLine();
+            String[] split = line.split(" ");
+            String path = split[1];
+            while (!line.isEmpty()) {
+                logger.debug("request : {}", line);
+                line = br.readLine();
             }
+
+            File file = new File("src/main/resources/static" + path);
+            FileInputStream fis = new FileInputStream(file);
+            byte[] body = fis.readAllBytes();
 
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
+//            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
