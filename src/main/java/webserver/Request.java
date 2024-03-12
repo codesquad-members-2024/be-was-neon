@@ -53,7 +53,8 @@ public class Request {
     private static void setFileReqUrl(Request request) {
         try {
             // valueOf(~.toUpperCase()) 로 파일타입 Enum 에서 타입 찾아 지정
-            request.fileType = FileType.valueOf(request.url.split("\\.")[1].toUpperCase());
+            String[] type = request.url.split("\\.");
+            request.fileType = FileType.valueOf(type[type.length-1].toUpperCase());
         } catch (ArrayIndexOutOfBoundsException justPath) {
             // 파일이 아니라 경로라면 그 경로의 index.html 을 요청한 것으로 간주
             request.url = request.url + "/index.html";
