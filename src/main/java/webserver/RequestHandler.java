@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
-    private static final String RELATIVE_PATH = "./src/main/resources/static/";
+    private static final String RELATIVE_PATH = "./src/main/resources/static";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private Socket connection;
 
@@ -23,6 +23,7 @@ public class RequestHandler implements Runnable {
             String line = br.readLine();
             String fileName = getFileName(line);
             DataOutputStream dos = new DataOutputStream(out);
+
             while (line != null && !line.isEmpty()) {
                 // Request header 의 로그를 콘솔에 출력해 줍니다.
                 logger.debug("header : {}",line);
@@ -54,7 +55,7 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
-    private String getFileName(String firstLine) throws IOException {
+    public String getFileName(String firstLine) throws IOException {
         // /index.html HTTP/1.1 string 형태로 받아와서 파일 이름을 사용할수있게 split 을 이용하여 index.html 형태로 파싱해줍니다.
         String[] getFile = firstLine.split(" ");
         return getFile[1];
