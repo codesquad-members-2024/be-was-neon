@@ -5,7 +5,9 @@ public enum FileType {
         CSS("text/css"),
         SVG("image/svg+xml"),
         PNG("image/png"),
-        ICO("image/x-icon");
+        ICO("image/x-icon"),
+        TXT("text/plain"),
+        NONE("none");
 
 
         private final String contentType;
