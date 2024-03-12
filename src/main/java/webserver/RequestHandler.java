@@ -1,20 +1,24 @@
 package webserver;
 
+import db.Database;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RequestHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private Pattern getFileHeader = Pattern.compile("(GET )((\\/?.)*)\\.+(\\w)+( HTTP\\/1.1)");
-    // group 2,4,6,8 이 파라미터인 createUser 요청 Header 정규식
-    private Pattern registrationHeader = Pattern.compile("(GET )(\\/registration)( HTTP\\/1.1)");
-    private Pattern createUserHeader = Pattern.compile("(GET \\/create\\?userId\\=)+(\\w)+(&password=)+(\\w)+(&name=)+.*(&email=).*( HTTP\\/1.1)");
+    private final Pattern getFileHeader = Pattern.compile("(GET )((\\/?.)*)\\.+(\\w)+( HTTP\\/1.1)");
+    private final Pattern registrationHeader = Pattern.compile("(GET )(\\/registration)( HTTP\\/1.1)");
+    private final Pattern createUserHeader = Pattern.compile("(GET \\/create\\?userId\\=)+(\\w)+(&password=)+(\\w)+(&name=)(\\w)+(&email=)(.*%40\\w+\\.com)( HTTP\\/1.1)");
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -29,24 +33,45 @@ public class RequestHandler implements Runnable {
             requestHeader = br.readLine();
             String[] request = requestHeader.split(" ");
 
-            if(getFileHeader.matcher(requestHeader).matches()){
-                responseGetFile(dos, request);
-            }
-            else if(registrationHeader.matcher(requestHeader).matches()){
+            if(registrationHeader.matcher(requestHeader).matches()){
+                log.info("registration request : " + requestHeader);
                 responseRegistration(dos);
             }
             else if(createUserHeader.matcher(requestHeader).matches()){
-                // create User 메서드
-                log.info(requestHeader);
+                log.info("create request " + requestHeader);
+                createUser(requestHeader);
+            }
+            else if(getFileHeader.matcher(requestHeader).matches()){
+                log.info("getFile request : " + requestHeader);
+                responseGetFile(dos, request);
             }
             else {
                 log.error(requestHeader);
             }
-
-
         } catch (IOException |  ArrayIndexOutOfBoundsException e) { // 리퀘스트 읽을 때 발생 예외
             log.error(e.getMessage());
         }
+    }
+
+    private static void createUser(String requestHeader) {
+        // create User 메서드
+        Pattern param = Pattern.compile("=\\w+(%40\\w+\\.com)?");
+        Matcher matcher = param.matcher(requestHeader);
+        List<String> createParameters = new ArrayList<>();
+
+        while(matcher.find()){
+            createParameters.add(matcher.group());
+        }
+
+        String id = createParameters.get(0).substring(1);
+        String password = createParameters.get(1).substring(1);
+        String nickname = createParameters.get(2).substring(1);
+        String email = createParameters.get(3).substring(1);
+
+        User user = new User(id , password , nickname , email);
+        Database.addUser(user);
+
+        log.info("created : " + Database.findUserById(id).toString());
     }
 
     private void responseRegistration(DataOutputStream dos) throws IOException {
