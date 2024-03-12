@@ -23,14 +23,15 @@
     </header>
     <div class="page">
         <h2 class="page-title">회원가입</h2>
-        <form class="form" id="signupForm" action="/user/create" method="GET">
+        <form class="form" id="signupForm" action="/user/create" method="GET" onsubmit="return validateForm()">
             <div class="textfield textfield_size_s">
                 <p class="title_textfield">아이디</p>
                 <input
                         class="input_textfield"
                         id="userId"
                         name="userId"
-                        placeholder="아이디를 입력해주세요"
+                        size="40"
+                        placeholder="아이디를 입력해주세요 (영어와 숫자만 가능)"
                         autocomplete="userid"
                 />
             </div>
@@ -41,7 +42,8 @@
                         type="password"
                         id="userPw"
                         name="userPw"
-                        placeholder="비밀번호를 입력해주세요"
+                        size="40"
+                        placeholder="비밀번호를 입력해주세요 (8자 이상)"
                         autocomplete="current-password"
                 />
             </div>
@@ -51,7 +53,8 @@
                         class="input_textfield"
                         id="userName"
                         name="userName"
-                        placeholder="이름을 입력해주세요"
+                        size="40"
+                        placeholder="이름을 입력해주세요 (영어와 한글만 가능)"
                         autocomplete="username"
                 />
             </div>
@@ -61,7 +64,8 @@
                         class="input_textfield"
                         id="userEmail"
                         name="userEmail"
-                        placeholder="이메일을 입력해주세요"
+                        size="40"
+                        placeholder="이메일을 형식에 맞게 입력해주세요"
                         autocomplete="useremail"
                 />
             </div>
@@ -76,5 +80,38 @@
         </form>
     </div>
 </div>
+
+<script>
+    function validateForm() {
+        var userId = document.getElementById("userId").value;
+        var nameRegex = /^[a-zA-Z0-9]+$/;
+        if (!nameRegex.test(userId)) { // 아이디가 영어와 숫자로만 되어 있는지 검증한다.
+            alert("아이디는 영어와 숫자만 입력할 수 있습니다.");
+            return false;
+        }
+
+        var userPw = document.getElementById("userPw").value;
+        if (userPw.length < 8) { // 비밀번호가 8자 이상인지 검증한다.
+            alert("비밀번호는 8자 이상이어야 합니다.");
+            return false;
+        }
+
+        var userName = document.getElementById("userName").value;
+        var nameRegex = /^[a-zA-Z가-힣]+$/;
+        if (!nameRegex.test(userName)) { // 이름이 영어와 한글로만 되어 있는지 검증한다.
+            alert("이름은 영어와 한글만 입력할 수 있습니다.");
+            return false;
+        }
+
+        var userEmail = document.getElementById("userEmail").value;
+        var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(userEmail)) { // 올바른 이메일 형식인지 검증한다.
+            alert("올바른 이메일 형식을 입력해주세요.");
+            return false;
+        }
+        return true; // 모든 유효성 검사를 통과
+    }
+</script>
+
 </body>
 </html>
