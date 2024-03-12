@@ -2,6 +2,8 @@ package webserver;
 
 import db.Database;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -12,15 +14,16 @@ import java.util.List;
 import static webserver.ResponseStatus.*;
 
 public class Response {
+    private static final Logger log = LoggerFactory.getLogger(Response.class);
     private Response(){}
-    public static String sendResponse(DataOutputStream dos, Request request) throws IOException {
+    public static void sendResponse(DataOutputStream dos, Request request) throws IOException {
         if (request.getReqDetail().equals("createUser")) {
             createUser(dos, request.getParams());
         } else if (request.getReqDetail().equals("getFile")) {
             responseGetFile(dos, request.getUrl(), request.getFileType());
         }
 
-        return request.getLog() + " Complete";
+        log.info(request.getLog() + " Complete");
     }
 
     static void createUser(DataOutputStream dos, List<String> params) throws IOException {
@@ -47,7 +50,7 @@ public class Response {
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(bytes);
         } catch (IOException e) {
-            System.out.println("noSuchFile");
+            log.error("noSuchFile "+ file.toPath());
         }
         return bytes;
     }

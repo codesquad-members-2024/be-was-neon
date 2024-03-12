@@ -20,7 +20,7 @@ public class RequestHandler implements Runnable {
 
             DataOutputStream dos = new DataOutputStream(out);
 
-            log.info(Response.sendResponse(dos , request));
+            Response.sendResponse(dos , request);
         } catch (IOException | ArrayIndexOutOfBoundsException e) { // 리퀘스트 읽을 때 발생 예외
             log.error(e.getMessage());
         }
