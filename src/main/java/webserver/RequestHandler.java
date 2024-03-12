@@ -23,11 +23,10 @@ public class RequestHandler implements Runnable {
             String line = br.readLine();
             String fileName = getFileName(line);
             DataOutputStream dos = new DataOutputStream(out);
-            logger.debug(line);
             while (line != null && !line.isEmpty()) {
                 // Request header 의 로그를 콘솔에 출력해 줍니다.
+                logger.debug("header : {}",line);
                 line = br.readLine();
-                logger.debug(line);
             }
             if (fileName.endsWith(".html")) {
                 // html 파일을 읽어와 Bytes 로 변환한 후에 response 를 내보낸다.
