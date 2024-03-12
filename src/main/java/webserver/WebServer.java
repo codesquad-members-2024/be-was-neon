@@ -33,6 +33,7 @@ public class WebServer {
                 executorService.execute(new RequestHandler(connection));
             }
 
+            // ExecutorService 닫기
             executorService.shutdown();
         }
     }
