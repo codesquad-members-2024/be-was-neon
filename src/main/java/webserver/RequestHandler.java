@@ -2,7 +2,7 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -27,7 +27,7 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             String requestLine = br.readLine();
             logger.debug("request method : {}", requestLine);
@@ -35,6 +35,12 @@ public class RequestHandler implements Runnable {
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
             String requestURL = StringUtils.separatePath(requestLine);
             String filePath = FILE_PATH + requestURL;
+
+            requestLine = br.readLine();
+            while(!requestLine.isEmpty()){ // 나머지 header 출력
+                logger.debug("request header : {}", requestLine);
+                requestLine = br.readLine();
+            }
 
             // 파일이 존재하면 해당 파일을 읽어 응답.
             DataOutputStream dos = new DataOutputStream(out);
