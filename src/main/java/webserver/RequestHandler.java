@@ -2,9 +2,7 @@ package webserver;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import model.User;
 import utils.Decoder;
 import utils.DirectoryMatcher;
@@ -24,6 +22,14 @@ import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final String CREATE_REQUEST = "/\\w+/create\\?.+";
+    private static final String NEW_CLIENT_CONNECT_MESSAGE = "New Client Connect! Connected IP : {}, Port : {}";
+    private static final String REQUEST_LINE_MESSAGE = "request line : {}";
+    private static final String CHARSETS = "UTF-8";
+    private static final int ID_INDEX = 0;
+    private static final int PW_INDEX = 1;
+    private static final int NAME_INDEX = 2;
+    private static final int EMAIL_INDEX = 3;
 
     private List<User> users;
     private Socket connection;
@@ -34,23 +40,17 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug(NEW_CLIENT_CONNECT_MESSAGE, connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
+            InputStreamReader inputStreamReader = new InputStreamReader(in, CHARSETS);
             BufferedReader br = new BufferedReader(inputStreamReader);
             String request = br.readLine();
-            logger.debug("request line : {}", request);
+            logger.debug(REQUEST_LINE_MESSAGE, request);
 
             String url = FileExtractor.extractUrl(request);
-            String filePath = DirectoryMatcher.mathDirectory(url); // 디렉토리를 포함한 위치 지정
-            if (url.matches("/\\w+/create\\?.+")) { // 생성 요청인 경우
-                createUser(url);
-                filePath = "src/main/resources/static/registration/register.html"; // User 생성 완료 후 다시 돌아가기
-            }
+            byte[] body = generateByte(url);
 
-            byte[] body = readAllBytes(filePath); // 바이트 배열로 변환
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);
@@ -59,13 +59,23 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    private byte[] generateByte(String url) throws IOException {
+        String filePath = DirectoryMatcher.mathDirectory(url); // 디렉토리를 포함한 위치 지정
+        if (url.matches(CREATE_REQUEST)) { // 생성 요청인 경우
+            createUser(url);
+            return new byte[0]; // 페이지 이동 X (임시)
+        } else {
+            return readAllBytes(filePath); // 바이트 배열로 변환
+        }
+    }
+
     private void createUser(String url)
             throws IndexOutOfBoundsException, IllegalArgumentException, UnsupportedEncodingException {
         String[] userInfo = FileExtractor.extractUser(url);
-        String id = Decoder.decode(userInfo[0]);
-        String pw = Decoder.decode(userInfo[1]);
-        String name = Decoder.decode(userInfo[2]);
-        String email = Decoder.decode(userInfo[3]);
+        String id = Decoder.decode(userInfo[ID_INDEX]);
+        String pw = Decoder.decode(userInfo[PW_INDEX]);
+        String name = Decoder.decode(userInfo[NAME_INDEX]);
+        String email = Decoder.decode(userInfo[EMAIL_INDEX]);
         User user = new User(id, pw, name, email);
         users.add(user);
         logger.debug(user.toString());
