@@ -1,5 +1,13 @@
 package webserver;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import model.User;
+import utils.Decoder;
+import utils.DirectoryMatcher;
 import utils.FileExtractor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -15,13 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
-    private static final String BASE_PATH = "./src/main/resources/static";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+    private List<User> users;
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        users = new ArrayList<>();
     }
 
     public void run() {
@@ -29,19 +38,37 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String filePath = br.readLine();
+            InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
+            BufferedReader br = new BufferedReader(inputStreamReader);
+            String request = br.readLine();
+            logger.debug("request line : {}", request);
 
-            logger.debug("request line : {}", filePath);
-            String url = FileExtractor.extractUrl(filePath);
-            byte[] body = readAllBytes(BASE_PATH + url); // 바이트 배열로 변환
+            String url = FileExtractor.extractUrl(request);
+            String filePath = DirectoryMatcher.mathDirectory(url); // 디렉토리를 포함한 위치 지정
+            if (url.matches("/\\w+/create\\?.+")) { // 생성 요청인 경우
+                createUser(url);
+                filePath = "src/main/resources/static/registration/register.html"; // User 생성 완료 후 다시 돌아가기
+            }
 
+            byte[] body = readAllBytes(filePath); // 바이트 배열로 변환
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void createUser(String url)
+            throws IndexOutOfBoundsException, IllegalArgumentException, UnsupportedEncodingException {
+        String[] userInfo = FileExtractor.extractUser(url);
+        String id = Decoder.decode(userInfo[0]);
+        String pw = Decoder.decode(userInfo[1]);
+        String name = Decoder.decode(userInfo[2]);
+        String email = Decoder.decode(userInfo[3]);
+        User user = new User(id, pw, name, email);
+        users.add(user);
+        logger.debug(user.toString());
     }
 
     private byte[] readAllBytes(String filePath) throws IOException {
