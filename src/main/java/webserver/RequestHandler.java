@@ -2,6 +2,8 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+
+import Utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import Utils.PathParser;
@@ -42,14 +44,18 @@ public class RequestHandler implements Runnable {
             }
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+            // 파일을 읽어 바이트 배열로 변환 NIO 안 쓰기
+            File file = new File("src/main/resources/static" + firstPath);
+            byte[] body = FileUtils.readFileToByteArray(file);
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
+
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
