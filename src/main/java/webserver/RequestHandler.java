@@ -24,7 +24,7 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = br.readLine();
             String fileName = getFileName(line);
-            // InputStream 의 로그를 콘솔에 출력해 줍니다.
+            // Request header 의 로그를 콘솔에 출력해 줍니다.
             logger.debug(line);
             while(!line.isEmpty()){
                 line = br.readLine();
@@ -57,7 +57,7 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
-    public String getFileName(String firstLine) throws IOException {
+    private String getFileName(String firstLine) throws IOException {
         // /index.html HTTP/1.1 string 형태로 받아와서 파일 이름을 사용할수있게 split 을 이용하여 index.html 형태로 파싱해줍니다.
         String[] getFile = firstLine.split(" ");
         return getFile[1];
