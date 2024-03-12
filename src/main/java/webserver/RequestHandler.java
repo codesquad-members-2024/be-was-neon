@@ -6,6 +6,8 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static webserver.RequestUtils.extractRequestURL;
+
 public class RequestHandler implements Runnable {
     private static final String INDEX_FILE_PATH = "src/main/resources/static";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -48,15 +50,6 @@ public class RequestHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.error("Error handling client request", e);
-        }
-    }
-
-    public static String extractRequestURL(String requestLine) {
-        String[] tokens = requestLine.split(" ");
-        if (tokens.length >= 2) {
-            return tokens[1]; // 요청 URL
-        } else {
-            return null;
         }
     }
 
