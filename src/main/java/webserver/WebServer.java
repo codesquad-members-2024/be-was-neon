@@ -27,8 +27,8 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                ExecutorService es = Executors.newFixedThreadPool(10);
-                es.submit(new RequestHandler(connection));
+                ExecutorService executorService = Executors.newFixedThreadPool(10);
+                executorService.execute(new RequestHandler(connection));
             }
         }
     }
