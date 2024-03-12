@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import org.slf4j.Logger;
 public class Parser {
     private static final String DEFAULT_URL = "/index.html";
+    private static final String SPACE = " ";
     public static String getRequestTarget(InputStream in, Logger logger) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
         //Http Request 는 BlankLine 포함된다.
@@ -21,7 +21,7 @@ public class Parser {
             if(line.isEmpty()) break;
         }
 
-        String[] tokens = startLine.split(" ");
+        String[] tokens = startLine.split(SPACE);
 
         String url = tokens[1];
 

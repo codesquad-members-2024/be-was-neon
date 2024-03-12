@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 public class WebServer {
-    //Logger 클래스
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080; //기본 포트정보
 
@@ -27,7 +26,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Executor executor = Executors.newFixedThreadPool(1);
+                Executor executor = Executors.newCachedThreadPool();
                 executor.execute(new RequestHandler(connection));
             }
         }
