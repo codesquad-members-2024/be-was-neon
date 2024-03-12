@@ -29,6 +29,7 @@ public class Response {
     static void createUser(DataOutputStream dos, List<String> params) throws IOException {
         User user = User.makeUser(params);
         Database.addUser(user);
+        log.info("User Created : " + user.getUserId());
         sendResponseHeader(dos, FOUND , FileType.NONE , 0);
     }
 
@@ -38,7 +39,8 @@ public class Response {
             sendResponseHeader(dos, OK, fileType, body.length);
             dos.write(body);
             dos.flush();
-        } catch (IOException | NullPointerException noSuchFile) { // 해당 경로의 파일이 없을 때
+        } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
+            // 404 페이지 응답
             sendResponseHeader(dos , NotFound , FileType.TXT , NotFound.getMessage().length());
             dos.writeBytes(NotFound.getMessage());
         }
@@ -51,6 +53,7 @@ public class Response {
             fis.read(bytes);
         } catch (IOException e) {
             log.error("noSuchFile "+ file.toPath());
+            throw e;
         }
         return bytes;
     }

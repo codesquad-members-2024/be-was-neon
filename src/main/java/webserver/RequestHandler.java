@@ -14,14 +14,15 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
+        log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             Request request = Request.makeRequest(in);
             log.info(request.getLog());
 
             DataOutputStream dos = new DataOutputStream(out);
-
             Response.sendResponse(dos , request);
-        } catch (IOException | ArrayIndexOutOfBoundsException e) { // 리퀘스트 읽을 때 발생 예외
+        } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
