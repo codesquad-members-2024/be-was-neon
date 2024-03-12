@@ -41,7 +41,6 @@ public class RequestHandler implements Runnable {
                 DataOutputStream dos = new DataOutputStream(out);
                 response200Header(dos, body.length);
                 responseBody(dos, body);
-
                 fis.close();
             } else{
                 logger.error("File not found: {}", INDEX_FILE_PATH + requestLine);
