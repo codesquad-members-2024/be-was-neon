@@ -4,13 +4,11 @@ public class User {
     private String userId;
     private String password;
     private String name;
-    private String email;
 
-    public User(String userId, String password, String name, String email) {
+    public User(String userId, String password, String name) {
         this.userId = userId;
         this.password = password;
         this.name = name;
-        this.email = email;
     }
 
     public String getUserId() {
@@ -25,12 +23,8 @@ public class User {
         return name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", password=" + password + ", name=" + name + ", email=" + email + "]";
+        return "User [userId=" + userId + ", password=" + password + ", name=" + name + "]";
     }
 }
