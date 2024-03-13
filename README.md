@@ -18,3 +18,10 @@
 - HTTP Request 내용 출력
 - 파일 형식에 따라 HTTP Response Header 의 content-type을 변경
 - 요청 타켓이 디렉토리면 해당 디렉토리의 `index.html` 파일을 반환하도록 구현
+- RequestHandler의 run 메서드의 코드를 HttpRequest, HttpResponse 클래스로 분할
+
+## 요청 타겟 별 기능
+- `/` : `index.html` 을 반환
+- `/login` : `login/index.html` 반환
+- `/registration` : `registration/index.html`
+- `/user/create` : 쿼리 파라미터의 값으로 User 객체를 만들어 저장
