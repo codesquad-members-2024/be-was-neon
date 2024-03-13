@@ -17,15 +17,14 @@ public class Request {
     private FileType fileType;
     private List<String> params;
 
-    private Request() {
+    private Request(String method , String url) {
+        this.method = method;
+        this.url = url;
     }
 
     public static Request makeRequest(InputStream in) throws IOException {
         String[] requestHeader = parseRequest(in);
-        Request request = new Request();
-        request.method = requestHeader[0];
-        request.url = requestHeader[1];
-
+        Request request = new Request(requestHeader[0] , requestHeader[1]);
 
         if (createUserHeader.matcher(request.url).matches()) {
             request.reqDetail = "createUser";
@@ -35,7 +34,6 @@ public class Request {
             request.reqDetail = "getFile";
             setFileReqUrl(request);
         }
-
         return request;
     }
 
@@ -63,6 +61,7 @@ public class Request {
     }
 
     private static String[] parseRequest(InputStream in) throws IOException {
+        // 현재는 한 줄만 읽어 파싱
         String requestHeader;
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         requestHeader = br.readLine();
