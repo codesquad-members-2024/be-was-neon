@@ -22,7 +22,10 @@ public class RequestHandler implements Runnable {
             Request request = makeRequest(requestMessage);
 
             DataOutputStream dos = new DataOutputStream(out);
-            Response.sendResponse(dos, request);
+            Response response = new Response(request);
+
+            response.sendResponse(dos);
+            log.info(request.getLog() + " Complete");
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -37,12 +40,15 @@ public class RequestHandler implements Runnable {
 
     private static String readRequestMessage(InputStream in) throws IOException {
         StringBuilder sb = new StringBuilder();
-        int input;
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        while ((input = br.read()) != -1) {
-            sb.append((char) input);
+
+        String reqLine = br.readLine();
+        if(reqLine == null){
+            throw new IOException("null req");
         }
+        sb.append(reqLine);
+
+        log.info("read " + sb);
         return sb.toString();
     }
-
 }

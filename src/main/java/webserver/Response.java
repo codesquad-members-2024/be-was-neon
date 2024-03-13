@@ -9,62 +9,98 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import static webserver.ResponseStatus.*;
+import static webserver.WebServer.staticSourcePath;
 
 public class Response {
+    Map<String, Runnable> urlMapping = Map.of(
+            "default", this::responseGet,
+            "/create", this::createUser
+    );
     private static final Logger log = LoggerFactory.getLogger(Response.class);
-    private Response(){}
-    public static void sendResponse(DataOutputStream dos, Request request) throws IOException {
-        if (request.getReqDetail().equals("createUser")) {
-            createUser(dos, request.getParams());
-        } else if (request.getReqDetail().equals("getFile")) {
-            responseGetFile(dos, request.getUrl(), request.getFileType());
-        }
+    byte[] header;
+    byte[] body;
+    private String path;
+    private final Map<String, String> params;
+    private FileType fileType;
 
-        log.info(request.getLog() + " Complete");
+    public Response(Request request) {
+        this.path = request.getPath();
+        this.params = request.getParams();
+
+        String urlKey = urlMapping.keySet().stream()
+                .filter(url -> path.startsWith(url))
+                .findFirst().orElse("default");
+        urlMapping.get(urlKey).run();
     }
 
-    static void createUser(DataOutputStream dos, List<String> params) throws IOException {
-        User user = User.makeUser(params);
+    public void sendResponse(DataOutputStream dos) throws IOException {
+//        log.info(new String(header));
+//        log.info(new String(body));
+        dos.write(header, 0 , header.length);
+        dos.write(body, 0 , body.length);
+        dos.flush();
+    }
+
+    void createUser() {
+        User user = new User(params.get("name"), params.get("password"), params.get("nickname"), params.get("email"));
         Database.addUser(user);
         log.info("User Created : " + user.getUserId());
-        sendResponseHeader(dos, FOUND , FileType.NONE , 0);
+        writeResponseHeader(FOUND, FileType.NONE, 0);
     }
 
-    static void responseGetFile(DataOutputStream dos, String url, FileType fileType) throws IOException {
+    void responseGet() {
         try {
-            byte[] body = getFileBytes(url);
-            sendResponseHeader(dos, OK, fileType, body.length);
-            dos.write(body);
-            dos.flush();
+            body = getFileBytes();
+            writeResponseHeader(OK, fileType, body.length);
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
-            sendResponseHeader(dos , NotFound , FileType.TXT , NotFound.getMessage().length());
-            dos.writeBytes(NotFound.getMessage());
+            writeResponseHeader(NotFound, FileType.TXT, NotFound.getMessage().length());
+            body = (NotFound.getMessage().getBytes());
         }
     }
 
-    private static byte[] getFileBytes(String url) throws IOException {
-        File file = new File("./src/main/resources/static" + url); // 프로젝트 기준 상대 경로
-        byte[] bytes = new byte[(int) file.length()];
+    private byte[] getFileBytes() throws IOException {
+        setFilePath();
+        File file = new File(staticSourcePath + path); // 프로젝트 기준 상대 경로
+
+        byte[] fileBytes = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(bytes);
+            fis.read(fileBytes);
         } catch (IOException e) {
-            log.error("noSuchFile "+ file.toPath());
+            log.error("noSuchFile " + file.toPath());
             throw e;
         }
-        return bytes;
+
+        log.info(file.getName() + " send");
+        return fileBytes;
     }
 
-    private static void sendResponseHeader(DataOutputStream dos, ResponseStatus status, FileType contentType, int contentLength) throws IOException {
-        dos.writeBytes("HTTP/1.1 " + status.getMessage() + "\r\n");
-        if(status == FOUND) dos.writeBytes("Location:" + "/index.html"); // 이부분 파라미터로 사용하지 못해 고민
-        else {
-            dos.writeBytes("Content-Type: " + contentType.getContentType() + "\r\n");
-            dos.writeBytes("Content-Length: " + contentLength + "\r\n");
-            dos.writeBytes("\r\n");
+    private void setFilePath() {
+        try {
+            // valueOf(~.toUpperCase()) 로 파일타입 Enum 에서 타입 찾아 지정
+            String[] type = path.split("\\.");
+            fileType = FileType.valueOf(type[type.length - 1].toUpperCase());
+        } catch (IllegalArgumentException justPath) {
+            // 파일이 아니라 경로라면 그 경로의 index.html 을 요청한 것으로 간주
+            path = path + "/index.html";
+            fileType = FileType.HTML;
         }
+    }
+
+    private void writeResponseHeader(ResponseStatus status, FileType contentType, int contentLength) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("HTTP/1.1 ").append(status.getMessage()).append("\r\n");
+        if (status == FOUND) sb.append("Location:" + "/index.html"); // 이부분 파라미터로 사용하지 못해 고민
+        else {
+            sb.append("Content-Type: ").append(contentType.getContentType()).append("\r\n");
+            sb.append("Content-Length: ").append(contentLength).append("\r\n");
+            sb.append("\r\n");
+        }
+
+        header = sb.toString().getBytes();
     }
 }

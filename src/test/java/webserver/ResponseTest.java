@@ -3,31 +3,35 @@ package webserver;
 import db.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class ResponseTest {
-    List<Byte> dataOutput;
-
-    DataOutputStream dos = new DataOutputStream(new OutputStream() {
-        @Override
-        public void write(int b) throws IOException {
-        }
-    });
+class ResponseTest {
 
     @Test
-    @DisplayName("createUser 요청에 대해 매개변수가 알맞게 파싱되고 , Request 객체가 반환되어야 한다")
-    void createUserResponse() throws IOException {
+    @DisplayName("createUser 요청이 들어오면 유저가 DB에 추가되고 , 302 응답을 보내야 한다")
+    void createUserResponse(){
         String url = "GET /create?userId=test&password=test&name=test&email=test%40naver.com";
         Request request = makeRequest(url);
+        Response response = new Response(request);
+        String header = new String(response.header);
 
-        Response.sendResponse(dos, request);
+        assertThat(header.startsWith("HTTP/1.1 " + ResponseStatus.FOUND.getMessage())).isTrue();
         assertThat(Database.findUserById("test")).isNotNull();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"GET /", "GET /registration"})
+    @DisplayName("url 이 경로라면 해당 경로의 index.html 을 요청한 것으로 간주한다")
+    void getPathRequest(String url){
+        Request request = makeRequest(url);
+        Response response = new Response(request);
+        String body = new String(response.header);
+        System.out.println(body);
+
+        assertThat(body.startsWith("<!DOCTYPE html>")).isTrue();
     }
 
     private static Request makeRequest(String url) {
