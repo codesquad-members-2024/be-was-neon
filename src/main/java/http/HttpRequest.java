@@ -1,21 +1,21 @@
 package http;
 
 public class HttpRequest {
-    private HttpMethod method;
-    private String requestURI;
-    private String httpVersion;
-    private String host;
-    private String userAgent;
-    private String accept;
-    private String acceptLanguage;
-    private String acceptEncoding;
-    private String referer;
-    private String connection;
-    private String ifModifiedSince;
-    private String ifNoneMatch;
-    private String cacheControl;
-    private String cookie;
-    private String pragma;
+    private final HttpMethod method;
+    private final String requestURI;
+    private final String httpVersion;
+    private final String host;
+    private final String userAgent;
+    private final String accept;
+    private final String acceptLanguage;
+    private final String acceptEncoding;
+    private final String referer;
+    private final String connection;
+    private final String ifModifiedSince;
+    private final String ifNoneMatch;
+    private final String cacheControl;
+    private final String cookie;
+    private final String pragma;
 
     protected HttpRequest(HttpMethod method, String requestURI, String httpVersion, String host, String userAgent,
                        String accept, String acceptLanguage, String acceptEncoding, String referer, String connection,
