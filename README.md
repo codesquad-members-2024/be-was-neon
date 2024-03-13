@@ -4,6 +4,28 @@
 # GitHub Wiki
 - 학습 내용 정리: [WAS1 - Wiki](https://github.com/Yeriimii/be-was-neon/wiki/Java-Concurrent-%E2%80%90-CompletableFuture)
 
+# 전체 요청 흐름
+## HTTP GET 요청 흐름 (`/index.html`, `/registration`)
+```mermaid
+sequenceDiagram
+    actor client
+    client->>WebServer: 1. GET 요청: '/index.html'
+    activate WebServer
+    WebServer->>WebServer: 2. accept --> Socket(connection) 생성 
+    deactivate WebServer
+    WebServer->>RequestHandler: 3. Socket(connection) 전달
+    activate RequestHandler
+    RequestHandler->>RequestHandler: 4. HttpConverter --> `HttpRequest`, `HttpResponse` 생성
+    RequestHandler->>StaticMapper: 5. `HttpRequest`를 처리할 수 있는 `Processor` 전달 요청
+    StaticMapper-->>RequestHandler: 6. `Processor` 반환 (HttpRequest, HttpResponse 처리)
+    RequestHandler->>RequestHandler: 7. `Processor` 로직 실행 (없으면 404 Not Found)
+    RequestHandler-->>client: 8. `HttpResponse` 응답
+    deactivate RequestHandler
+    activate client
+    client-->>client: 9. 화면 구성
+    deactivate client
+```
+
 # 기능 구현 리스트
 ## RequestHandler
 - [x] 요청 헤더(GET/Host/Connection/Accept)에 대해 파싱하고 로그로 출력할 수 있다
