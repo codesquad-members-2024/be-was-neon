@@ -29,9 +29,9 @@ public class HttpRequestConverter {
 
     public static String makeOneLine(Socket connection) {
         StringBuilder builder = new StringBuilder();
-        try (InputStream in = connection.getInputStream()) {
+        try {
+            InputStream in = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-
             String line;
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
                 builder.append(line).append(NEWLINE); // request string를 한 줄씩 추가하고 마지막에 개행 문자 추가
