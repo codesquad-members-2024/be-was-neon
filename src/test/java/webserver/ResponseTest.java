@@ -28,7 +28,7 @@ class ResponseTest {
     void getPathRequest(String url){
         Request request = makeRequest(url);
         Response response = new Response(request);
-        String body = new String(response.header);
+        String body = new String(response.body);
         System.out.println(body);
 
         assertThat(body.startsWith("<!DOCTYPE html>")).isTrue();
