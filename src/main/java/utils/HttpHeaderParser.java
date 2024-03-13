@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +19,7 @@ public enum HttpHeaderParser {
     CACHE_CONTROL(Pattern.compile("Cache-Control:.*")),
     COOKIE(Pattern.compile("Cookie:.*")),
     PRAGMA(Pattern.compile("Pragma:.*")),
+    QUERY_PARAMETER(Pattern.compile("[?&]([^=]+)=([^&]+)")),
     OTHER(Pattern.compile(".*:.*")),
     ;
 
@@ -32,5 +35,15 @@ public enum HttpHeaderParser {
             return headerMatcher.group();
         }
         return "";
+    }
+
+    public static Map<String, String> parseParams(String header) {
+        Map<String, String> paramMap = new HashMap<>();
+
+        Matcher paramMatcher = QUERY_PARAMETER.compiledPattern.matcher(header);
+        while (paramMatcher.find()) {
+            paramMap.put(paramMatcher.group(1), paramMatcher.group(2)); // key = 인덱스 1, value = 인덱스 2
+        }
+        return paramMap;
     }
 }

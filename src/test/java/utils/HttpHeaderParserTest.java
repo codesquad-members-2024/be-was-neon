@@ -3,6 +3,8 @@ package utils;
 import static org.assertj.core.api.Assertions.*;
 import static utils.HttpHeaderParser.*;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -185,5 +187,22 @@ class HttpHeaderParserTest {
 
         // then
         assertThat(requestLine).isEqualTo("아무거나: 아무거나 어쩌구");
+    }
+
+    @DisplayName("'/index.html?name=str&id=str2&money=123'에서 쿼리파라미터를 추출하면 name=str, id=str2, money=123 3개 이다")
+    @Test
+    void parse_query_params() {
+        // given
+        String requestHeader = "/index.html?name=str&id=str2&money=123";
+
+        // when
+        Map<String, String> params = parseParams(requestHeader);
+
+        // then
+        assertThat(params.size()).isEqualTo(3);
+        assertThat(params).containsEntry("name", "str")
+                .containsEntry("id", "str2")
+                .containsEntry("money", "123");
+        assertThat(params).doesNotContainEntry("noKey", "noValue");
     }
 }
