@@ -2,11 +2,10 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
-
 import Utils.FileUtils;
+import Utils.HTTPRequestParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import Utils.PathParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -15,22 +14,24 @@ public class RequestHandler implements Runnable {
     private String firstPath; // 첫 번째 요청된 경로(index.html)를 저장할 변수
 
     public RequestHandler(Socket connectionSocket) {
-
         this.connection = connectionSocket;
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = br.readLine();
-            logger.debug("request line: {}", line);
 
-            // 요청된 URL
-            String path = PathParser.extractPathFromRequestLine(line);
+            // 요청 라인을 읽어서 파싱
+            String requestLine = br.readLine();
+            logger.debug("request line: {}", requestLine);
+
+            HTTPRequestParser requestParser = new HTTPRequestParser();
+            requestParser.parseRequestLine(requestLine);
+
+            // 요청된 URL 추출
+            String path = requestParser.getPath();
             if ("/index.html".equals(path)) {
                 if (firstPath == null) {
                     firstPath = path;
@@ -38,8 +39,9 @@ public class RequestHandler implements Runnable {
                 }
             }
 
-            while(!line.isEmpty()){
-                line = br.readLine();
+            // 헤더들을 읽어서 파싱
+            String line;
+            while(!(line = br.readLine()).isEmpty()){
                 logger.debug("header: {}", line);
             }
 
@@ -59,7 +61,6 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
-
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
