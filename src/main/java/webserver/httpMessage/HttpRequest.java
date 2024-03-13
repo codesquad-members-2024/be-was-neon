@@ -37,9 +37,9 @@ public class HttpRequest {
         return new HttpRequest(httpRequest);
     }
 
-    public void read() {
+    public void log() {
         for (String line : httpRequest) {
-            logger.debug("line = " + line);
+            logger.debug("request = " + line);
         }
     }
 
