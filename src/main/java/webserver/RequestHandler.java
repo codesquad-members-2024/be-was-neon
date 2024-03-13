@@ -8,7 +8,7 @@ import java.net.Socket;
 
 import http.HttpResponse;
 import http.HttpRequest;
-import web.StaticMapper;
+import web.UriMapper;
 import web.HttpProcessor;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -52,6 +52,6 @@ public class RequestHandler implements Runnable {
     }
 
     public Optional<HttpProcessor> findProcessor(String uri) {
-        return StaticMapper.getInstance().getProcessor(uri);
+        return UriMapper.getInstance().getProcessor(uri);
     }
 }

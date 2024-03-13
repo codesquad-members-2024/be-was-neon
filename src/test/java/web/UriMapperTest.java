@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class StaticMapperTest {
+class UriMapperTest {
 
     @DisplayName("'/' 또는 '/index.html'을 입력받으면 HtmlProcessor를 반환한다")
     @Test
@@ -15,7 +15,7 @@ class StaticMapperTest {
         String rootUrl = "/";
         String staticUrl = "/index.html";
 
-        StaticMapper mapper = StaticMapper.getInstance();
+        UriMapper mapper = UriMapper.getInstance();
 
         // when
         Optional<HttpProcessor> rootProcessor = mapper.getProcessor(rootUrl);
@@ -34,7 +34,7 @@ class StaticMapperTest {
         // given
         String notFoundUrl = "/not-found";
 
-        StaticMapper mapper = StaticMapper.getInstance();
+        UriMapper mapper = UriMapper.getInstance();
 
         // when
         Optional<HttpProcessor> notFoundProcessor = mapper.getProcessor(notFoundUrl);
