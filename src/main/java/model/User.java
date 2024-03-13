@@ -15,15 +15,6 @@ public class User {
         this.email = email;
     }
 
-    public static User makeUser(List<String> params){
-        String id = params.get(0);
-        String password = params.get(1);
-        String nickname = params.get(2);
-        String email = params.get(3);
-
-        return new User(id, password , nickname , email);
-    }
-
     public String getUserId() {
         return userId;
     }
