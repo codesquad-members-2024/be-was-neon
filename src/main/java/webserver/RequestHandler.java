@@ -25,8 +25,10 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
             String line = br.readLine();
+            logger.debug("first : {}", line);
             String[] split = line.split(" ");
             String uri = split[1];
+            logger.debug("uri : {}", uri);
 
             File file = new File("./src/main/resources/static");
 
@@ -36,7 +38,7 @@ public class RequestHandler implements Runnable {
 
 //            요청을 모두 받는다
             while (!line.isEmpty()) {
-                logger.debug("request : {}", line);
+//                logger.debug("request : {}", line);
                 line = br.readLine();
             }
             file = new File("./src/main/resources/static" + uri);
@@ -46,7 +48,6 @@ public class RequestHandler implements Runnable {
 
 
             DataOutputStream dos = new DataOutputStream(out);
-//            byte[] body = "<h1>Hello World</h1>".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {

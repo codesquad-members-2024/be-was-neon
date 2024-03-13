@@ -13,3 +13,5 @@
     - Absolute Path: 실제 폴더에 위치하고있는 파일의 경로/파일이름.확장자
         - 얘를 쓰면 파일의 위치가 변하면 귀찮아
     - Path From Content Root : 이게 정배
+- HTML에 FORM 태그를 공부해보자
+
