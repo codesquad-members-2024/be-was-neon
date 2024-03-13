@@ -2,17 +2,15 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.URLDecoder;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import utils.StringUtils;
-import model.User;
-import db.Database;
 
 public class RequestHandler implements Runnable {
-    private static final String REGISTER_ACTION = "/user/create";
+    public static final String REGISTER_ACTION = "/user/create";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -32,7 +30,7 @@ public class RequestHandler implements Runnable {
             String requestLine = br.readLine();
             logger.debug("request method : {}", requestLine);
             if(checkRegisterInput(requestLine)){
-                Database.addUser(parseRegisterRequest(requestLine));
+                RegisterRequestHandler registerRH = new RegisterRequestHandler(requestLine);
             }
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
@@ -101,17 +99,5 @@ public class RequestHandler implements Runnable {
 
     private boolean checkRegisterInput(String startLine){ // 회원가입에서 보낸 GET인지 확인
         return startLine.contains(REGISTER_ACTION);
-    }
-
-    private User parseRegisterRequest(String startLine) throws UnsupportedEncodingException {
-        String[] splitLine = startLine.split("[=& ]");
-
-        // 디코딩하여 한글로 변환
-        String userId = URLDecoder.decode(splitLine[2], "UTF-8");
-        String password = URLDecoder.decode(splitLine[4], "UTF-8");
-        String name = URLDecoder.decode(splitLine[6], "UTF-8");
-        String email = URLDecoder.decode(splitLine[8], "UTF-8");
-
-        return new User(userId, password, name, email);
     }
 }
