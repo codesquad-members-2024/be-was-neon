@@ -1,9 +1,5 @@
 package webserver;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -11,61 +7,50 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Request {
-    private String method;
-    private String reqDetail;
+    private final String method;
     private String url;
+    private String reqDetail;
     private FileType fileType;
     private List<String> params;
 
-    private Request(String method , String url) {
+    public Request(String method , String url) {
         this.method = method;
         this.url = url;
+        setRequestDetail();
     }
 
-    public static Request makeRequest(InputStream in) throws IOException {
-        String[] requestHeader = parseRequest(in);
-        Request request = new Request(requestHeader[0] , requestHeader[1]);
-
-        if (createUserHeader.matcher(request.url).matches()) {
-            request.reqDetail = "createUser";
-            setParams(request);
+    private void setRequestDetail(){
+        if (createUserHeader.matcher(url).matches()) {
+            reqDetail = "createUser";
+            setParams();
         }
-        else if (getFileHeader.matcher(request.url).matches()) {
-            request.reqDetail = "getFile";
-            setFileReqUrl(request);
+        else if (getFileHeader.matcher(url).matches()) {
+            reqDetail = "getFile";
+            setFileReqUrl();
         }
-        return request;
     }
 
-    private static void setParams(Request request) {
+    private void setParams() {
         Pattern param = Pattern.compile("=\\w+(%40\\w+\\.com)?");
-        Matcher matcher = param.matcher(request.url);
+        Matcher matcher = param.matcher(url);
         List<String> createParameters = new ArrayList<>();
 
         while (matcher.find()) {
             createParameters.add(matcher.group().substring(1)); // '=' 제거
         }
-        request.params = createParameters;
+        params = createParameters;
     }
 
-    private static void setFileReqUrl(Request request) {
+    private void setFileReqUrl() {
         try {
             // valueOf(~.toUpperCase()) 로 파일타입 Enum 에서 타입 찾아 지정
-            String[] type = request.url.split("\\.");
-            request.fileType = FileType.valueOf(type[type.length-1].toUpperCase());
+            String[] type = url.split("\\.");
+            fileType = FileType.valueOf(type[type.length-1].toUpperCase());
         } catch (IllegalArgumentException justPath) {
             // 파일이 아니라 경로라면 그 경로의 index.html 을 요청한 것으로 간주
-            request.url = request.url + "/index.html";
-            request.fileType = FileType.HTML;
+            url = url + "/index.html";
+            fileType = FileType.HTML;
         }
-    }
-
-    private static String[] parseRequest(InputStream in) throws IOException {
-        // 현재는 한 줄만 읽어 파싱
-        String requestHeader;
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        requestHeader = br.readLine();
-        return requestHeader.split(" ");
     }
 
     public String getReqDetail() {
