@@ -9,7 +9,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
     private static final String NEWLINE = System.lineSeparator();
     private static final String BLANK = " ";
+    private static final String QUERY_PARAM_SYMBOL = "\\?";
     private static final int METHOD_INDEX = 0;
     private static final int URL_INDEX = 1;
     private static final int HTTP_VERSION_INDEX = 2;
@@ -47,11 +50,11 @@ public class HttpRequestConverter {
         HttpRequestBuilder builder = new HttpRequestBuilder();
 
         /* request line */
-        String[] requestLine = getRequestLine(header);
+        String[] requestLine = splitRequestLine(header);
 
-        HttpMethod method = HttpMethod.valueOf(requestLine[METHOD_INDEX]);
-        String requestURI = requestLine[URL_INDEX];
-        String httpVersion = requestLine[HTTP_VERSION_INDEX];
+        HttpMethod method = getMethod(requestLine);
+        String requestURI = getRequestURI(requestLine);
+        String httpVersion = getHttpVersion(requestLine);
 
         builder.setMethod(method);
         builder.setRequestURI(requestURI);
@@ -90,16 +93,52 @@ public class HttpRequestConverter {
         builder.setPragma(PRAGMA.parse(header));
 
         /* parameter */
-        builder.setParameter(parseParameters(header));
+        builder.setParameter(parseParameter(getQueryParameter(requestLine)));
 
         return builder.build();
     }
 
-    private static String[] getRequestLine(String header) {
-        return REQUEST_LINE.parse(header).split(BLANK);
+    private static String[] splitRequestLine(String header) {
+        return REQUEST_LINE.parse(header).split(BLANK); // 'GET /registration?id=test&password=1234 HTTP/1.1'
     }
 
-    private static Map<String, String> parseParameters(String header) {
-        return parseParameters(header);
+    private static HttpMethod getMethod(String[] requestLine) {
+        if (requestLine.length < 3) {
+            return HttpMethod.GET;
+        }
+        return HttpMethod.valueOf(requestLine[METHOD_INDEX]);
+    }
+
+    private static String getRequestURI(String[] requestLine) {
+        if (requestLine.length < 3) {
+            return "/";
+        }
+        return requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[0]; // '/registration?id=test&password=1234'에서 ? 기준 앞 부분
+    }
+
+    private static String getHttpVersion(String[] requestLine) {
+        if (requestLine.length < 3) {
+            return "/";
+        }
+        return requestLine[HTTP_VERSION_INDEX];
+    }
+
+    private static String getQueryParameter(String[] requestLine) {
+        String query = "";
+        if (requestLine.length < 3 || !requestLine[URL_INDEX].contains("?")) {
+            return query;
+        }
+
+        try {
+            String queryParameter = "?" + requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[1];
+            query = URLDecoder.decode(queryParameter, "UTF-8"); // '/registration?id=test&password=1234'에서 ? 기준 뒷 부분
+        } catch (UnsupportedEncodingException e) {
+            logger.error("[REQUEST CONVERTER] {}", e.getMessage());
+        }
+        return query;
+    }
+
+    private static Map<String, String> parseParameter(String queryParameter) {
+        return parseParams(queryParameter);
     }
 }
