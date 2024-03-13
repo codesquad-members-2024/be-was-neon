@@ -22,3 +22,6 @@
 ## ResourceHandler
 - [x] 파일을 읽어 byte로 변환할 수 있다
 
+## StaticMapper
+- [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
+- [x] 존재하지 않는 URI는 빈 Optional을 반환할 수 있다
