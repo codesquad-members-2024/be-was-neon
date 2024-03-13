@@ -21,6 +21,12 @@ public class HttpRequestConverter {
     private static final int URL_INDEX = 1;
     private static final int HTTP_VERSION_INDEX = 2;
 
+    public static HttpRequest convertToHttpRequest(Socket connection) {
+        String header = makeOneLine(connection);
+
+        return convert(header);
+    }
+
     public static String makeOneLine(Socket connection) {
         StringBuilder builder = new StringBuilder();
         try (InputStream in = connection.getInputStream()) {
@@ -31,7 +37,7 @@ public class HttpRequestConverter {
                 builder.append(line).append(NEWLINE); // request string를 한 줄씩 추가하고 마지막에 개행 문자 추가
             }
         } catch (IOException e) {
-            logger.error("[CONVERTER ERROR] {}", e.getMessage());
+            logger.error("[REQUEST CONVERTER ERROR] {}", e.getMessage());
         }
         return builder.toString();
     }
