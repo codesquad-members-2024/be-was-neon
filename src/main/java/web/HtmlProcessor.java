@@ -24,7 +24,10 @@ public class HtmlProcessor extends HttpProcessor {
         if (request.getRequestURI().endsWith(HTML_EXTENSION)) {
             return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI());
         }
-        return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI() + BASE_NAME + HTML_EXTENSION);
+        if (request.getRequestURI().equals("/")) {
+            return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI() + BASE_NAME + HTML_EXTENSION);
+        }
+        return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI() + "/" + BASE_NAME + HTML_EXTENSION);
     }
 
     private void responseHeader200(HttpResponse response) {
