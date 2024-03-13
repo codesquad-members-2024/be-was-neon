@@ -29,7 +29,7 @@ public class Request {
 
         if (createUserHeader.matcher(request.url).matches()) {
             request.reqDetail = "createUser";
-            setCreateParams(request);
+            setParams(request);
         }
         else if (getFileHeader.matcher(request.url).matches()) {
             request.reqDetail = "getFile";
@@ -39,7 +39,7 @@ public class Request {
         return request;
     }
 
-    private static void setCreateParams(Request request) {
+    private static void setParams(Request request) {
         Pattern param = Pattern.compile("=\\w+(%40\\w+\\.com)?");
         Matcher matcher = param.matcher(request.url);
         List<String> createParameters = new ArrayList<>();
