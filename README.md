@@ -18,3 +18,7 @@
 
 ## HttpResponseConverter
 - [x] Socket의 connection으로부터 HttpResponse를 생성할 수 있다
+
+## ResourceHandler
+- [x] 파일을 읽어 byte로 변환할 수 있다
+
