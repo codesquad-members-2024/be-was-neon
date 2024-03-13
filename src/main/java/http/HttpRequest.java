@@ -1,5 +1,7 @@
 package http;
 
+import java.util.Map;
+
 public class HttpRequest {
     private final HttpMethod method;
     private final String requestURI;
@@ -16,10 +18,12 @@ public class HttpRequest {
     private final String cacheControl;
     private final String cookie;
     private final String pragma;
+    private final Map<String, String> parameter;
 
     protected HttpRequest(HttpMethod method, String requestURI, String httpVersion, String host, String userAgent,
                        String accept, String acceptLanguage, String acceptEncoding, String referer, String connection,
-                       String ifModifiedSince, String ifNoneMatch, String cacheControl, String cookie, String pragma) {
+                       String ifModifiedSince, String ifNoneMatch, String cacheControl, String cookie, String pragma,
+                          Map<String, String> parameter) {
         this.method = method;
         this.requestURI = requestURI;
         this.httpVersion = httpVersion;
@@ -35,6 +39,7 @@ public class HttpRequest {
         this.cacheControl = cacheControl;
         this.cookie = cookie;
         this.pragma = pragma;
+        this.parameter = parameter;
     }
 
     public HttpMethod getMethod() {
@@ -95,5 +100,9 @@ public class HttpRequest {
 
     public String getPragma() {
         return pragma;
+    }
+
+    public String getParameter(String parameterName) {
+        return parameter.getOrDefault(parameterName, "");
     }
 }

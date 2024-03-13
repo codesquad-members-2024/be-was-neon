@@ -1,5 +1,8 @@
 package http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HttpRequestBuilder {
     private HttpMethod method;
     private String requestURI = "";
@@ -16,11 +19,12 @@ public class HttpRequestBuilder {
     private String cacheControl = "";
     private String cookie = "";
     private String pragma = "";
+    private Map<String, String> parameter = new HashMap<>();
 
     public HttpRequest build() {
         return new HttpRequest(
                 method, requestURI, httpVersion, host, userAgent, accept, acceptLanguage, acceptEncoding,
-                referer, connection, ifModifiedSince, ifNoneMatch, cacheControl, cookie, pragma
+                referer, connection, ifModifiedSince, ifNoneMatch, cacheControl, cookie, pragma, parameter
         );
     }
 
@@ -96,6 +100,11 @@ public class HttpRequestBuilder {
 
     public HttpRequestBuilder setPragma(String pragma) {
         this.pragma = pragma;
+        return this;
+    }
+
+    public HttpRequestBuilder setParameter(Map<String, String> parameter) {
+        this.parameter = parameter;
         return this;
     }
 }

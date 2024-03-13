@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,10 +89,17 @@ public class HttpRequestConverter {
         builder.setCookie(COOKIE.parse(header));
         builder.setPragma(PRAGMA.parse(header));
 
+        /* parameter */
+        builder.setParameter(parseParameters(header));
+
         return builder.build();
     }
 
     private static String[] getRequestLine(String header) {
         return REQUEST_LINE.parse(header).split(BLANK);
+    }
+
+    private static Map<String, String> parseParameters(String header) {
+        return parseParameters(header);
     }
 }
