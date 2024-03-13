@@ -3,6 +3,8 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import db.Database;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +32,10 @@ public class RequestHandler implements Runnable {
                 line = br.readLine();
             }
             if (fileName.endsWith(".html")) {
-                // html 파일을 읽어와 Bytes 로 변환한 후에 response 를 내보낸다.
                 respondHtmlFile(dos, RELATIVE_PATH + fileName);
+            }else if (fileName.startsWith("/create")){
+                getUserData(fileName);
+                response302Header(dos, "/login/index.html");
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -52,6 +56,15 @@ public class RequestHandler implements Runnable {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+    private void response302Header(DataOutputStream dos, String location){
+        try{
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location);
+            dos.writeBytes("\r\n");
+        }catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
@@ -83,6 +96,35 @@ public class RequestHandler implements Runnable {
             e.printStackTrace();
         }
     }
+    private void getUserData(String fileName){
+        String[] parts = fileName.split("\\?"); // "?" 이후의 정보을 불러오기위해
+        String path = parts[0];
+        String queryParams = parts[1];
+        String[] params = queryParams.split("&");
+        String username = "";
+        String nickname = "";
+        String password = "";
 
+        for (String param : params) {
+            String[] keyValue = param.split("="); // "="를 기준으로 파라미터를 키-값으로 나눕니다.
+            String key = keyValue[0];
+            String value = keyValue[1];
 
+            // 키에 따라 값을 설정합니다.
+            if (key.equals("username")) {
+                username = value;
+            } else if (key.equals("nickname")) {
+                nickname = value;
+            } else if (key.equals("password")) {
+                password = value;
+            }
+        }
+        User user = new User(username, password, nickname);
+        System.out.println("Username: " + username);
+        System.out.println("Nickname: " + nickname);
+        System.out.println("Password: " + password);
+        logger.debug("신규 유저가 생성되었습니다. {}", user);
+        Database.addUser(user);
+        logger.debug("모든 유저 {}", Database.findAll());
+    }
 }
