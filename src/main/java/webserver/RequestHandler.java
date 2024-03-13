@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import utils.StringUtils;
 
 public class RequestHandler implements Runnable {
+    private static final String REGISTER_ACTION = "/user/create";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -27,6 +28,10 @@ public class RequestHandler implements Runnable {
 
             String requestLine = br.readLine();
             logger.debug("request method : {}", requestLine);
+            if(checkRegisterInput(requestLine)){
+
+            }
+
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
             String requestURL = StringUtils.separatePath(requestLine);
@@ -90,5 +95,9 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private boolean checkRegisterInput(String requestLine){
+        return requestLine.contains(REGISTER_ACTION);
     }
 }
