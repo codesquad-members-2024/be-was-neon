@@ -93,10 +93,10 @@
             fetch(url)
                 .then(response => {
                     if (response.ok) {
-                        alert('회원가입이 완료되었습니다.');
+                        alert('회원가입 성공!');
                         document.getElementById('signupForm').reset(); // 폼 초기화
                     } else {
-                        alert('회원가입에 실패하였습니다.');
+                        alert('회원가입에 실패');
                     }
                     id.value = null;
                     password.value = null;
@@ -104,7 +104,7 @@
                     email.value = null;
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('[Error] 에러 발생 :', error);
                 });
         }
     });

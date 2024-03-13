@@ -1,5 +1,9 @@
 package webserver;
 
+import http.FileReader;
+import http.HttpRequestVerifier;
+import http.ResponseBody;
+import http.ResponseHeader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +13,6 @@ import utils.DirectoryMatcher;
 import utils.FileExtractor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,33 +47,44 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(in, CHARSETS);
             BufferedReader br = new BufferedReader(inputStreamReader);
+
             String request = br.readLine();
             logger.debug(REQUEST_LINE_MESSAGE, request);
 
-            String url = FileExtractor.extractUrl(request);
-            byte[] body = generateByte(url);
-
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+            ResponseHeader responseHeader = new ResponseHeader(dos);
+            ResponseBody responseBody = new ResponseBody(dos);
+
+            verifyRequest(dos, request, responseHeader, responseBody);
+            sendResponse(request, responseHeader, responseBody, dos);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private byte[] generateByte(String url) throws IOException {
-        String filePath = DirectoryMatcher.mathDirectory(url); // 디렉토리를 포함한 위치 지정
-        if (url.matches(CREATE_REQUEST)) { // 생성 요청인 경우
-            createUser(url);
-            return new byte[0]; // 페이지 이동 X (임시)
-        } else {
-            return readAllBytes(filePath); // 바이트 배열로 변환
+    private void verifyRequest(DataOutputStream dos, String request, ResponseHeader responseHeader, ResponseBody responseBody)
+            throws IOException {
+        String[] requestHeader = FileExtractor.extract(request);
+        if (!HttpRequestVerifier.verify(requestHeader)) {
+            responseHeader.createHeader(400, "Bad Request", "text/plain;charset=utf-8", 0);
+            responseBody.createBody(new byte[0]);
+            dos.flush();
         }
     }
 
-    private void createUser(String url)
+    private byte[] processRequest(String request) throws IOException {
+        String url = FileExtractor.extractUrl(request);
+        if (url.matches(CREATE_REQUEST)) { // 생성 요청인 경우
+            String[] userInfo = FileExtractor.extractUser(url);
+            createUser(userInfo);
+            return new byte[0]; // 페이지 이동 X (임시)
+        }
+        String filePath = DirectoryMatcher.mathDirectory(url);
+        return FileReader.readAllBytes(filePath); // 바이트 배열로 변환
+    }
+
+    private void createUser(String[] userInfo)
             throws IndexOutOfBoundsException, IllegalArgumentException, UnsupportedEncodingException {
-        String[] userInfo = FileExtractor.extractUser(url);
         String id = Decoder.decode(userInfo[ID_INDEX]);
         String pw = Decoder.decode(userInfo[PW_INDEX]);
         String name = Decoder.decode(userInfo[NAME_INDEX]);
@@ -81,38 +94,11 @@ public class RequestHandler implements Runnable {
         logger.debug(user.toString());
     }
 
-    private byte[] readAllBytes(String filePath) throws IOException {
-        File file = new File(filePath);
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            byte[] buffer = new byte[(int) file.length()]; // 파일 길이만큼 바이트 배열 생성
-            int bytesRead = inputStream.read(buffer); // 파일 내용 읽기
-
-            if (bytesRead != file.length()) { // 잘못 변환된 경우 예외 처리
-                throw new IOException();
-            }
-            return buffer;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private void sendResponse(String request, ResponseHeader responseHeader, ResponseBody responseBody, DataOutputStream dos)
+            throws IOException {
+        byte[] body = processRequest(request);
+        responseHeader.createHeader(200, "OK", "text/html;charset=utf-8", body.length);
+        responseBody.createBody(body);
+        dos.flush();
     }
 }
