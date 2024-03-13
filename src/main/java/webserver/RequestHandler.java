@@ -15,10 +15,6 @@ import org.slf4j.LoggerFactory;
 import utils.Parser;
 
 public class RequestHandler implements Runnable {
-    //Thread 클래스를 상속하면 Thread 클래스를 상속한 클래스가 다른 클래스를 상속할 수 없기 때문에 Runnable 인터페이스를 주로 사용한다.
-    //Runnable 인터페이스는 run 메서드를 구현하도록 강제
-    //Thread 객체의 생성자로 Runnable 인터페이스를 구현한 객체를 전달하는 방법을 사용
-    //ex) Thread thread = new Thread(new RequestHandler(connection));
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
