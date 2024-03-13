@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import utils.StringUtils;
 
 public class RequestHandler implements Runnable {
-    private static final String FILE_PATH = "src/main/resources/static";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -31,7 +30,7 @@ public class RequestHandler implements Runnable {
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
             String requestURL = StringUtils.separatePath(requestLine);
-            String filePath = FILE_PATH + requestURL;
+            String filePath = StringUtils.makeCompletePath(requestURL);
 
             requestLine = br.readLine();
             while(!requestLine.isEmpty()){ // 나머지 header 출력
