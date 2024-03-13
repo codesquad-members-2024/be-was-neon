@@ -18,67 +18,69 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+        try {
+            processRequest();
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
 
+    private void processRequest() throws IOException {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-
-            // 요청 라인을 읽어서 파싱
-            String requestLine = br.readLine();
-            logger.debug("request line: {}", requestLine);
-
-            HTTPRequestParser requestParser = new HTTPRequestParser();
-            requestParser.parseRequestLine(requestLine);
-
-            // 요청된 URL 추출
-            String path = requestParser.getPath();
-            if ("/index.html".equals(path)) {
-                if (firstPath == null) {
-                    firstPath = path;
-                    logger.debug("Extracted path: {}", firstPath);
-                }
-            }
-
-            // 헤더들을 읽어서 파싱
-            String line;
-            while(!(line = br.readLine()).isEmpty()){
-                logger.debug("header: {}", line);
-            }
-
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            // 파일을 읽어 바이트 배열로 변환 (NIO 안 쓰기)
-            File file = new File("src/main/resources/static" + firstPath);
-
-            // FileUtils 인스턴스 생성
-            FileUtils fileUtils = new FileUtils(file);
-            byte[] body = fileUtils.readFileToByteArray(); // 인스턴스 메소드 호출
-
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
 
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            String requestLine = readRequestLine(br);
+            parseRequest(requestLine);
+            readHeaders(br);
+
+            if (firstPath != null) {
+                byte[] body = readFileContent();
+                response200Header(dos, body.length);
+                responseBody(dos, body);
+            }
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+    private String readRequestLine(BufferedReader br) throws IOException {
+        String requestLine = br.readLine();
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+        logger.debug("request line: {}", requestLine);
+        return requestLine;
+    }
+
+    private void parseRequest(String requestLine) {
+        HTTPRequestParser requestParser = new HTTPRequestParser();
+        requestParser.parseRequestLine(requestLine);
+        String path = requestParser.getPath();
+        if ("/index.html".equals(path)) {
+            firstPath = path;
+            logger.debug("Extracted path: {}", firstPath);
         }
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+    private void readHeaders(BufferedReader br) throws IOException {
+        String line;
+        while (!(line = br.readLine()).isEmpty()) {
+            logger.debug("header: {}", line);
         }
+    }
+
+    private byte[] readFileContent() throws IOException {
+        File file = new File("src/main/resources/static" + firstPath);
+        FileUtils fileUtils = new FileUtils(file);
+        return fileUtils.readFileToByteArray();
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) throws IOException {
+        dos.writeBytes("HTTP/1.1 200 OK \r\n");
+        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+        dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+        dos.writeBytes("\r\n");
+    }
+
+    private void responseBody(DataOutputStream dos, byte[] body) throws IOException {
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 }
