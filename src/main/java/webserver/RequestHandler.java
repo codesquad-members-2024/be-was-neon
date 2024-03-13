@@ -37,6 +37,7 @@ public class RequestHandler implements Runnable {
 
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+        logger.debug("URI = {}", request.getRequestURI());
 
         // HttpRequest를 처리할 Processor 찾기
         Optional<HttpProcessor> optionalProcessor = findProcessor(request.getRequestURI());
