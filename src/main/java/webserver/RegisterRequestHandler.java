@@ -5,29 +5,33 @@ import model.User;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 
 public class RegisterRequestHandler {
+    HashMap<String, String> registerInfo = new HashMap<String, String>(); //ex) <userID, daniel>
+
     RegisterRequestHandler(String startLine) {
-        storeDatabase(parseRegisterRequest(startLine));
+        parseRegisterInfo(removeUseless(startLine));
+        storeDatabase();
     }
-    private User parseRegisterRequest(String startLine) {
-        String[] splitLine = startLine.split("[=& ]");
-        String userId = "", password = "", name = "", email = "";
-        try {
-            // 디코딩하여 한글로 변환
-            userId = URLDecoder.decode(splitLine[2], "UTF-8");
-            password = URLDecoder.decode(splitLine[4], "UTF-8");
-            name = URLDecoder.decode(splitLine[6], "UTF-8");
-            email = URLDecoder.decode(splitLine[8], "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+
+    private void parseRegisterInfo(String registerLine) {
+        for(String token : registerLine.split("[& ]")){
+            String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
+            try {
+                registerInfo.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-
-        return new User(userId, password, name, email);
     }
 
-    private void storeDatabase(User user){
-        Database.addUser(user);
+    private String removeUseless(String startLine){ // 사용자 입력 정보 부분만 반환
+        String[] splitStartLine = startLine.split("[? ]");
+        return splitStartLine[2];
     }
 
+    private void storeDatabase(){
+        Database.addUser(new User(registerInfo.get("userId"), registerInfo.get("password"), registerInfo.get("name"), registerInfo.get("email")));
+    }
 }
