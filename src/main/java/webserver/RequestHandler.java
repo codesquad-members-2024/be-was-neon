@@ -44,9 +44,13 @@ public class RequestHandler implements Runnable {
             }
 
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            // 파일을 읽어 바이트 배열로 변환 NIO 안 쓰기
+            // 파일을 읽어 바이트 배열로 변환 (NIO 안 쓰기)
             File file = new File("src/main/resources/static" + firstPath);
-            byte[] body = FileUtils.readFileToByteArray(file);
+
+            // FileUtils 인스턴스 생성
+            FileUtils fileUtils = new FileUtils(file);
+            byte[] body = fileUtils.readFileToByteArray(); // 인스턴스 메소드 호출
+
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);
