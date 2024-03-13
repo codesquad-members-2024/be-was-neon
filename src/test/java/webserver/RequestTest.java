@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -38,8 +36,8 @@ public class RequestTest {
         assertThat(request.getParams().get(1)).isEqualTo("test");
     }
 
-    private static Request makeRequest(String url) throws IOException {
-        InputStream inputStream = new ByteArrayInputStream(url.getBytes());
-        return Request.makeRequest(inputStream);
+    private static Request makeRequest(String url) {
+        String[] splitUrl = url.split(" ");
+        return new Request(splitUrl[0] , splitUrl[1]);
     }
 }

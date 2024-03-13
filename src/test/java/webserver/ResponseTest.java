@@ -3,10 +3,10 @@ package webserver;
 import db.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -26,12 +26,12 @@ public class ResponseTest {
         String url = "GET /create?userId=test&password=test&name=test&email=test%40naver.com";
         Request request = makeRequest(url);
 
-        Response.sendResponse(dos,request);
+        Response.sendResponse(dos, request);
         assertThat(Database.findUserById("test")).isNotNull();
     }
 
-    private static Request makeRequest(String url) throws IOException {
-        InputStream inputStream = new ByteArrayInputStream(url.getBytes());
-        return Request.makeRequest(inputStream);
+    private static Request makeRequest(String url) {
+        String[] splitUrl = url.split(" ");
+        return new Request(splitUrl[0], splitUrl[1]);
     }
 }
