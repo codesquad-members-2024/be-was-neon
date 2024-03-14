@@ -1,8 +1,9 @@
+package webserver.utils;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import webserver.utils.TypeMapper;
 
 import java.io.File;
 
