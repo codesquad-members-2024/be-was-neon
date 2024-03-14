@@ -28,9 +28,8 @@ public class RequestHandler implements Runnable {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest httpRequest = HttpRequest.from(in);
             httpRequest.log();
-            String requestTarget = httpRequest.getRequestTarget();
 
-            HttpResponse httpResponse = requestMapper.getHttpResponse(requestTarget);
+            HttpResponse httpResponse = requestMapper.service(httpRequest);
             send(out, httpResponse);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -52,7 +51,7 @@ public class RequestHandler implements Runnable {
         dos.write(body, 0, body.length);
     }
 
-    private static void writeHeader(List<String> httpResponse, DataOutputStream dos) throws IOException {
+    private void writeHeader(List<String> httpResponse, DataOutputStream dos) throws IOException {
         for (String line : httpResponse) {
             dos.writeBytes(line);
         }
