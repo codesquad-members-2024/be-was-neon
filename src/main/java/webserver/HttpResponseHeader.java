@@ -38,7 +38,7 @@ public class HttpResponseHeader {
         }
     }
 
-    public void setLengthOfBodyContent(int contentLength) {
+    public void setContentLength(int contentLength) {
         try {
             dos.writeBytes("Content-Length: " + contentLength + "\r\n");
             dos.writeBytes("\r\n");

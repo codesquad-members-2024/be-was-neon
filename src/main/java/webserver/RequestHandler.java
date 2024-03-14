@@ -6,7 +6,6 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class RequestHandler implements Runnable {
     public static final String REGISTER_ACTION = "/user/create";
 
@@ -45,70 +44,77 @@ public class RequestHandler implements Runnable {
 //            }
 
             // 파일이 존재하면 해당 파일을 읽어 응답.
+            byte[] fileContent;
+            String statusCode;
+            String statusMessage;
+            String contentType;
+
             DataOutputStream dos = new DataOutputStream(out);
             File file = new File(filePath);
             if (file.exists() && !file.isDirectory()) {
                 FileInputStream fis = new FileInputStream(file);
-//                byte[] fileContent = new byte[(int) file.length()];
-//                fis.read(fileContent);
-//                fis.close();
-                byte[] fileContent = fis.readAllBytes();
+                fileContent = fis.readAllBytes();
                 fis.close();
 
-                response200Header(dos, fileContent.length);
-                responseBody(dos, fileContent);
+                statusCode = "200";
+                statusMessage = "OK";
+                contentType = "Content-Type: text/html;charset=utf-8";
+
+                /*response200Header(dos, fileContent.length);
+                responseBody(dos, fileContent);*/
             } else {
                 // 파일이 존재하지 않으면 404 응답.
-                byte[] notFoundContent = "<h1>404 Not Found</h1>".getBytes();
-                response404Header(dos, notFoundContent.length);
-                responseBody(dos, notFoundContent);
+                fileContent = "<h1>404 Not Found</h1>".getBytes();
+
+                statusCode = "404";
+                statusMessage = "Not Found";
+                contentType = "Content-Type: text/html;charset=utf-8";
             }
+            HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
+            HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
 
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
+            httpResponseHeader.setStartLine(statusCode, statusMessage);
+            httpResponseHeader.setContentType(contentType);
+            httpResponseHeader.setContentLength(fileContent.length);
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void response302Header(DataOutputStream dos){ // 회원가입 정보 받고 redirect에 사용
-        try {
-            dos.writeBytes("HTTP/1.1 302 FOUND\r\n");
-            dos.writeBytes("Location: " + "/index.html" + "\r\n"); // redirect 경로 지정
-            dos.writeBytes("\r\n");
+            httpResponseBody.setBody(fileContent);
             dos.flush();
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void response404Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
+//    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+//        try {
+//            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+//            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+//            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+//            dos.writeBytes("\r\n");
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        }
+//    }
+//
+//    private void response302Header(DataOutputStream dos){ // 회원가입 정보 받고 redirect에 사용
+//        try {
+//            dos.writeBytes("HTTP/1.1 302 FOUND\r\n");
+//            dos.writeBytes("Location: " + "/index.html" + "\r\n"); // redirect 경로 지정
+//            dos.writeBytes("\r\n");
+//            dos.flush();
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        }
+//    }
+//
+//    private void response404Header(DataOutputStream dos, int lengthOfBodyContent) {
+//        try {
+//            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
+//            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+//            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+//            dos.writeBytes("\r\n");
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        }
+//    }
 }
