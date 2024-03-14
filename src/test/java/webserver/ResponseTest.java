@@ -16,7 +16,7 @@ class ResponseTest {
         String url = "GET /create?userId=test&password=test&name=test&email=test%40naver.com";
         Request request = makeRequest(url);
         Response response = new Response(request);
-        String header = new String(response.header);
+        String header = new String(response.getHeader());
 
         assertThat(header.startsWith("HTTP/1.1 " + ResponseStatus.FOUND.getMessage())).isTrue();
         assertThat(Database.findUserById("test")).isNotNull();
@@ -28,7 +28,7 @@ class ResponseTest {
     void getPathRequest(String url){
         Request request = makeRequest(url);
         Response response = new Response(request);
-        String body = new String(response.body);
+        String body = new String(response.getBody());
         System.out.println(body);
 
         assertThat(body.startsWith("<!DOCTYPE html>")).isTrue();
