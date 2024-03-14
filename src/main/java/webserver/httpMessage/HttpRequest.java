@@ -10,18 +10,24 @@ import java.util.List;
 public class HttpRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
+    public static final String NO_QUERY_PARAMS = "";
+    public static final String EMPTY_HTTP_REQUEST_ERROR = "빈 HTTP 요청입니다.";
+    public static final String BLANK = " ";
+    public static final String REQUEST_TARGET_DELIMETER = "?";
     private final List<String> httpRequest;
     private final String startLine;
+    private final String requestTarget;
 
     public HttpRequest(List<String> httpRequest) {
         validate(httpRequest);
         this.httpRequest = httpRequest;
         this.startLine = httpRequest.get(0);
+        this.requestTarget = getRequestTarget();
     }
 
     private void validate(List<String> httpRequest) {
         if (httpRequest.isEmpty()) {
-            throw new IllegalArgumentException("빈 HTTP 요청입니다.");
+            throw new IllegalArgumentException(EMPTY_HTTP_REQUEST_ERROR);
         }
     }
 
@@ -43,9 +49,24 @@ public class HttpRequest {
         }
     }
 
-    public String getRequestTarget() {
-        String[] split = startLine.split(" ");
-        return split[1];
+    public String getUri() {
+        if (requestTarget.contains(REQUEST_TARGET_DELIMETER)) {
+            String[] split = requestTarget.split("\\?");
+            return split[0];
+        }
+        return requestTarget;
+    }
 
+    public String getQueryParams() {
+        if (requestTarget.contains(REQUEST_TARGET_DELIMETER)) {
+            String[] split = requestTarget.split("\\?");
+            return split[1];
+        }
+        return NO_QUERY_PARAMS;
+    }
+
+    private String getRequestTarget() {
+        String[] split = startLine.split(BLANK);
+        return split[1];
     }
 }
