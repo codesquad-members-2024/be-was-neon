@@ -25,7 +25,6 @@ public class RequestMapper {
 
     public HttpResponse service(HttpRequest request) {
         String uri = request.getUri();
-        System.out.println(uri);
         if (map.containsKey(uri)) {
             return map.get(uri).apply(request);
         }
@@ -49,7 +48,6 @@ public class RequestMapper {
 
     private HttpResponse createUser(HttpRequest request) {
         String queryParams = request.getQueryParams();
-        System.out.println(queryParams);
         try {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
             Database.addUser(User.from(userForm));
