@@ -1,5 +1,7 @@
 package web;
 
+import static utils.ResourceHandler.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,15 +30,17 @@ public class UriMapper {
 
     private static void setUriMap() {
         URI_MAP.put("/", new HtmlProcessor());
-        URI_MAP.put("/index.html", new HtmlProcessor());
         URI_MAP.put("/registration", new MemberSave());
     }
 
     public Optional<HttpProcessor> getProcessor(String uri) {
-        if (!URI_MAP.containsKey(uri)) {
-            logger.debug("[STATIC MAPPER] NOT FOUND: {}", uri);
-            return Optional.empty();
+        if (URI_MAP.containsKey(uri)) {
+            return Optional.of(URI_MAP.get(uri));
         }
-        return Optional.of(URI_MAP.get(uri));
+        if (FILE_EXTENSION_MAP.containsKey(getExtension(uri))) {
+            return Optional.of(URI_MAP.get("/"));
+        }
+        logger.debug("[STATIC MAPPER] NOT FOUND: {}", uri);
+        return Optional.empty();
     }
 }
