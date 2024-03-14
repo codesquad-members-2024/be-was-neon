@@ -1,96 +1,57 @@
 package webserver;
 
-import static utils.RequestHeaderParser.*;
+import static http.HttpStatus.*;
+import static utils.HttpRequestConverter.*;
+import static utils.HttpResponseConverter.*;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 
+import http.HttpResponse;
+import http.HttpRequest;
+import web.UriMapper;
+import web.HttpProcessor;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String RESOURCE_PATH = "./src/main/resources/static";
-    private static final String HTML_EXTENSION = ".html";
-    private static final int BUFFER_SIZE = 1024;
-
-    private Socket connection;
+    private final Socket connection;
+    private final HttpRequest request;
+    private HttpResponse response;
+    private final Runnable responseEmpty = () -> {
+        response.setHttpVersion("HTTP/1.1");
+        response.setStatusCode(STATUS_NOT_FOUND);
+        response.setContentType("text/plain");
+        response.setCharset("utf-8");
+        response.setContentLength(0);
+        response.setMessageBody("not found");
+        response.flush();
+    };
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
+        request = convertToHttpRequest(connection);
+        response = convertToHttpResponse(connection);
     }
 
     public void run() {
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
+        logger.debug("URI = {}", request.getRequestURI());
 
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            DataOutputStream dos = new DataOutputStream(out);
+        // HttpRequest를 처리할 Processor 찾기
+        Optional<HttpProcessor> optionalProcessor = findProcessor(request.getRequestURI());
 
-            String line = reader.readLine();
-            while (line != null && !line.isEmpty()) {
-                String request = requestParse(line);
-
-                if (request.endsWith(HTML_EXTENSION)) {
-                    responseHtml(dos, RESOURCE_PATH + request);
-                }
-
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+        // Processor가 존재하면 로직 실행, 없으면 404 status 반환
+        optionalProcessor.ifPresentOrElse(this::handle, responseEmpty);
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    public void handle(HttpProcessor processor) {
+        logger.debug("[REQUEST HANDLER] success service");
+        processor.service(request, response);
     }
 
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseHtml(DataOutputStream dos, String path) {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(path);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ) {
-            int bytesRead;
-            byte[] buffer = new byte[BUFFER_SIZE];
-
-            // HTML 파일을 읽어 ByteArrayOutputStream에 쓰기
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) { // 더 이상 읽지 못하면 -1을 반환 -> 루프 종료
-                byteArrayOutputStream.write(buffer, 0, bytesRead); // buffer 배열의 0번째부터 읽은 바이트 수 만큼 작성
-            }
-
-            // ByteArrayOutputStream의 내용을 바이트 배열로 가져오기
-            byte[] fileBytes = byteArrayOutputStream.toByteArray();  // 모든 html 내용이 쓰여져 있음 (메모리에 올라온 상태)
-
-            // DataOutputStream으로 변환하여 반환
-            response200Header(dos, fileBytes.length);
-            responseBody(dos, fileBytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Optional<HttpProcessor> findProcessor(String uri) {
+        return UriMapper.getInstance().getProcessor(uri);
     }
 }
