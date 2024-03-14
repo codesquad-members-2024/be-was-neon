@@ -22,14 +22,14 @@ public class RequestMapper {
     public static final String REGISTRATION = "/registration";
     public static final String LOGIN = "/login";
 
-    private final Map<String, Function<HttpRequest, HttpResponse>> map = Map.ofEntries(
-            Map.entry("/", this::home),
-            Map.entry("/registration", this::register),
-            Map.entry("/login", this::login),
-            Map.entry("/create", this::createUser)
+    private static final Map<String, Function<HttpRequest, HttpResponse>> map = Map.ofEntries(
+            Map.entry("/", RequestMapper::home),
+            Map.entry("/registration", RequestMapper::register),
+            Map.entry("/login", RequestMapper::login),
+            Map.entry("/create", RequestMapper::createUser)
     );
 
-    public HttpResponse service(HttpRequest request) {
+    public static HttpResponse service(HttpRequest request) {
         String uri = request.getUri();
         if (map.containsKey(uri)) {
             return map.get(uri).apply(request);
@@ -37,22 +37,22 @@ public class RequestMapper {
         return HttpResponse.from(new File(STATIC_PATH + uri));
     }
 
-    private HttpResponse home(HttpRequest request) {
+    private static HttpResponse home(HttpRequest request) {
         File file = new File(STATIC_PATH + INDEX_HTML);
         return HttpResponse.from(file);
     }
 
-    private HttpResponse register(HttpRequest request) {
+    private static HttpResponse register(HttpRequest request) {
         File file = new File(STATIC_PATH + REGISTRATION + INDEX_HTML);
         return HttpResponse.from(file);
     }
 
-    private HttpResponse login(HttpRequest request) {
+    private static HttpResponse login(HttpRequest request) {
         File file = new File(STATIC_PATH + LOGIN + INDEX_HTML);
         return HttpResponse.from(file);
     }
 
-    private HttpResponse createUser(HttpRequest request) {
+    private static HttpResponse createUser(HttpRequest request) {
         String queryParams = request.getQueryParams();
         try {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
