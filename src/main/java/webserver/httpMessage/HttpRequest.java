@@ -14,6 +14,7 @@ public class HttpRequest {
     public static final String EMPTY_HTTP_REQUEST_ERROR = "빈 HTTP 요청입니다.";
     public static final String BLANK = " ";
     public static final String REQUEST_TARGET_DELIMITER = "?";
+
     private final List<String> httpRequest;
     private final String startLine;
     private final String requestTarget;
