@@ -1,5 +1,6 @@
 package webserver;
 
+import db.Database;
 import http.ContentType;
 import http.FileReader;
 import http.HttpMethod;
@@ -42,12 +43,10 @@ public class RequestHandler implements Runnable {
     private static final int NAME_INDEX = 2;
     private static final int EMAIL_INDEX = 3;
 
-    private List<User> users;
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        users = new ArrayList<>();
     }
 
     public void run() {
@@ -130,7 +129,7 @@ public class RequestHandler implements Runnable {
         String name = userInfo[NAME_INDEX];
         String email = userInfo[EMAIL_INDEX];
         User user = new User(id, pw, name, email);
-        users.add(user);
+        Database.addUser(user);
         logger.debug(user.toString());
     }
 
