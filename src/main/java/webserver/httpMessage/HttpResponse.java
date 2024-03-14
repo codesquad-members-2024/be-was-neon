@@ -52,4 +52,25 @@ public class HttpResponse {
 
         return header;
     }
+
+    public void send(OutputStream out) {
+        DataOutputStream dos = new DataOutputStream(out);
+        try {
+            writeHeader(getHeader(), dos);
+            writeBody(getBody(), dos);
+            dos.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void writeBody(byte[] body, DataOutputStream dos) throws IOException {
+        dos.write(body, 0, body.length);
+    }
+
+    private void writeHeader(List<String> httpResponse, DataOutputStream dos) throws IOException {
+        for (String line : httpResponse) {
+            dos.writeBytes(line);
+        }
+    }
 }

@@ -30,31 +30,10 @@ public class RequestHandler implements Runnable {
             httpRequest.log();
 
             HttpResponse httpResponse = requestMapper.service(httpRequest);
-            send(out, httpResponse);
+            httpResponse.send(out);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
-
-    private void send(OutputStream out, HttpResponse httpResponse) {
-        DataOutputStream dos = new DataOutputStream(out);
-        try {
-            writeHeader(httpResponse.getHeader(), dos);
-            writeBody(httpResponse.getBody(), dos);
-            dos.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void writeBody(byte[] body, DataOutputStream dos) throws IOException {
-        dos.write(body, 0, body.length);
-    }
-
-    private void writeHeader(List<String> httpResponse, DataOutputStream dos) throws IOException {
-        for (String line : httpResponse) {
-            dos.writeBytes(line);
-        }
-    }
-
+    
 }
