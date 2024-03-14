@@ -2,6 +2,8 @@ package webserver;
 
 import db.Database;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
 import webserver.utils.Parser;
@@ -12,6 +14,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class RequestMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestMapper.class);
 
     private static final String STATIC_PATH = "src/main/resources/static";
     private static final String INDEX_HTML = "/index.html";
@@ -52,7 +56,9 @@ public class RequestMapper {
         String queryParams = request.getQueryParams();
         try {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
-            Database.addUser(User.from(userForm));
+            User user = User.from(userForm);
+            Database.addUser(user);
+            logger.debug("User created : " + Database.findUserById(user.getUserId()));
             return HttpResponse.redirect(LOGIN);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
