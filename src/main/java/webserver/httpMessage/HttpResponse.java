@@ -15,16 +15,27 @@ public class HttpResponse {
     private final List<String> header;
     private final byte[] body;
 
-    private HttpResponse(File file) {
-        header = getHeader(TypeMapper.getContentType(file), (int) file.length());
-        body = readFile(file);
+    public HttpResponse(List<String> header) {
+        this.header = header;
+        this.body = new byte[]{};
+    }
+
+    public HttpResponse(List<String> header, byte[] body) {
+        this.header = header;
+        this.body = body;
     }
 
     public static HttpResponse from(File file) {
-        return new HttpResponse(file);
+        List<String> header = getHeader(TypeMapper.getContentType(file), (int) file.length());
+        byte[] body = readFile(file);
+        return new HttpResponse(header, body);
     }
 
-    private byte[] readFile(File file) {
+    public static HttpResponse redirect(String location) {
+        return new HttpResponse(getRedirectHeader(location));
+    }
+
+    private static byte[] readFile(File file) {
         byte[] body = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(body);
@@ -42,12 +53,22 @@ public class HttpResponse {
         return body;
     }
 
-    private List<String> getHeader(String contentType, int bodyLength) {
+    private static List<String> getHeader(String contentType, int bodyLength) {
         List<String> header = new ArrayList<>();
 
         header.add("HTTP/1.1 200 OK \r\n");
         header.add("Content-Type: " + contentType + ";charset=utf-8\r\n");
         header.add("Content-Length: " + bodyLength + "\r\n");
+        header.add("\r\n");
+
+        return header;
+    }
+
+    private static List<String> getRedirectHeader(String location) {
+        List<String> header = new ArrayList<>();
+
+        header.add("HTTP/1.1 308 Permanent Redirect \r\n");
+        header.add("Location: " + location);
         header.add("\r\n");
 
         return header;

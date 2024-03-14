@@ -53,8 +53,7 @@ public class RequestMapper {
         try {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
             Database.addUser(User.from(userForm));
-            File file = new File(STATIC_PATH + LOGIN + INDEX_HTML);
-            return HttpResponse.from(file);
+            return HttpResponse.redirect(LOGIN);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
