@@ -16,14 +16,33 @@ sequenceDiagram
     WebServer->>RequestHandler: 3. Socket(connection) 전달
     activate RequestHandler
     RequestHandler->>RequestHandler: 4. HttpConverter --> `HttpRequest`, `HttpResponse` 생성
-    RequestHandler->>StaticMapper: 5. `HttpRequest`를 처리할 수 있는 `Processor` 전달 요청
-    StaticMapper-->>RequestHandler: 6. `Processor` 반환 (HttpRequest, HttpResponse 처리)
+    RequestHandler->>UriMapper: 5. `HttpRequest`를 처리할 수 있는 `Processor` 전달 요청
+    UriMapper-->>RequestHandler: 6. `Processor` 반환 (HttpRequest, HttpResponse 처리)
     RequestHandler->>RequestHandler: 7. `Processor` 로직 실행 (없으면 404 Not Found)
     RequestHandler-->>client: 8. `HttpResponse` 응답
     deactivate RequestHandler
     activate client
     client-->>client: 9. 화면 구성
     deactivate client
+```
+
+## 회원가입 흐름(GET 버전)
+```mermaid
+sequenceDiagram
+    actor client
+    client->>WebServer: 1. GET 요청: "/registration?id=yelly&password=qwerty"
+    WebServer->>RequestHandler: 2. Socket(connection) 전달
+    activate RequestHandler
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 회원가입 처리할 Processor 찾음
+    RequestHandler->>Processor: 4. HttpRequest 처리 요청
+    activate Processor
+    Processor->>Processor: 5. User 생성
+    Processor->>Database: 6. User 등록 요청
+    deactivate Processor
+    RequestHandler-->>client: 7. HttpResponse 반환 (200 OK (추후 201 created로 변경))
+    deactivate RequestHandler
+    client->>WebServer: 8. `/registration` 리디렉션 (WebServer에 다시 GET 요청)
+    WebServer-->>client: 9. `/registration` 리디렉션 응답(RequestHandler 전달 생략)
 ```
 
 # 기능 구현 리스트
