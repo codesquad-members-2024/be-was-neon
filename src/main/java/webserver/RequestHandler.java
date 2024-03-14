@@ -7,7 +7,6 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import utils.StringUtils;
 
 public class RequestHandler implements Runnable {
     public static final String REGISTER_ACTION = "/user/create";
@@ -25,23 +24,23 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            HttpRequest httpRequest = new HttpRequest(in);
 
-            String requestLine = br.readLine();
-            logger.debug("request method : {}", requestLine);
-            if(checkRegisterInput(requestLine)){
-                RegisterRequestHandler registerRH = new RegisterRequestHandler(requestLine);
+            // String requestLine = br.readLine();
+            logger.debug("request method : {}", httpRequest.getStartLine());
+
+            if(checkRegisterInput(httpRequest.getStartLine())){
+                RegisterRequestHandler registerRH = new RegisterRequestHandler(httpRequest.getStartLine());
             }
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
-            String requestURL = StringUtils.separatePath(requestLine);
-            String filePath = StringUtils.makeCompletePath(requestURL);
+            String filePath = httpRequest.getCompletePath();
 
-            requestLine = br.readLine();
-            while(!requestLine.isEmpty()){ // 나머지 header 출력
-                logger.debug("request header : {}", requestLine);
-                requestLine = br.readLine();
-            }
+//            requestLine = br.readLine();
+//            while(!requestLine.isEmpty()){ // 나머지 header 출력
+//                logger.debug("request header : {}", requestLine);
+//                requestLine = br.readLine();
+//            }
 
             // 파일이 존재하면 해당 파일을 읽어 응답.
             DataOutputStream dos = new DataOutputStream(out);
@@ -72,6 +71,17 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos){ // 회원가입 정보 받고 redirect에 사용
+        try {
+            dos.writeBytes("HTTP/1.1 302 FOUND\r\n");
+            dos.writeBytes("Location: " + StringUtils.INDEX_FILE_NAME + "\r\n"); // redirect 경로 지정
+            dos.writeBytes("\r\n");
+            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

@@ -15,8 +15,7 @@ public class HttpRequest {
     HttpRequest(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
         this.startLine = br.readLine();
-
-
+        parseStartLine(startLine);
     }
 
     private void parseStartLine(String startLine){
