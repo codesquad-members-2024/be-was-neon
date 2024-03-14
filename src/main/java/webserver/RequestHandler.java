@@ -3,8 +3,6 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
-import db.Database;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.HttpResponse;
@@ -33,7 +31,7 @@ public class RequestHandler implements Runnable {
             if (fileName.endsWith(".html")) {
                 HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName);
             }else if (fileName.startsWith("/create")){
-                RegistrationResponse.getUserData(dos, fileName);
+                RegistrationResponse.respondRegistration(dos,fileName);
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
