@@ -1,6 +1,11 @@
 package webserver;
 
+import db.Database;
+import model.User;
+
 import java.io.*;
+import java.net.URLDecoder;
+import java.util.HashMap;
 
 public class HttpRequest {
     private static final String BASIC_FILE_PATH = "src/main/resources/static";
@@ -11,12 +16,38 @@ public class HttpRequest {
     private String url;
     private String version;
 
+    private HashMap<String, String> registerUserData;
 
-    HttpRequest(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+
+    HttpRequest(BufferedReader br) throws IOException {
         this.startLine = br.readLine();
         parseStartLine(startLine);
+        this.registerUserData = new HashMap<String, String>();
     }
+
+    // 회원가입 정보 파싱
+    public void parseRegisterData() {
+        for(String token : extractUserData().split("[& ]")){
+            String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
+            try {
+                registerUserData.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 회원가입 정보 파싱
+    private String extractUserData(){ // 사용자 입력 정보 부분만 반환
+        String[] splitStartLine = url.split("[?]");
+        return splitStartLine[1];
+    }
+
+    // 회원가입 데이터 DB에 추가
+    public void storeDatabase(){
+        Database.addUser(new User(registerUserData.get("userId"), registerUserData.get("password"), registerUserData.get("name"), registerUserData.get("email")));
+    }
+
 
     private void parseStartLine(String startLine){
         String[] splitStartLine = startLine.split(" ");

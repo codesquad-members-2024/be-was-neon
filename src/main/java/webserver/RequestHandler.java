@@ -3,7 +3,6 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,9 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            HttpRequest httpRequest = new HttpRequest(in);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+
+            HttpRequest httpRequest = new HttpRequest(br);
 
             // String requestLine = br.readLine();
             logger.debug("request method : {}", httpRequest.getStartLine());
@@ -47,8 +48,10 @@ public class RequestHandler implements Runnable {
             File file = new File(filePath);
             if (file.exists() && !file.isDirectory()) {
                 FileInputStream fis = new FileInputStream(file);
-                byte[] fileContent = new byte[(int) file.length()];
-                fis.read(fileContent);
+//                byte[] fileContent = new byte[(int) file.length()];
+//                fis.read(fileContent);
+//                fis.close();
+                byte[] fileContent = fis.readAllBytes();
                 fis.close();
 
                 response200Header(dos, fileContent.length);
@@ -79,7 +82,7 @@ public class RequestHandler implements Runnable {
     private void response302Header(DataOutputStream dos){ // 회원가입 정보 받고 redirect에 사용
         try {
             dos.writeBytes("HTTP/1.1 302 FOUND\r\n");
-            dos.writeBytes("Location: " + StringUtils.INDEX_FILE_NAME + "\r\n"); // redirect 경로 지정
+            dos.writeBytes("Location: " + "/index.html" + "\r\n"); // redirect 경로 지정
             dos.writeBytes("\r\n");
             dos.flush();
         } catch (IOException e) {
