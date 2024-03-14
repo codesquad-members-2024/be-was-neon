@@ -1,18 +1,23 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import db.Database;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import java.util.HashMap;
+import java.util.StringTokenizer;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Parser;
 
 public class RequestHandler implements Runnable {
+
+    private static final String DEFAULT_PATH = "src/main/resources/static";
+    private static final String INDEX_HTML = "/index.html";
+    private static final String REGISTRATION = "/registration";
+    private static final String QUESTION_MARK = "?";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -27,49 +32,44 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            //start-line에서 Request target을 파싱해서 가져옴
-            String url = Parser.getRequestTarget(in, logger);
+            //startLine에서 요청 대상만 가져온다
+            String requestTarget = HttpRequest.getRequestTarget(in, logger);
 
-            DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = readFile("src/main/resources/static" + url);
+            // registration이 들어오면?
+            String filePath = DEFAULT_PATH + requestTarget;
+            //여기에 경로를 설정해주는 코드 작성
+            if (!requestTarget.contains(QUESTION_MARK)) {
+                if (requestTarget.equals(INDEX_HTML)) {
+                    filePath = DEFAULT_PATH + INDEX_HTML;
+                }
+                if (requestTarget.equals(REGISTRATION)){
+                    filePath = DEFAULT_PATH + REGISTRATION + INDEX_HTML;
+                }
 
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+                //HttpResponse를 생성해서 보낸다.
+                HttpResponse.sendHttpResponse(out,filePath);
+            }
+
+            if (requestTarget.contains(QUESTION_MARK)) {
+                int queryStringStartIndex = requestTarget.indexOf(QUESTION_MARK);
+
+                //HttpResponse를 생성해서 보낸다.
+                String queryString = requestTarget.substring(queryStringStartIndex);
+                StringTokenizer tokenizer = new StringTokenizer(queryString,"&");
+//                HashMap<String,String> hashMap = new HashMap();
+
+                while (tokenizer.hasMoreTokens()) {
+                    String token = tokenizer.nextToken();
+                    System.out.println(token);
+                }
+
+                Database.addUser(new User("1","2","3","tmdgus717@naver.com"));
+                HttpResponse.sendHttpResponse(out,DEFAULT_PATH + INDEX_HTML);
+            }
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private byte[] readFile(String path) {
-
-        File file = new File(path);
-        byte[] byteArray = new byte[(int) file.length()];
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            inputStream.read(byteArray);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return byteArray;
-    }
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error("response200HeaderError : "+e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            //지정된 바이트 배열의 오프셋(offset) 위치 off로 부터 시작되는 len 바이트를 기본이 되는 출력 스트림에 출력합니다.
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error("responseBodyError : "+e.getMessage());
-        }
-    }
 }
