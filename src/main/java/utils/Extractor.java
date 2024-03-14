@@ -1,7 +1,8 @@
 package utils;
 
-public class FileExtractor {
+public class Extractor {
     private static final String BLANK = "\s+";
+    private static final int METHOD_INDEX = 0;
     private static final int URL_INDEX = 1;
     private static final String EMPTY = "";
     private static final String REPLACE_PATH = "/\\w+/create\\?";
@@ -12,8 +13,12 @@ public class FileExtractor {
         return request.split(BLANK);
     }
 
-    public static String extractUrl(String filePath) {
-        return filePath.split(BLANK)[URL_INDEX]; // html Url 추출
+    public static String extractMethod(String request) {
+        return request.split(BLANK)[METHOD_INDEX];
+    }
+
+    public static String extractUrl(String request) {
+        return request.split(BLANK)[URL_INDEX]; // html Url 추출
     }
 
     public static String[] extractUser(String url) {

@@ -1,6 +1,7 @@
 package webserver;
 
 import http.FileReader;
+import http.HttpMethod;
 import http.HttpRequestVerifier;
 import http.ResponseBody;
 import http.ResponseHeader;
@@ -10,7 +11,7 @@ import java.util.List;
 import model.User;
 import utils.Decoder;
 import utils.DirectoryMatcher;
-import utils.FileExtractor;
+import utils.Extractor;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -56,7 +57,8 @@ public class RequestHandler implements Runnable {
             ResponseBody responseBody = new ResponseBody(dos);
 
             verifyRequest(dos, request, responseHeader, responseBody);
-            sendResponse(request, responseHeader, responseBody, dos);
+            byte[] body = processRequest(request);
+            sendResponse(body, responseHeader, responseBody, dos);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -64,7 +66,7 @@ public class RequestHandler implements Runnable {
 
     private void verifyRequest(DataOutputStream dos, String request, ResponseHeader responseHeader, ResponseBody responseBody)
             throws IOException {
-        String[] requestHeader = FileExtractor.extract(request);
+        String[] requestHeader = Extractor.extract(request);
         if (!HttpRequestVerifier.verify(requestHeader)) {
             responseHeader.createHeader(400, "Bad Request", "text/plain;charset=utf-8", 0);
             responseBody.createBody(new byte[0]);
@@ -73,30 +75,34 @@ public class RequestHandler implements Runnable {
     }
 
     private byte[] processRequest(String request) throws IOException {
-        String url = FileExtractor.extractUrl(request);
-        if (url.matches(CREATE_REQUEST)) { // 생성 요청인 경우
-            String[] userInfo = FileExtractor.extractUser(url);
-            createUser(userInfo);
-            return new byte[0]; // 페이지 이동 X (임시)
+        String method = Extractor.extractMethod(request);
+        if (method.equals(HttpMethod.GET.name())) {
+            String url = Extractor.extractUrl(request);
+            if (url.matches(CREATE_REQUEST)) { // 생성 요청인 경우
+                String[] userEncodedInfo = Extractor.extractUser(url);
+                createUser(userEncodedInfo);
+                return new byte[0]; // 페이지 이동 X (임시)
+            }
+            String filePath = DirectoryMatcher.mathDirectory(url);
+            return FileReader.readAllBytes(filePath); // 바이트 배열로 변환
         }
-        String filePath = DirectoryMatcher.mathDirectory(url);
-        return FileReader.readAllBytes(filePath); // 바이트 배열로 변환
+        return new byte[0]; // 우선 GET 요청만 처리
     }
 
-    private void createUser(String[] userInfo)
+    private void createUser(String[] userEncodedInfo)
             throws IndexOutOfBoundsException, IllegalArgumentException, UnsupportedEncodingException {
-        String id = Decoder.decode(userInfo[ID_INDEX]);
-        String pw = Decoder.decode(userInfo[PW_INDEX]);
-        String name = Decoder.decode(userInfo[NAME_INDEX]);
-        String email = Decoder.decode(userInfo[EMAIL_INDEX]);
+        String[] userInfo = Decoder.decodeUser(userEncodedInfo);
+        String id = userInfo[ID_INDEX];
+        String pw = userInfo[PW_INDEX];
+        String name = userInfo[NAME_INDEX];
+        String email = userInfo[EMAIL_INDEX];
         User user = new User(id, pw, name, email);
         users.add(user);
         logger.debug(user.toString());
     }
 
-    private void sendResponse(String request, ResponseHeader responseHeader, ResponseBody responseBody, DataOutputStream dos)
+    private void sendResponse(byte[] body, ResponseHeader responseHeader, ResponseBody responseBody, DataOutputStream dos)
             throws IOException {
-        byte[] body = processRequest(request);
         responseHeader.createHeader(200, "OK", "text/html;charset=utf-8", body.length);
         responseBody.createBody(body);
         dos.flush();

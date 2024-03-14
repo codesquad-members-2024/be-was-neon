@@ -25,6 +25,7 @@ public class WebServer {
 
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
+                // 비동기 작업을 더 유연하게 처리하기 위해 CompletableFuture 사용
                 CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(new RequestHandler(connection));
                 completableFuture.get();
             }
