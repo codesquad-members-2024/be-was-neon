@@ -2,10 +2,11 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+
 import Utils.FileUtils;
-import Utils.HTTPRequestParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import Utils.PathParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -18,44 +19,35 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {
-        try {
-            processRequest();
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+                connection.getPort());
+        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String line = readRequestLine(br);
+            parseRequestPath(line);
+            readHeaders(br);
+            byte[] body = readFileContent();
+            DataOutputStream dos = new DataOutputStream(out);
+            response200Header(dos, body.length);
+            responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void processRequest() throws IOException {
-        try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            DataOutputStream dos = new DataOutputStream(out);
-
-            String requestLine = readRequestLine(br);
-            parseRequest(requestLine);
-            readHeaders(br);
-
-            if (firstPath != null) {
-                byte[] body = readFileContent();
-                response200Header(dos, body.length);
-                responseBody(dos, body);
-            }
-        }
-    }
-
     private String readRequestLine(BufferedReader br) throws IOException {
-        String requestLine = br.readLine();
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
-        logger.debug("request line: {}", requestLine);
-        return requestLine;
+        String line = br.readLine();
+        logger.debug("request line: {}", line);
+        return line;
     }
 
-    private void parseRequest(String requestLine) {
-        HTTPRequestParser requestParser = new HTTPRequestParser();
-        requestParser.parseRequestLine(requestLine);
-        String path = requestParser.getPath();
+    private void parseRequestPath(String requestLine) {
+        String path = PathParser.extractPathFromRequestLine(requestLine);
         if ("/index.html".equals(path)) {
-            firstPath = path;
-            logger.debug("Extracted path: {}", firstPath);
+            if (firstPath == null) {
+                firstPath = path;
+                logger.debug("Extracted path: {}", firstPath);
+            }
         }
     }
 
