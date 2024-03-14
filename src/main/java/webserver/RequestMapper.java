@@ -15,6 +15,8 @@ public class RequestMapper {
 
     private static final String STATIC_PATH = "src/main/resources/static";
     private static final String INDEX_HTML = "/index.html";
+    public static final String REGISTRATION = "/registration";
+    public static final String LOGIN = "/login";
 
     private final Map<String, Function<HttpRequest, HttpResponse>> map = Map.ofEntries(
             Map.entry("/", this::home),
@@ -37,12 +39,12 @@ public class RequestMapper {
     }
 
     private HttpResponse register(HttpRequest request) {
-        File file = new File(STATIC_PATH + "/registration" + INDEX_HTML);
+        File file = new File(STATIC_PATH + REGISTRATION + INDEX_HTML);
         return HttpResponse.from(file);
     }
 
     private HttpResponse login(HttpRequest request) {
-        File file = new File(STATIC_PATH + "/login" + INDEX_HTML);
+        File file = new File(STATIC_PATH + LOGIN + INDEX_HTML);
         return HttpResponse.from(file);
     }
 
@@ -51,7 +53,7 @@ public class RequestMapper {
         try {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
             Database.addUser(User.from(userForm));
-            File file = new File(STATIC_PATH + "/login" + INDEX_HTML);
+            File file = new File(STATIC_PATH + LOGIN + INDEX_HTML);
             return HttpResponse.from(file);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
