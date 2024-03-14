@@ -9,7 +9,6 @@ import java.net.Socket;
 public class RequestHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
     private final Socket connection;
-
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
@@ -24,11 +23,20 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             Response response = new Response(request);
 
-            response.sendResponse(dos);
+            sendResponse(dos, response);
             log.info(request.getLog() + " Complete");
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private void sendResponse(DataOutputStream dos , Response response) throws IOException {
+        byte[] header = response.getHeader();
+        byte[] body = response.getBody();
+
+        dos.write(header, 0, header.length);
+        dos.write(body, 0, body.length);
+        dos.flush();
     }
 
     private static Request makeRequest(String requestMessage) {
@@ -43,7 +51,7 @@ public class RequestHandler implements Runnable {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
         String reqLine = br.readLine();
-        if(reqLine == null){
+        if (reqLine == null) {
             throw new IOException("null req");
         }
         sb.append(reqLine);

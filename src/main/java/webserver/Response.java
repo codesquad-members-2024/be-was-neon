@@ -5,7 +5,6 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,8 +19,8 @@ public class Response {
             "/create", this::createUser
     );
     private static final Logger log = LoggerFactory.getLogger(Response.class);
-    byte[] header;
-    byte[] body;
+    private byte[] header;
+    private byte[] body;
     private String path;
     private final Map<String, String> params;
     private FileType fileType;
@@ -36,22 +35,22 @@ public class Response {
         urlMapping.get(urlKey).run();
     }
 
-    public void sendResponse(DataOutputStream dos) throws IOException {
-//        log.info(new String(header));
-//        log.info(new String(body));
-        dos.write(header, 0 , header.length);
-        dos.write(body, 0 , body.length);
-        dos.flush();
+    public byte[] getHeader() {
+        return header.clone();
     }
 
-    void createUser() {
+    public byte[] getBody() {
+        return body.clone();
+    }
+
+    private void createUser() {
         User user = new User(params.get("name"), params.get("password"), params.get("nickname"), params.get("email"));
         Database.addUser(user);
         log.info("User Created : " + user.getUserId());
         writeResponseHeader(FOUND, FileType.NONE, 0);
     }
 
-    void responseGet() {
+    private void responseGet() {
         try {
             body = getFileBytes();
             writeResponseHeader(OK, fileType, body.length);
