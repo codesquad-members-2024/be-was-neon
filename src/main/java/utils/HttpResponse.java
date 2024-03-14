@@ -8,9 +8,9 @@ import java.util.Objects;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    public static void respondHtmlFile (DataOutputStream dos, String fileName){
+    public static void respondHtmlFile (DataOutputStream dos, String fileName, String fileType){
         try{
-            response200Header(dos, Objects.requireNonNull(htmlToByte(fileName)).length);
+            response200Header(dos, Objects.requireNonNull(htmlToByte(fileName)).length, fileType);
             responseBody(dos, htmlToByte(fileName));
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -32,10 +32,10 @@ public class HttpResponse {
         // 파일 데이터를 fileBytes 배열로 읽어옵니다.
         return baos.toByteArray();
     }
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String fileType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + fileType + ";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

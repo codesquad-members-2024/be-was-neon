@@ -11,6 +11,9 @@ import utils.RegistrationResponse;
 
 public class RequestHandler implements Runnable {
     private static final String RELATIVE_PATH = "./src/main/resources/static";
+    private static final String TEXT_HTML = "text/html";
+    private static final String TEXT_CSS = "text/css";
+    private static final String IMAGE_SVG_XML = "image/svg+xml";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private Socket connection;
 
@@ -29,7 +32,11 @@ public class RequestHandler implements Runnable {
             IOUtils.showEveryHeaders(logger,br,line);
             // request 의 종류에 따라 다른 response 를 보내줄수있게 해주었습니다.
             if (fileName.endsWith(".html")) {
-                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName);
+                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, TEXT_HTML);
+            }else if (fileName.endsWith(".css")) {
+                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, TEXT_CSS);
+            }else if (fileName.endsWith(".svg")) {
+                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, IMAGE_SVG_XML);
             }else if (fileName.startsWith("/create")){
                 RegistrationResponse.respondRegistration(dos,fileName);
             }
