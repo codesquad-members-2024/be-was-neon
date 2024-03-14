@@ -2,7 +2,7 @@ package webserver.httpMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.TypeMapper;
+import webserver.utils.TypeMapper;
 
 import java.io.*;
 import java.util.ArrayList;

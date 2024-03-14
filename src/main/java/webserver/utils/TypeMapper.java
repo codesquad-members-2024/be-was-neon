@@ -1,4 +1,4 @@
-package webserver;
+package webserver.utils;
 
 import java.io.File;
 import java.util.Map;
