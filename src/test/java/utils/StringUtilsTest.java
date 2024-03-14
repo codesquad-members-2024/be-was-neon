@@ -13,7 +13,13 @@ public class StringUtilsTest {
         assertThat(requestURL).isEqualTo("/index.html");
     }
 
+    @Test
+    @DisplayName("request method의 경로가 /registration일 경우 회원가입 페이지의 경로를 반환해야 한다.")
+    void getRegisterPath() {
+        String requestLine = "GET /registration HTTP/1.1\n";
 
-
-
+        String requestURL = StringUtils.separatePath(requestLine);
+        String registerLocation = StringUtils.makeCompletePath(requestURL);
+        assertThat(registerLocation).isEqualTo("src/main/resources/static/registration/index.html");
+    }
 }

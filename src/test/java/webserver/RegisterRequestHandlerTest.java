@@ -12,7 +12,7 @@ public class RegisterRequestHandlerTest {
 
     @Test
     @DisplayName("Request Header에서 Request Parameter 를 추출하여 User 클래스에 담아야 한다.")
-    void extractPath() {
+    void parseRegisterInfo() {
         String requestStartLine = "GET /user/create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1";
 
         RegisterRequestHandler registerRH = new RegisterRequestHandler(requestStartLine);
