@@ -9,6 +9,7 @@ import java.net.Socket;
 public class RequestHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
     private final Socket connection;
+
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
@@ -30,7 +31,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void sendResponse(DataOutputStream dos , Response response) throws IOException {
+    private void sendResponse(DataOutputStream dos, Response response) throws IOException {
         byte[] header = response.getHeader();
         byte[] body = response.getBody();
 
@@ -47,16 +48,12 @@ public class RequestHandler implements Runnable {
     }
 
     private static String readRequestMessage(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-        String reqLine = br.readLine();
-        if (reqLine == null) {
-            throw new IOException("null req");
+        StringBuilder result = new StringBuilder();
+        while (in.available() > 0){
+            result.append((char) in.read());
         }
-        sb.append(reqLine);
 
-        log.info("read " + sb);
-        return sb.toString();
+        log.info("read " + result);
+        return result.toString();
     }
 }
