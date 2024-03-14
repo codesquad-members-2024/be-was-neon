@@ -16,7 +16,6 @@ public class ResponseBody {
     public void createBody(byte[] body) {
         try {
             dos.write(body, 0, body.length);
-            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

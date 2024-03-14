@@ -13,10 +13,24 @@ public class ResponseHeader {
         this.dos = dos;
     }
 
-    public void createHeader(int status, String description, String contentType, int lengthOfBodyContent) {
+    public void setStatus(HttpStatus httpStatus) {
         try {
-            dos.writeBytes("HTTP/1.1" + " " + status + " " + description + "\r\n");
+            dos.writeBytes("HTTP/1.1" + " " + httpStatus.getCode() + " " + httpStatus.getDescription() + "\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void setContentType(String contentType) {
+        try {
             dos.writeBytes("Content-Type: " + contentType + "\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public void setLengthOfBodyContent(int lengthOfBodyContent) {
+        try {
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

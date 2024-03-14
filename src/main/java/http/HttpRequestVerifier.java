@@ -1,5 +1,6 @@
 package http;
 
+import java.io.File;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,5 +33,10 @@ public class HttpRequestVerifier {
     private static boolean verifyVersion(String version) {
         String versionNum = version.split(VERSION_DELIMITER)[VERSION_NUMBER_INDEX];
         return Arrays.stream(HttpVersion.values()).anyMatch(httpVersion -> httpVersion.getVersion().equals(versionNum));
+    }
+
+    public static boolean verifyFile(String filePath) {
+        File file = new File(filePath);
+        return file.isFile() && file.exists();
     }
 }
