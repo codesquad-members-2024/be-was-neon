@@ -4,13 +4,13 @@ public enum HttpStatus {
     OK("HTTP/1.1 200 OK \r\n"),
     PERMANENT_REDIRECT("HTTP/1.1 308 Permanent Redirect \r\n");
 
-    private final String status_message;
+    private final String statusMessage;
 
-    HttpStatus(String status_message) {
-        this.status_message = status_message;
+    HttpStatus(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 
-    public String getStatus_message() {
-        return status_message;
+    public String getStatusMessage() {
+        return statusMessage;
     }
 }

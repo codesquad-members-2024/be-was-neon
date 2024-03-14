@@ -56,7 +56,7 @@ public class HttpResponse {
     private static List<String> getHeader(String contentType, int bodyLength) {
         List<String> header = new ArrayList<>();
 
-        header.add(HttpStatus.OK.getStatus_message());
+        header.add(HttpStatus.OK.getStatusMessage());
         header.add("Content-Type: " + contentType + ";charset=utf-8\r\n");
         header.add("Content-Length: " + bodyLength + "\r\n");
         header.add("\r\n");
@@ -67,7 +67,7 @@ public class HttpResponse {
     private static List<String> getRedirectHeader(String location) {
         List<String> header = new ArrayList<>();
 
-        header.add(HttpStatus.PERMANENT_REDIRECT.getStatus_message());
+        header.add(HttpStatus.PERMANENT_REDIRECT.getStatusMessage());
         header.add("Location: " + location);
         header.add("\r\n");
 
