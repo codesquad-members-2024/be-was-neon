@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.IOException;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -14,7 +14,7 @@ class RequestTest {
     @ParameterizedTest
     @CsvSource({"GET /index.html , GET : /index.html"})
     @DisplayName("getFile 요청에 대해 알맞은 Request 객체가 반환된다")
-    void getFileRequest(String url , String log) throws IOException {
+    void getFileRequest(String url , String log){
         Request request = makeRequest(url);
         assertThat(request.getLog()).isEqualTo(log);
     }
@@ -24,11 +24,12 @@ class RequestTest {
     void createUserRequest(){
         String url = "GET /create?userId=test&password=test&name=test&email=test%40naver.com";
         Request request = makeRequest(url);
-        assertThat(request.getParams().get("userId")).isEqualTo("test");
-        assertThat(request.getParams().get("password")).isEqualTo("test");
-        assertThat(request.getParams().get("name")).isEqualTo("test");
-        assertThat(request.getParams().get("email")).isEqualTo("test%40naver.com");
+        Map<String , String> params = request.getParams();
 
+        assertThat(params.get("userId")).isEqualTo("test");
+        assertThat(params.get("password")).isEqualTo("test");
+        assertThat(params.get("name")).isEqualTo("test");
+        assertThat(params.get("email")).isEqualTo("test%40naver.com");
     }
 
     private static Request makeRequest(String url) {

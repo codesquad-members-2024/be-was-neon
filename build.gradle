@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 group 'codesquad'
@@ -18,8 +19,6 @@ dependencies {
 
     implementation 'ch.qos.logback:logback-classic:1.4.14'
     testImplementation 'org.assertj:assertj-core:3.16.1'
-
-
 }
 
 test {
