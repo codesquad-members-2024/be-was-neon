@@ -20,6 +20,7 @@ public class WebServer {
     public static void main(String args[]) throws Exception {
         int port = determinePort(args);
         connectSocket(port);
+
     }
 
     private static int determinePort(String[] args) {

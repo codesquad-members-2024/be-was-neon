@@ -20,6 +20,7 @@ public class RequestHandler implements Runnable {
     private final OutputStream out;
 
 
+
     public RequestHandler(Socket connection, InputStream in, OutputStream out) {
         this.connection = connection;
         this.in = in;
@@ -47,6 +48,7 @@ public class RequestHandler implements Runnable {
             return requestHeader.contains("?") ?
                     new JoinUriFactory().getRequest(requestHeader) :
                     new PageUriFactory().getRequest(requestHeader);
+
         }
 
         private void respond(HttpRequest requestType, String requestHeader) throws IOException {

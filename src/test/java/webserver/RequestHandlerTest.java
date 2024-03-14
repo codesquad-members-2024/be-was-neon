@@ -6,11 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 class RequestHandlerTest {
+
 
     @DisplayName("index.html 리소스를 요청할 때 네트워크로 응답이 반환된다.")
     @Test
@@ -22,6 +21,7 @@ class RequestHandlerTest {
 
         when(socketMock.getInputStream()).thenReturn(inputStreamMock);
         when(socketMock.getOutputStream()).thenReturn(outputStreamMock);
+
 
         RequestHandler requestHandler = new RequestHandler(socketMock, inputStreamMock, outputStreamMock);
         requestHandler.run();
