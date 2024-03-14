@@ -3,7 +3,7 @@ package utils;
 import org.junit.jupiter.api.*;
 import static org.assertj.core.api.Assertions.*; // AssertJ
 
-public class StringUtilsTest {
+class StringUtilsTest {
     @Test
     @DisplayName("request method에서 파일 경로를 분리해야 한다.")
     void extractPath() {

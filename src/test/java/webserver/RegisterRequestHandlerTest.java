@@ -8,7 +8,7 @@ import utils.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RegisterRequestHandlerTest {
+class RegisterRequestHandlerTest {
 
     @Test
     @DisplayName("Request Header에서 Request Parameter 를 추출하여 User 클래스에 담아야 한다.")
