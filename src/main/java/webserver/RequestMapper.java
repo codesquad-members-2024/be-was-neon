@@ -58,7 +58,7 @@ public class RequestMapper {
             Map<String, String> userForm = Parser.splitQuery(queryParams);
             User user = User.from(userForm);
             Database.addUser(user);
-            logger.debug("User created : " + Database.findUserById(user.getUserId()));
+            logger.debug("User created : {}", Database.findUserById(user.getUserId()));
             return HttpResponse.redirect(LOGIN);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
