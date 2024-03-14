@@ -27,15 +27,10 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String uri = URL.getTargetURI(br);
             logger.debug("uri : {}", uri);
-
             File file = URL.getFile(uri);
-
-
 
             FileInputStream fis = new FileInputStream(file);
             byte[] body = fis.readAllBytes();
-
-
 
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
