@@ -3,13 +3,14 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import utils.StringUtils;
 
 public class RequestHandler implements Runnable {
-    private static final String FILE_PATH = "src/main/resources/static";
+    public static final String REGISTER_ACTION = "/user/create";
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -28,10 +29,13 @@ public class RequestHandler implements Runnable {
 
             String requestLine = br.readLine();
             logger.debug("request method : {}", requestLine);
+            if(checkRegisterInput(requestLine)){
+                RegisterRequestHandler registerRH = new RegisterRequestHandler(requestLine);
+            }
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
             String requestURL = StringUtils.separatePath(requestLine);
-            String filePath = FILE_PATH + requestURL;
+            String filePath = StringUtils.makeCompletePath(requestURL);
 
             requestLine = br.readLine();
             while(!requestLine.isEmpty()){ // 나머지 header 출력
@@ -91,5 +95,9 @@ public class RequestHandler implements Runnable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private boolean checkRegisterInput(String startLine){ // 회원가입에서 보낸 GET인지 확인
+        return startLine.contains(REGISTER_ACTION);
     }
 }
