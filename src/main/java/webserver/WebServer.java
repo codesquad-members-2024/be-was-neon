@@ -3,12 +3,13 @@ package webserver;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
-    private static final int DEFAULT_PORT = 8080;
+    private static final int DEFAULT_PORT = 8080; //기본 포트정보
 
     public static void main(String args[]) throws Exception {
         int port = 0;
@@ -25,8 +26,8 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                Thread thread = new Thread(new RequestHandler(connection));
-                thread.start();
+                Executor executor = Executors.newCachedThreadPool();
+                executor.execute(new RequestHandler(connection));
             }
         }
     }
