@@ -30,8 +30,9 @@ public class RequestHandler implements Runnable {
             // String requestLine = br.readLine();
             logger.debug("request method : {}", httpRequest.getStartLine());
 
-            if(checkRegisterInput(httpRequest.getStartLine())){
-                RegisterRequestHandler registerRH = new RegisterRequestHandler(httpRequest.getStartLine());
+            if(httpRequest.checkRegisterDataEnter()){
+                httpRequest.parseRegisterData();
+                httpRequest.storeDatabase();
             }
 
             // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
@@ -110,7 +111,4 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private boolean checkRegisterInput(String startLine){ // 회원가입에서 보낸 GET인지 확인
-        return startLine.contains(REGISTER_ACTION);
-    }
 }

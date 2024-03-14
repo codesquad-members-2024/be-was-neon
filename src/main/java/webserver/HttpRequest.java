@@ -48,6 +48,10 @@ public class HttpRequest {
         Database.addUser(new User(registerUserData.get("userId"), registerUserData.get("password"), registerUserData.get("name"), registerUserData.get("email")));
     }
 
+    public boolean checkRegisterDataEnter(){ // 회원가입에서 보낸 GET인지 확인
+        return (method.equals("GET") && url.startsWith("/user/create"));
+    }
+
 
     private void parseStartLine(String startLine){
         String[] splitStartLine = startLine.split(" ");
