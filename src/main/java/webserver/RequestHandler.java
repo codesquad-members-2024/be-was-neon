@@ -23,18 +23,15 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String uri = URL.getTargetURI(br);
             logger.debug("uri : {}", uri);
 
-            File file = new File("./src/main/resources/static");
-
-            if(uri.equals("/index.html")) {
-                file = new File("./src/main/resources/static" + uri);
-            }
+            File file = URL.getFile(uri);
 
 
-            file = new File("./src/main/resources/static" + uri);
+
             FileInputStream fis = new FileInputStream(file);
             byte[] body = fis.readAllBytes();
 
