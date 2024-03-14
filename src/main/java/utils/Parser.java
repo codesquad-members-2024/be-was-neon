@@ -18,10 +18,6 @@ public class Parser {
 
         String requestTarget = tokens[1];
 
-        if (requestTarget.equals("/")) {
-            requestTarget = DEFAULT_URL;
-        }
-
         return requestTarget;
     }
 }
