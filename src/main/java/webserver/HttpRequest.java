@@ -19,11 +19,10 @@ public class HttpRequest {
 
     private HashMap<String, String> registerUserData;
 
-
-    HttpRequest(BufferedReader br) throws IOException {
-        this.startLine = br.readLine();
-        parseStartLine(startLine);
+    HttpRequest(String startLine) throws IOException {
+        this.startLine = startLine;
         this.registerUserData = new HashMap<String, String>();
+        parseStartLine(startLine);
     }
 
     // 회원가입 정보 파싱
