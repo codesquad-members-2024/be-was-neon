@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final String DOT = "\\.";
 
     private Socket connection;
 
@@ -86,7 +87,7 @@ public class RequestHandler implements Runnable {
     }
 
     private String getFileType(String filePath){
-        String[] splitPath = filePath.split("\\.");
+        String[] splitPath = filePath.split(DOT);
         return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
     }
 }

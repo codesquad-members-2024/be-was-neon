@@ -11,6 +11,7 @@ public class HttpRequest {
     private static final String BASIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
     public static final String REGISTER_ACTION = "/user/create";
+    public static final String METHOD_GET = "GET";
 
     private String startLine;
     private String method;
@@ -49,7 +50,7 @@ public class HttpRequest {
     }
 
     public boolean checkRegisterDataEnter(){ // 회원가입에서 보낸 GET인지 확인
-        return (method.equals("GET") && url.startsWith(REGISTER_ACTION));
+        return (method.equals(METHOD_GET) && url.startsWith(REGISTER_ACTION));
     }
 
 
