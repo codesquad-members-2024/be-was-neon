@@ -1,39 +1,73 @@
 # be-was-2024
 코드스쿼드 백엔드 교육용 WAS 2024 개정판
 
-# 학습 내용
-## HTTP
-### HTTP 통신
-HTTP 통신은 **클라이언트**(Front-End)와 **서버**(Back-End)로 나뉘어진 구조.
-클라이언트 즉, 사용자가 브라우저를 통해서 어떠한 서비스를 url을 통하거나 다른 것을 통해서 요청(request)을 하면 서버에서는 해당 요청사항에 맞는 결과를 찾아서 사용자에게 응답(response)하는 형태로 동작한다.
+## 👨‍💻구현 방법 
+### 클래스 구조
+```WebServer 클래스```  
+```RequestHandler 클래스```  
+```HttpRequest 클래스``` StartLine 정보 파싱, 회원가입 정보 파싱, 파일 타입 확인 기능을 하는 매소드 구현.  
+```HttpResponseHeader 클래스``` response의 header 부분을 만들어 반환하는 매소드 구현.  
+```HttpResponseBody 클래스``` response의 body 부분을 만들어 반환하는 매소드 구현.  
+```ContentType enum 클래스``` 파일 타입별 content type을 저장한 enum.  
 
-### 요청 메세지 Request (클라이언트 ➡️ 서버)
-**시작 라인(Start Line)** 
-- Method : GET, PUT, POST, PUSH, OPTIONS 등의 요청방식이 온다. 서버에게 요청의 종류를 알려주기 위해서 사용된다.
-- 요청URL : 요청하는 자원의 위치를 명시한다.
-- HTTP 프로토콜 버전 : 웹 브라우저가 사용하는 http 프로토콜의 버전이다.
+### static 파일 경로를 반환하는 기능
+```HttpRequest 클래스  ```
 
-**헤더(Header)** <br>
-HTTP 전송에 필요한 모든 부가 정보를 담고 있다. (메세지 크기, 압축 여부, 인증, 브라우저 정보, 서버 정보, 캐시 ..등)
+```java
+private void parseStartLine(String startLine){
+    String[] splitStartLine = startLine.split(" ");
+    this.method = splitStartLine[0];
+    this.url = splitStartLine[1];
+    this.version = splitStartLine[2];
+}
+```
+parseStartLine 매소드로 request의 startLine을 파싱한다. 인덱스 1의 값이 url이다.
 
-**공백 라인(Empty Line)** <br>
-헤더와 바디를 구분하기 위한 라인
+```java
+public String getCompletePath(){
+    StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
+    if(!url.contains(REGISTER_ACTION)){
+        completePath.append(url);
+    }
+    File file = new File(completePath.toString());
+    if(file.isDirectory()){ // file이 아니라 폴더이면 "/index.html" 추가
+        completePath.append(INDEX_FILE_NAME);
+    }
+    return completePath.toString();
+}
+```
+getCompletePath 매소드에서 url을 이용해 전체 파일 경로를 만든다.
+- REGISTER_ACTION(/user/create)를 포함할 때는 url을 추가하지 않는다.
+- 만든 경로가 파일이 아니라 폴더라면 INDEX_FILE_NAME(/index.html)을 붙여준다. 
 
-**요청 바디(Message Body)** <br>
-실제 전송할 데이터 (HTML 문서, 이미지, 영상, JSON 등).
-요청메소드가 POST나 PUT을 사용하게 됐을 떄 들어오게 된다. GET 방식은 요청할 때 가지고 가야 되는 자원도 URL에 포함되어 있기 때문에 GET방식은 요청바디가 없다.
+### 회원가입 정보 받아오는 기능
+```HttpRequest 클래스  ```
+```java
+private HashMap<String, String> registerUserData;
 
-### 응답 메세지 Response (서버 ➡️ 클라이언트 )
-시작 라인(Start Line) <br>
-- Version : 사용된 http 버전
-- Status Code (상태 코드) : 클라이언트가 보낸 요청이 성공인지 실패인지 숫자 코드로 나타낸다.
+// GET /user/create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1
 
-**헤더(Header)** <br>
-HTTP 전송에 필요한 모든 부가 정보를 담고 있다. (메세지 크기, 압축 여부, 인증, 브라우저 정보, 서버 정보, 캐시 ..등)
+HttpRequest(String startLine) {
+    this.startLine = startLine;
+    this.registerUserData = new HashMap<String, String>();
+    parseStartLine(startLine);
+}
 
-**공백 라인(Empty Line)** <br>
-헤더와 바디를 구분하기 위한 라인
+// 회원가입 정보 파싱
+public void parseRegisterData() {
+    for(String token : extractUserData().split("[& ]")){
+        String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
+        try {
+            registerUserData.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+- 우선 "?"을 기준으로 split.
+- 다음으로 "="을 기준 split 한 뒤 이름을 key 값을 value로 HashMap에 저장.
 
-**바디(Message Body)** <br>
-전송 받은 데이터
+### 다양한 컨텐츠 타입 지원 기능
+HttpResponseHeader 클래스의 content-type을 파일 타입에 맞는 content-type으로 설정해 준다.
 
