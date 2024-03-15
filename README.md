@@ -7,6 +7,8 @@
 
 **학습 키워드 :  Java, HTTP, OS Thread, Java 동시성 제어, Java File IO, Linux IO, Linux Thread**
 
+**[학습 내용 정리](https://github.com/Miensoap/be-was-neon/wiki/Masters_BE-:-Web-Server-%EA%B5%AC%ED%98%84)**
+
 #### Thread , Java 동시성 제어
 
 - 스레드 개수는 몇 개가 적당한가?? FixedThreadPool 에 개수를 지정해 사용한 근거가 없다

@@ -1,4 +1,4 @@
-package webserver;
+package webserver.eums;
 
 
 public enum ResponseStatus {
