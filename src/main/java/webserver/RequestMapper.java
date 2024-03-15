@@ -34,6 +34,10 @@ public class RequestMapper {
         if (map.containsKey(uri)) {
             return map.get(uri).apply(request);
         }
+        return getStaticFileResponse(uri);
+    }
+
+    private static HttpResponse getStaticFileResponse(String uri) {
         return HttpResponse.from(new File(STATIC_PATH + uri));
     }
 
