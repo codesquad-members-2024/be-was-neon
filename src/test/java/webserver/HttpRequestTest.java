@@ -66,4 +66,31 @@ public class HttpRequestTest {
         assertThat(user.getName()).isEqualTo("박재성");
         assertThat(user.getEmail()).isEqualTo("javajigi@slipp.net");
     }
+
+    @Test
+    @DisplayName("html 파일이면 ContentType으로 'text/html;charset=utf-8'을 반환 한다.")
+    void getHtmlContentType() {
+        String requestStartLine = "GET /main.html HTTP/1.1";
+        httpRequest = new HttpRequest(requestStartLine);
+
+        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("text/html;charset=utf-8");
+    }
+
+    @Test
+    @DisplayName("css 파일이면 ContentType으로 'text/css;charset=utf-8'을 반환 한다.")
+    void getCssContentType() {
+        String requestStartLine = "GET /main.css HTTP/1.1";
+        httpRequest = new HttpRequest(requestStartLine);
+
+        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("text/css;charset=utf-8");
+    }
+
+    @Test
+    @DisplayName("img 파일이면 ContentType으로 'image/svg+xml'을 반환 한다.")
+    void getImgContentType() {
+        String requestStartLine = "GET /img/signiture.svg HTTP/1.1";
+        httpRequest = new HttpRequest(requestStartLine);
+
+        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("image/svg+xml");
+    }
 }
