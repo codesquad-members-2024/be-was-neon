@@ -2,7 +2,7 @@ package Utils;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import model.User;
 /**
  * HTTP 요청을 파싱하여 다양한 정보를 추출하고, 요청된 URL의 경로에 따른 파일 경로를 생성하는 클래스
  */
@@ -71,6 +71,28 @@ public class HttpRequestParser {
         }
         return completePath.toString();
     }
+//    public User parseUserFromRequest() {
+//        String path = extractPath();
+//        if (!path.startsWith("/create")) {
+//            throw new IllegalArgumentException("회원가입 요청이 아닙니다.");
+//        }
+//
+//        Map<String, String> queryParams = new HashMap<>();
+//        String[] params = path.split("\\?")[1].split("&");
+//        for (String param : params) {
+//            String[] keyValue = param.split("=");
+//            String key = keyValue[0];
+//            String value
+//            queryParams.put(key, value);
+//        }
+//
+//        return new User(
+//                queryParams.get("userId"),
+//                queryParams.get("password"),
+//                queryParams.get("name"),
+//                queryParams.get("email")
+//        );
+//    }
 
 
 

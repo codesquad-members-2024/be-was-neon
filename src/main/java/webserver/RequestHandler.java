@@ -75,7 +75,6 @@ public class RequestHandler implements Runnable {
     }
 
 
-
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) throws IOException {
         dos.writeBytes("HTTP/1.1 200 OK \r\n");
         dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
@@ -87,4 +86,5 @@ public class RequestHandler implements Runnable {
         dos.write(body, 0, body.length);
         dos.flush();
     }
+
 }
