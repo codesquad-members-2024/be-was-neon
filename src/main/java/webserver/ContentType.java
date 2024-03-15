@@ -15,7 +15,7 @@ public enum ContentType {
         this.fileType = fileType;
     }
 
-    public static String getContentType(String inputType) {
+    public static String getContentType(String inputType) { // 파일 type에 맞는 ContentType을 반환
         return valueOf(inputType).fileType;
     }
 }
