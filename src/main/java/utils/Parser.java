@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.slf4j.Logger;
 public class Parser {
-    private static final String DEFAULT_URL = "/index.html";
     private static final String SPACE = " ";
     public static String getRequestTarget(InputStream in, Logger logger) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));

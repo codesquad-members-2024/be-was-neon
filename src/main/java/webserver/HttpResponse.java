@@ -15,15 +15,37 @@ public class HttpResponse {
         DataOutputStream dos = new DataOutputStream(out);
 
         byte[] body = readFile(filePath);
-
-        response200Header(dos, body.length);
+        String contentType = getContentType(filePath);
+        response200Header(dos, body.length, contentType);
         responseBody(dos, body);
     }
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private static String getContentType(String filePath) {
+        String contentType = "application/octet-stream"; // 기본값 설정
+
+        if (filePath.endsWith(".html") || filePath.endsWith(".htm")) {
+            contentType = "text/html;charset=utf-8";
+        } else if (filePath.endsWith(".css")) {
+            contentType = "text/css";
+        } else if (filePath.endsWith(".js")) {
+            contentType = "text/javascript";
+        } else if (filePath.endsWith(".png")) {
+            contentType = "image/png";
+        } else if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
+            contentType = "image/jpeg";
+        } else if (filePath.endsWith(".gif")) {
+            contentType = "image/gif";
+        } else if (filePath.endsWith(".svg")) {
+            contentType = "image/svg+xml";
+        }
+
+        return contentType;
+    }
+
+    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent,String contentType) {
         try {
             // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

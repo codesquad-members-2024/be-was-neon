@@ -2,25 +2,19 @@ package model;
 
 import db.Database;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.Map;
 
 public class UserRegistration {
 
-    public static void registration(String queryString) throws UnsupportedEncodingException {
-        StringTokenizer tokenizer = new StringTokenizer(queryString,"&");
-        HashMap<String,String> queryMap = new HashMap();
+    public static void registration(Map<String,String> queryString) throws UnsupportedEncodingException {
 
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            String[] keyValue = token.split("=");
-            queryMap.put(keyValue[0], keyValue[1]);
-        }
-
+        //유저 객체 생성
         User user =
-            new User(queryMap.get("id"), queryMap.get("nickname"), queryMap.get("password"), queryMap.get("email"));
+            new User(queryString.get("id"), queryString.get("nickname"), queryString.get("password"), queryString.get("email"));
 
+        //데이터 베이스에 저장
         Database.addUser(user);
     }
 
 }
+
