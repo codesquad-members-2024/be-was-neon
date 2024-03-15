@@ -12,6 +12,7 @@ public class HttpRequest {
     private static final String INDEX_FILE_NAME = "/index.html";
     public static final String REGISTER_ACTION = "/user/create";
     public static final String METHOD_GET = "GET";
+    private static final String DOT = "\\.";
 
     private String startLine;
     private String method;
@@ -71,6 +72,11 @@ public class HttpRequest {
             completePath.append(INDEX_FILE_NAME);
         }
         return completePath.toString();
+    }
+
+    public String getFileType(){
+        String[] splitPath = getCompletePath().split(DOT);
+        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
     }
 
     public String getStartLine(){

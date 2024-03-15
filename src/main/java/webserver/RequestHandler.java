@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private static final String DOT = "\\.";
 
     private Socket connection;
 
@@ -29,7 +28,7 @@ public class RequestHandler implements Runnable {
 
             logger.debug("request method : {}", httpRequest.getStartLine());
 
-            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보 라면
+            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보라면
                 storeUser(httpRequest); // user 생성 후 저장
             }
 
@@ -40,37 +39,37 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(dos, httpRequest.getCompletePath(), httpRequest.checkRegisterDataEnter());
+            sendResponse(dos, httpRequest);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void sendResponse(DataOutputStream dos, String filePath, boolean isRedirect) throws IOException {
+    private void sendResponse(DataOutputStream dos, HttpRequest httpRequest) throws IOException {
         HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
         HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
 
-        File file = new File(filePath);
+        File file = new File(httpRequest.getCompletePath());
         if(checkValidFile(file)){ // 파일이 존재하면 해당 파일을 읽어 응답.
             FileInputStream fis = new FileInputStream(file);
             byte[] fileContent = fis.readAllBytes();
             fis.close();
 
-            if(isRedirect){
+            if(httpRequest.checkRegisterDataEnter()){
                 httpResponseHeader.setStartLine("302", "FOUND");
                 httpResponseHeader.setLocation("/index.html"); // redirect 경로 지정
             }else{
                 httpResponseHeader.setStartLine("200", "OK");
             }
-            httpResponseHeader.setContentType(ContentType.getContentType(getFileType(filePath)));
+            httpResponseHeader.setContentType(ContentType.getContentType(httpRequest.getFileType()));
             httpResponseHeader.setContentLength(fileContent.length);
             httpResponseBody.setBody(fileContent);
         }else{
             byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
 
             httpResponseHeader.setStartLine("404", "Not Found");
-            httpResponseHeader.setContentType(ContentType.getContentType(getFileType(filePath)));
+            httpResponseHeader.setContentType(ContentType.getContentType(httpRequest.getFileType()));
             httpResponseHeader.setContentLength(fileContent.length);
             httpResponseBody.setBody(fileContent);
         }
@@ -84,10 +83,5 @@ public class RequestHandler implements Runnable {
 
     private boolean checkValidFile(File file){
         return (file.exists() && !file.isDirectory());
-    }
-
-    private String getFileType(String filePath){
-        String[] splitPath = filePath.split(DOT);
-        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
     }
 }

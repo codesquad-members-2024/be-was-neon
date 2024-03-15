@@ -9,6 +9,7 @@ import java.io.IOException;
 public class HttpResponseHeader {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
     private static final String ESCAPE_SEQUENCE = "\r\n";
+    private static final String SPACE = " ";
     private DataOutputStream dos;
 
     HttpResponseHeader(DataOutputStream dos){
@@ -17,7 +18,7 @@ public class HttpResponseHeader {
 
     public void setStartLine(String statusCode, String statusMessage){
         try {
-            dos.writeBytes("HTTP/1.1 " + statusCode + " " +statusMessage + ESCAPE_SEQUENCE);
+            dos.writeBytes("HTTP/1.1 " + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
