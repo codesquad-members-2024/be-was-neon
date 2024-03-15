@@ -2,19 +2,23 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.Request.Request;
-import webserver.Response.Response;
+import webserver.HttpMessage.MessageBody;
+import webserver.HttpMessage.MessageHeader;
+import webserver.HttpMessage.Request;
+import webserver.HttpMessage.Response;
+import webserver.Mapping.MappingMatcher;
+import webserver.eums.FileType;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestHandler implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
+public class SocketMessageHandler implements Runnable {
+    private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
     private final Socket connection;
 
-    public RequestHandler(Socket connectionSocket) {
+    public SocketMessageHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
 
@@ -22,52 +26,46 @@ public class RequestHandler implements Runnable {
         log.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            Request request = readRequestMessage(in);
-
             DataOutputStream dos = new DataOutputStream(out);
-            Response response = new Response(request);
 
-            sendResponse(dos, response);
-            log.debug(new String(response.getHeader()));
-            log.info(request.getLog() + " Complete");
-        } catch (IOException e) {
+            Request request = getRequest(in);
+//            log.debug(request.toString());
+            MappingMatcher matcher = new MappingMatcher(request);
+
+            Response response = matcher.getResponse();
+            dos.writeBytes(response.toString());
+
+            log.debug("Send " + response.getHeader().toString());
+        } catch (Exception e) {
             log.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void sendResponse(DataOutputStream dos, Response response) throws IOException {
-        byte[] header = response.getHeader();
-        byte[] body;
-
-        dos.write(header, 0, header.length);
-        if ((body = response.getBody()).length != 0) {
-            dos.write(body, 0, body.length);
-        }
-        dos.flush();
-    }
-
-    private static Request readRequestMessage(InputStream in) throws IOException {
+    private static Request getRequest(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
         // start -line
         String startLine = br.readLine();
         if (startLine == null) throw new IOException("null request message");
+        Request request = new Request(startLine);
 
         //header
         Map<String, String> headerFields = new HashMap<>();
-        String reqLine = "";
+        String reqLine;
         while ((reqLine = br.readLine()) != null && !reqLine.isEmpty()) {
             String[] headerField = reqLine.split(": ");
             headerFields.put(headerField[0], headerField[1]);
         }
+        request.header(new MessageHeader(headerFields));
 
         // body
-        char[] body = {};
+        char[] body;
         if (headerFields.containsKey("Content-Length")) {
             body = new char[Integer.parseInt(headerFields.get("Content-Length"))];
             br.read(body);
+            request.body(new MessageBody(new String(body), FileType.valueOf(headerFields.get("Content-Type"))));
         }
 
-        return new Request(startLine, headerFields, new String(body));
+        return request;
     }
 }
