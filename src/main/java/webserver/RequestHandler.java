@@ -15,11 +15,9 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
-    private final RequestMapper requestMapper;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
-        requestMapper = new RequestMapper();
     }
 
     public void run() {
@@ -30,7 +28,7 @@ public class RequestHandler implements Runnable {
             HttpRequest httpRequest = HttpRequest.from(in);
             httpRequest.log();
 
-            HttpResponse httpResponse = requestMapper.service(httpRequest);
+            HttpResponse httpResponse = RequestMapper.service(httpRequest);
             httpResponse.send(out);
         } catch (IOException e) {
             logger.error(e.getMessage());
