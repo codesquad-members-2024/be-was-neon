@@ -9,13 +9,13 @@ public enum ContentType {
     jpeg("image/jpeg"),
     jpg("image/jpeg"),
     png("image/png");
-    private final String fileType;
+    private final String type;
 
-    ContentType(String fileType) {
-        this.fileType = fileType;
+    ContentType(String type) {
+        this.type = type;
     }
 
     public static String getContentType(String inputType) { // 파일 type에 맞는 ContentType을 반환
-        return valueOf(inputType).fileType;
+        return valueOf(inputType).type;
     }
 }
