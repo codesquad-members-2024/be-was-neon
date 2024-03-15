@@ -45,9 +45,7 @@ public class HttpRequest {
     }
 
     public void log() {
-        for (String line : httpRequest) {
-            logger.debug("request = " + line);
-        }
+        logger.info(startLine);
     }
 
     public String getUri() {
