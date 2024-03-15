@@ -44,7 +44,7 @@ public class Request {
     public String toString() {
         StringJoiner sj = new StringJoiner("\r\n");
         sj.add(startLine.toString())
-                .add(header.toString());
+                .add(header.toString()+ "\r\n");
         if(body!=null) sj.add(body.toString());
 
         return sj.toString();
