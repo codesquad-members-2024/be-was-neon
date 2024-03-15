@@ -11,13 +11,13 @@ public enum FileType {
         JS("Application/javascript");
 
 
-        private final String contentType;
+        private final String mimeType;
 
-        FileType(String contentType) {
-            this.contentType = contentType;
+        FileType(String mimeType) {
+            this.mimeType = mimeType;
         }
 
-        public String getContentType() {
-            return contentType;
+        public String getMimeType() {
+            return mimeType;
         }
     }
