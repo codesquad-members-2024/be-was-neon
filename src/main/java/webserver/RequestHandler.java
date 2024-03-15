@@ -6,7 +6,7 @@ import java.net.Socket;
 import Utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import Utils.PathParser;
+import Utils.HttpRequestParser;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -15,6 +15,7 @@ public class RequestHandler implements Runnable {
     private String firstPath; // 첫 번째 요청된 경로(index.html)를 저장할 변수
 
     public RequestHandler(Socket connectionSocket) {
+
         this.connection = connectionSocket;
     }
 
@@ -23,9 +24,14 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = readRequestLine(br);
-            parseRequestPath(line);
+
+            // 요청 라인 읽기
+            String requestLine = readRequestLine(br);
+            // 요청 경로 파싱
+            parseRequestPath(requestLine);
+            // 헤더 읽기
             readHeaders(br);
+
             byte[] body = readFileContent();
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
@@ -35,6 +41,7 @@ public class RequestHandler implements Runnable {
         }
     }
 
+
     private String readRequestLine(BufferedReader br) throws IOException {
         String line = br.readLine();
         logger.debug("request line: {}", line);
@@ -42,7 +49,8 @@ public class RequestHandler implements Runnable {
     }
 
     private void parseRequestPath(String requestLine) {
-        String path = PathParser.extractPathFromRequestLine(requestLine);
+        HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
+        String path = httpRequestParser.extractPath();
         if ("/index.html".equals(path)) {
             if (firstPath == null) {
                 firstPath = path;
