@@ -3,6 +3,7 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import Utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import Utils.HttpRequestParser;
@@ -64,33 +65,15 @@ public class RequestHandler implements Runnable {
     }
 
     private byte[] readFileContent() throws IOException {
-        File file = new File( firstPath);
-        if (!file.exists()) { // 파일이 존재하지 않는 경우
-            logger.error("Requested file not found: {}", file.getAbsolutePath());
-            // 파일이 존재하지 않을 경우 FileNotFoundException을 던집니다.
-            throw new FileNotFoundException("File not found: " + file.getAbsolutePath());
-        }
-
-        FileInputStream fileInputStream = null;
-        byte[] data = new byte[(int) file.length()]; // 파일 크기만큼의 바이트 배열 생성
-
-        try {
-            fileInputStream = new FileInputStream(file);
-            int bytesRead = fileInputStream.read(data); // 파일 내용을 바이트 배열에 읽어옴
-            if (bytesRead != file.length()) {
-                throw new IOException("File read error: Could not read the entire file");
-            }
-        } finally {
-            if (fileInputStream != null) {
-                try {
-                    fileInputStream.close(); // 파일 입력 스트림을 안전하게 닫음
-                } catch (IOException e) {
-                    logger.error("Error closing file input stream.", e);
-                }
-            }
+        FileUtils fileUtils = new FileUtils(new File(firstPath));
+        byte[] data = fileUtils.readFileToByteArray();
+        if (data.length == 0) { // 파일 내용이 비어있거나 파일을 읽을 수 없는 경우
+            logger.error("Requested file not found or empty: {}", firstPath);
+            throw new FileNotFoundException("File not found or empty: " + firstPath);
         }
         return data;
     }
+
 
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) throws IOException {
