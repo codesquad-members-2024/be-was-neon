@@ -3,14 +3,16 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static webserver.RequestUtils.extractRequestURL;
+import static webserver.RequestUtils.requestLineParser;
 
 public class RequestHandler implements Runnable {
     private static final String INDEX_FILE_PATH = "src/main/resources/static";
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Socket connection;
 
@@ -23,33 +25,78 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = br.readLine();
-            logger.debug("request line : {}", line);
-            while (!line.equals("") && line.isEmpty()) {
-                line = br.readLine();
-                logger.debug("header : {}", line);
-            }
-            String requestLine = extractRequestURL(line);
-            File file = new File(INDEX_FILE_PATH + requestLine);
-            if (file.isDirectory()) {
-                file = new File(file, "/index.html");
-            }
-            if(file.exists()) {
-                FileInputStream fis = new FileInputStream(file);
-                byte[] body = new byte[(int) file.length()];
-                fis.read(body);
-
-                DataOutputStream dos = new DataOutputStream(out);
-                response200Header(dos, body.length);
-                responseBody(dos, body);
-                fis.close();
-            } else{
-                logger.error("File not found: {}", INDEX_FILE_PATH + requestLine);
-                response404(out);
-            }
+            handleRequest(in, out);
         } catch (IOException e) {
-            logger.error("Error handling client request", e);
+            handleException(e);
+        }
+    }
+    private void handleRequest(InputStream in, OutputStream out) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        String line = br.readLine();
+        logger.debug("request line : {}", line);
+
+        while (!line.equals("") && line.isEmpty()) {
+            line = br.readLine();
+            logger.debug("header : {}", line);
+        }
+
+        String requestLine = extractRequestURL(line);
+        if (line.startsWith("GET /create?")) {
+            registrationHandler(out, line);
+            return;
+        }
+        File file = new File(INDEX_FILE_PATH + requestLine);
+        if (file.isDirectory()) {
+            file = new File(file, "/index.html");
+        }
+        if (file.exists()) {
+            sendResponse(out, file);
+        } else {
+            logger.error("File not found: {}", INDEX_FILE_PATH + requestLine);
+            response404(out);
+        }
+
+
+    }
+
+
+    private void registrationHandler(OutputStream out, String line) {
+        if (line.startsWith("GET")) {
+            // GET 요청에 대한 처리
+            requestLineParser(line);
+            // 회원가입 성공 시 로그인 페이지로 리다이렉트
+            DataOutputStream dos = new DataOutputStream(out);
+            response302Header(dos, "/index.html");
+        } else {
+            // GET 요청이 아닌 경우 404 응답
+            response404(out);
+        }
+    }
+
+
+    private void sendResponse(OutputStream out, File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] body = new byte[(int) file.length()];
+            fis.read(body);
+            DataOutputStream dos = new DataOutputStream(out);
+            response200Header(dos, body.length);
+            responseBody(dos, body);
+        }
+    }
+
+    private void handleException(IOException e) {
+        logger.error("Error handling client request", e);
+    }
+
+    private static void response302Header(DataOutputStream dos, String location){
+        // 302 response 는 get 으로 유저 데이터를 받아온후에 redirect 하여 클라이언트를 로그인 페이지로 연결시켜줍니다.
+        try{
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes("\r\n");
+
+        }catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
