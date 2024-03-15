@@ -50,7 +50,7 @@ public class RequestHandler implements Runnable {
 
     private void parseRequestPath(String requestLine) {
         HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
-        String path = httpRequestParser.makeCompletePath();
+        String path = httpRequestParser.makePath();
 
         firstPath = path; // 이전 조건문 제거
         logger.debug("Extracted path: {}", firstPath);

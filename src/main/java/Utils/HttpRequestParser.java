@@ -10,10 +10,10 @@ public class HttpRequestParser {
     private String requestLine;
     private Map<String, String> headers;
     private String body;
-    private static final String BASIC_FILE_PATH = "src/main/resources/static/";
+    private static final String BASIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
-    private static final String REGISTER_ACTION = "/registration";
-    private static final String LOGIN_ACTION = "/login";
+    private static final String REGISTER_PAGE = "/registration";
+    private static final String LOGIN_PAGE = "/login";
 
     public HttpRequestParser(String httpRequest) {
         this.headers = new HashMap<>();
@@ -46,17 +46,15 @@ public class HttpRequestParser {
         return tokens[1];
     }
 
-    public String makeCompletePath() {
+    public String makePath() {
         String requestURL = extractPath();
         StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
 
         switch (requestURL) {
-            case REGISTER_ACTION:
-                // registration 요청에 대한 처리
+            case REGISTER_PAGE:
                 completePath.append("/registration").append(INDEX_FILE_NAME);
                 break;
-            case LOGIN_ACTION:
-                // login 요청에 대한 처리
+            case LOGIN_PAGE:
                 completePath.append("/login").append(INDEX_FILE_NAME);
                 break;
             default:
@@ -64,16 +62,16 @@ public class HttpRequestParser {
                     completePath.append(INDEX_FILE_NAME);
                 } else {
                     completePath.append(requestURL);
-                    if (!completePath.toString().endsWith(".html")) {
-                        // 확장자 처리, 필요에 따라 다른 파일 유형도 처리 가능
+                    // 파일 확장자가 명시되어 있지 않은 경우 기본적으로 .html을 추가
+                    if (!requestURL.contains(".")) {
                         completePath.append(".html");
                     }
                 }
                 break;
         }
-
         return completePath.toString();
     }
+
 
 
     // 필요에 따라 추가적인 메소드 구현 가능
