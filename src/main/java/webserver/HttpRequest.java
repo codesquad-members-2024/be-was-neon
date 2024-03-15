@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class HttpRequest {
     private static final String BASIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
+    public static final String REGISTER_ACTION = "/user/create";
 
     private String startLine;
     private String method;
@@ -49,7 +50,7 @@ public class HttpRequest {
     }
 
     public boolean checkRegisterDataEnter(){ // 회원가입에서 보낸 GET인지 확인
-        return (method.equals("GET") && url.startsWith("/user/create"));
+        return (method.equals("GET") && url.startsWith(REGISTER_ACTION));
     }
 
 
@@ -62,10 +63,13 @@ public class HttpRequest {
 
     public String getCompletePath(){
         StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
-        if(!url.equals(INDEX_FILE_NAME) && !url.contains(RequestHandler.REGISTER_ACTION)){
+        if(!url.contains(REGISTER_ACTION)){
             completePath.append(url);
         }
-        completePath.append(INDEX_FILE_NAME);
+        File file = new File(completePath.toString());
+        if(file.isDirectory()){ // file이 아니라 폴더이면 "/index.html" 추가
+            completePath.append(INDEX_FILE_NAME);
+        }
         return completePath.toString();
     }
 
