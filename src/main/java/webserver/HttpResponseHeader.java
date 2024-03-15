@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class HttpResponseHeader {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
+    private static final String VERSION = "HTTP/1.1";
     private static final String ESCAPE_SEQUENCE = "\r\n";
     private static final String SPACE = " ";
     private DataOutputStream dos;
@@ -18,7 +19,7 @@ public class HttpResponseHeader {
 
     public void setStartLine(String statusCode, String statusMessage){
         try {
-            dos.writeBytes("HTTP/1.1 " + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
+            dos.writeBytes(VERSION + SPACE + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -26,7 +27,7 @@ public class HttpResponseHeader {
 
     public void setContentType(String contentType) {
         try {
-            dos.writeBytes("Content-Type: " + contentType + ESCAPE_SEQUENCE);
+            dos.writeBytes("Content-Type:" + SPACE + contentType + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -34,7 +35,7 @@ public class HttpResponseHeader {
 
     public void setLocation(String location) {
         try {
-            dos.writeBytes("Location: " + location + ESCAPE_SEQUENCE);
+            dos.writeBytes("Location:" + SPACE + location + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -42,7 +43,7 @@ public class HttpResponseHeader {
 
     public void setContentLength(int contentLength) {
         try {
-            dos.writeBytes("Content-Length: " + contentLength + ESCAPE_SEQUENCE);
+            dos.writeBytes("Content-Length:" + SPACE + contentLength + ESCAPE_SEQUENCE);
             dos.writeBytes(ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
