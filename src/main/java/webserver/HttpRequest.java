@@ -20,7 +20,7 @@ public class HttpRequest {
 
     private HashMap<String, String> registerUserData;
 
-    HttpRequest(String startLine) throws IOException {
+    HttpRequest(String startLine) {
         this.startLine = startLine;
         this.registerUserData = new HashMap<String, String>();
         parseStartLine(startLine);
@@ -87,5 +87,21 @@ public class HttpRequest {
 
     public String getVersion(){
         return version;
+    }
+
+    public String getUserId(){
+        return registerUserData.get("userId");
+    }
+
+    public String getPassword(){
+        return registerUserData.get("password");
+    }
+
+    public String getName(){
+        return registerUserData.get("name");
+    }
+
+    public String getEmail(){
+        return registerUserData.get("email");
     }
 }
