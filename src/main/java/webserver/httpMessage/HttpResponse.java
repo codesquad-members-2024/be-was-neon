@@ -57,8 +57,8 @@ public class HttpResponse {
         List<String> header = new ArrayList<>();
 
         header.add(HttpStatus.OK.getStatusMessage());
-        header.add("Content-Type: " + contentType + ";charset=utf-8\r\n");
-        header.add("Content-Length: " + bodyLength + "\r\n");
+        header.add("Content-Type: " + contentType + ";charset=utf-8 \r\n");
+        header.add("Content-Length: " + bodyLength + " \r\n");
         header.add("\r\n");
 
         return header;
@@ -68,7 +68,7 @@ public class HttpResponse {
         List<String> header = new ArrayList<>();
 
         header.add(HttpStatus.TEMPORARY_REDIRECTION.getStatusMessage());
-        header.add("Location: " + location);
+        header.add("Location: " + location + " \r\n");
         header.add("\r\n");
 
         return header;
