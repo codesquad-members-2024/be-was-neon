@@ -34,7 +34,6 @@ public class MessageBody {
     public FileType getContentType() {
         return contentType;
     }
-
     public String toString(){
         return new String(body);
     }

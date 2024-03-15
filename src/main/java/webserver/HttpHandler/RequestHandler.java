@@ -54,8 +54,8 @@ public class RequestHandler {
             writeResponseHeader(OK , body.getContentType() , body.getContentLength());
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
-            startLine = new ResponseStartLine("HTTP/1.1", NotFound);
             body = new MessageBody(NotFound.getMessage(), FileType.TXT);
+            startLine = new ResponseStartLine("HTTP/1.1", NotFound);
             writeResponseHeader(NotFound, body.getContentType(), body.getContentLength());
         }
 
