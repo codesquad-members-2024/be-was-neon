@@ -1,4 +1,4 @@
-package webserver;
+package webserver.eums;
 
 public enum FileType {
         HTML("text/html;charset=utf-8"),
@@ -7,7 +7,8 @@ public enum FileType {
         PNG("image/png"),
         ICO("image/x-icon"),
         TXT("text/plain"),
-        NONE("none");
+        NONE("none"),
+        JS("Application/javascript");
 
 
         private final String contentType;
