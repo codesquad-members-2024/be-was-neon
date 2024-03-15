@@ -70,8 +70,9 @@ public class HttpResponse {
     }
 
     public HttpResponse setMessageBody(byte[] bytesMessageBody) {
-        writeString(CRLF + CRLF);
+        writeString(CRLF);
         writeBytes(bytesMessageBody);
+        writeString(CRLF);
         return this;
     }
 

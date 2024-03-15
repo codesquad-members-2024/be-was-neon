@@ -1,44 +1,48 @@
 package web;
 
-import static utils.ResourceHandler.BASE_NAME;
-import static utils.ResourceHandler.HTML_EXTENSION;
-import static utils.ResourceHandler.RESOURCE_PATH;
+import static utils.ResourceHandler.*;
 
 import http.HttpRequest;
 import http.HttpResponse;
 import http.HttpStatus;
-import utils.ResourceHandler;
 
 public class HtmlProcessor extends HttpProcessor {
     @Override
     public void process(HttpRequest request, HttpResponse response) {
-        byte[] html = read(request);
+        byte[] resource = getBytes(request);
 
-        responseHeader200(response);
-        responseMessage(response, html);
+        responseHeader200(response, getContentType(request));
+        responseMessage(response, resource);
 
         response.flush();
     }
 
-    private byte[] read(HttpRequest request) {
-        if (request.getRequestURI().endsWith(HTML_EXTENSION)) {
-            return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI());
+    private byte[] getBytes(HttpRequest request) {
+        String extension = getExtension(request.getRequestURI());
+
+        if (FILE_EXTENSION_MAP.containsKey(extension)) { // /index.html, /min.css, ...
+            return read(RESOURCE_PATH + request.getRequestURI());
         }
-        if (request.getRequestURI().equals("/")) {
-            return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI() + BASE_NAME + HTML_EXTENSION);
+        if (request.getRequestURI().equals("/")) { // localhost:8080/
+            return read(RESOURCE_PATH + "/" + INDEX_HTML);
         }
-        return ResourceHandler.read(RESOURCE_PATH + request.getRequestURI() + "/" + BASE_NAME + HTML_EXTENSION);
+        return read(RESOURCE_PATH + request.getRequestURI() + "/" + INDEX_HTML); // /registration
     }
 
-    private void responseHeader200(HttpResponse response) {
+    private void responseHeader200(HttpResponse response, String contentType) {
         response.setHttpVersion("HTTP/1.1")
                 .setStatusCode(HttpStatus.STATUS_OK)
-                .setContentType("text/html")
+                .setContentType(contentType)
                 .setCharset("utf-8");
     }
 
-    private void responseMessage(HttpResponse response, byte[] html) {
-        response.setContentLength(html.length)
-                .setMessageBody(html);
+    private void responseMessage(HttpResponse response, byte[] resource) {
+        response.setContentLength(resource.length)
+                .setMessageBody(resource);
+    }
+
+    private String getContentType(HttpRequest request) {
+        String extension = getExtension(request.getRequestURI());
+        return FILE_EXTENSION_MAP.getOrDefault(extension, "text/html");
     }
 }

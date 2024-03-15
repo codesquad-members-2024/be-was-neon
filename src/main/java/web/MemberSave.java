@@ -13,12 +13,12 @@ public class MemberSave extends HtmlProcessor {
             super.process(request, response);
             return;
         }
-            String id = request.getParameter("id");
-            String username = request.getParameter("username");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+        String id = request.getParameter("id");
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
 
-            Database.addUser(new User(id, password, username, email));
-            super.process(request, response);
+        Database.addUser(new User(id, password, username, email));
+        super.process(request, response);
     }
 }
