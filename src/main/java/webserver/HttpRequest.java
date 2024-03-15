@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import utils.Parser;
 
 public class HttpRequest {
+
     private static final String QUESTION_MARK = "\\?";
     private static final String QUERY_STRING_DELIM = "&";
     private static final String KEY_VALUE_DELIM = "=";
+
     public static String[] getRequestTarget(InputStream in, Logger logger) throws IOException {
 
         String requestTarget = Parser.getRequestTarget(in, logger);
@@ -25,8 +27,8 @@ public class HttpRequest {
     }
 
     public static Map<String, String> getQueryString(String queryString) {
-        StringTokenizer tokenizer = new StringTokenizer(queryString,QUERY_STRING_DELIM);
-        HashMap<String,String> queryMap = new HashMap();
+        StringTokenizer tokenizer = new StringTokenizer(queryString, QUERY_STRING_DELIM);
+        HashMap<String, String> queryMap = new HashMap();
 
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
@@ -35,14 +37,16 @@ public class HttpRequest {
         }
         return queryMap;
     }
+
     public static void showHttpRequest(InputStream in, Logger logger) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
         //Http Request 는 BlankLine 포함된다.
-        while(true)
-        {
+        while (true) {
             String line = br.readLine();
-            logger.debug("line : {}",line);
-            if(line.isEmpty()) break;
+            logger.debug("line : {}", line);
+            if (line.isEmpty()) {
+                break;
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ public class RequestHandler implements Runnable {
     private static final String INDEX_HTML = "/index.html";
     private static final String REGISTRATION = "/registration";
     private static final String CREATE = "/create";
+
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -27,8 +28,9 @@ public class RequestHandler implements Runnable {
     }
 
     public void run() {// Runnable : run 메서드를 구현
-        logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
-                connection.getPort());
+        logger.debug("New Client Connect! Connected IP : {}, Port : {}",
+            connection.getInetAddress(),
+            connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
@@ -39,7 +41,7 @@ public class RequestHandler implements Runnable {
             Map<String, String> queryString = new HashMap<>();
 
             if (pathAndQuery.length == 2) {
-                queryString = HttpRequest.getQueryString(pathAndQuery[1]) ;
+                queryString = HttpRequest.getQueryString(pathAndQuery[1]);
             }
 
             //여기에 경로를 설정해주는 코드 작성
@@ -49,18 +51,26 @@ public class RequestHandler implements Runnable {
             //controller 역할
             if (path.equals(INDEX_HTML)) {
                 filePath = DEFAULT_PATH + INDEX_HTML;
-                HttpResponse.sendHttpResponse(out,filePath);
+
+                HttpResponse.sendHttpResponse(out, filePath);
             }
-            if (path.equals(REGISTRATION)){
+            if (path.equals(REGISTRATION)) {
                 filePath = DEFAULT_PATH + REGISTRATION + INDEX_HTML;
+
+                HttpResponse.sendHttpResponse(out, filePath);
             }
             if (path.equals(CREATE)) {
-                UserRegistration.registration(queryString);
-                filePath = DEFAULT_PATH + INDEX_HTML;
+                boolean isSuccess = UserRegistration.registration(queryString);
                 //redirect구현
-//                filePath = DEFAULT_PATH + REGISTRATION + INDEX_HTML;
+                if (isSuccess) {
+                    HttpResponse.redirectHttpResponse(out, INDEX_HTML);
+                }
+                if (!isSuccess) { // 가입 실패하면 그 페이지 그대로
+                    HttpResponse.redirectHttpResponse(out, REGISTRATION);
+                }
             }
-            HttpResponse.sendHttpResponse(out,filePath);
+            HttpResponse.sendHttpResponse(out, filePath);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

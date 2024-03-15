@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpResponse {
+
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     public static void sendHttpResponse(OutputStream out, String filePath) {
@@ -19,37 +20,34 @@ public class HttpResponse {
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);
     }
-    private static String getContentType(String filePath) {
-        String contentType = "application/octet-stream"; // 기본값 설정
 
-        if (filePath.endsWith(".html") || filePath.endsWith(".htm")) {
-            contentType = "text/html;charset=utf-8";
-        } else if (filePath.endsWith(".css")) {
-            contentType = "text/css";
-        } else if (filePath.endsWith(".js")) {
-            contentType = "text/javascript";
-        } else if (filePath.endsWith(".png")) {
-            contentType = "image/png";
-        } else if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) {
-            contentType = "image/jpeg";
-        } else if (filePath.endsWith(".gif")) {
-            contentType = "image/gif";
-        } else if (filePath.endsWith(".svg")) {
-            contentType = "image/svg+xml";
-        }
+    public static void redirectHttpResponse(OutputStream out, String filePath) {
+        DataOutputStream dos = new DataOutputStream(out);
 
-        return contentType;
+        response300Redirect(dos, filePath);
     }
 
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent,String contentType) {
+    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent,
+        String contentType) {
         try {
             // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
+            dos.writeBytes("Content-Type: " + contentType + "\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
-            logger.error("response200HeaderError : "+e.getMessage());
+            logger.error("response200HeaderError : " + e.getMessage());
+        }
+    }
+
+    private static void response300Redirect(DataOutputStream dos, String location) {
+        try {
+            // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
+            dos.writeBytes("HTTP/1.1 301 Moved Permanently\r\n");
+            dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error("response300HeaderError : " + e.getMessage());
         }
     }
 
@@ -59,7 +57,7 @@ public class HttpResponse {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
-            logger.error("responseBodyError : "+e.getMessage());
+            logger.error("responseBodyError : " + e.getMessage());
         }
     }
 
@@ -73,5 +71,33 @@ public class HttpResponse {
             throw new RuntimeException(e);
         }
         return byteArray;
+    }
+
+    private static String getContentType(String filePath) {
+        String contentType = "application/octet-stream";
+
+        if (filePath.endsWith(".html")) {
+            contentType = "text/html;charset=utf-8";
+        }
+        if (filePath.endsWith(".css")) {
+            contentType = "text/css";
+        }
+        if (filePath.endsWith(".js")) {
+            contentType = "text/javascript";
+        }
+        if (filePath.endsWith(".png")) {
+            contentType = "image/png";
+        }
+        if (filePath.endsWith(".jpg")) {
+            contentType = "image/jpeg";
+        }
+        if (filePath.endsWith(".ico")) {
+            contentType = "image/x-icon";
+        }
+        if (filePath.endsWith(".svg")) {
+            contentType = "image/svg+xml";
+        }
+
+        return contentType;
     }
 }
