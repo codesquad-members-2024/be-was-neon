@@ -62,7 +62,7 @@ public class HttpRequest {
         this.version = splitStartLine[2];
     }
 
-    public String getCompletePath(){
+    public String getCompletePath(){ // /registraion
         StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
         if(!url.contains(REGISTER_ACTION)){
             completePath.append(url);
