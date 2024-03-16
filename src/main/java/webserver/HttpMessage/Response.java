@@ -29,16 +29,15 @@ public class Response {
         return header;
     }
 
-    public MessageBody getBody() {
-        return body;
+    public byte[] getBody() {
+        if(body == null) return null;
+        return body.getBody();
     }
 
     public String toString() {
         StringJoiner sj = new StringJoiner("\r\n");
         sj.add(startLine.toString())
                 .add(header.toString() + "\r\n");
-        if(body!=null) sj.add(body.toString());
-
         return sj.toString();
     }
 }
