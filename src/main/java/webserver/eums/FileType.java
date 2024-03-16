@@ -1,7 +1,7 @@
 package webserver.eums;
 
 public enum FileType {
-        HTML("text/html;charset=utf-8"),
+        HTML("text/html; charset=utf-8"),
         CSS("text/css"),
         SVG("image/svg+xml"),
         PNG("image/png"),

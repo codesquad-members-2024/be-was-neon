@@ -20,9 +20,7 @@ public class MessageBody {
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(body);
         }
-
         String[] fileName = file.getName().split("\\.");
-//        System.out.println(fileName[fileName.length-1]);
         this.contentType = FileType.valueOf(fileName[fileName.length-1].toUpperCase());
     }
     public byte[] getBody() {

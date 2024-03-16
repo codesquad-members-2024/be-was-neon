@@ -29,13 +29,15 @@ public class SocketMessageHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
 
             Request request = getRequest(in);
-//            log.debug(request.toString());
+            log.debug(request.toString());
+
             MappingMatcher matcher = new MappingMatcher(request);
-
             Response response = matcher.getResponse();
-            dos.writeBytes(response.toString());
 
-            log.debug("Send " + response.getHeader().toString());
+            dos.writeBytes(response.toString());
+            if(response.getBody() != null) dos.write(response.getBody());
+            log.info("Send : " + response.getStartLine().toString() + " for " + request.getStartLine().toString());
+            log.debug("Send \n" + response);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
