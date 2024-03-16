@@ -40,13 +40,8 @@ public class MappingMatcher {
                 return (Response) method.invoke(handler, request);
             }
         }
-
-        Set<String> declaredGetMappings = collectDeclaredGetMappings();
-        if (!declaredGetMappings.contains(uri)) {
-            return handler.responseGet(request);
-        }
-
-        throw new IllegalAccessException("잘못된 http get 요청입니다.");
+        // default : get Resource
+        return handleRequest("/" , handler , matchMapping);
     }
 
     private boolean matchGetMapping(Method method, String uri) {
@@ -63,12 +58,5 @@ public class MappingMatcher {
             return path.equals(uri);
         }
         return false;
-    }
-
-    private Set<String> collectDeclaredGetMappings() {
-        return Arrays.stream(RequestHandler.class.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(GetMapping.class))
-                .map(method -> method.getAnnotation(GetMapping.class).path())
-                .collect(Collectors.toSet());
     }
 }
