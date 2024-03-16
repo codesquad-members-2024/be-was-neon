@@ -11,7 +11,6 @@ import webserver.eums.ResponseStatus;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static webserver.WebServer.staticSourcePath;
@@ -26,9 +25,9 @@ public class RequestHandler {
     @GetMapping(path = "/create")
     public Response createUser(Request request) {
         User user = new User(
-                request.getRequestQuery("name"),
+                request.getRequestQuery("userId"),
                 request.getRequestQuery("password"),
-                request.getRequestQuery("nickname"),
+                request.getRequestQuery("name"),
                 request.getRequestQuery("email")
         );
 
