@@ -1,4 +1,4 @@
-package utils;
+package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +8,14 @@ import java.util.Objects;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+
     public static void respondHtmlFile (DataOutputStream dos, String fileName, String fileType){
         try{
+            //LoggerDataOutputStream loggerDataOutputStream = new LoggerDataOutputStream(dos, logger);
+
             response200Header(dos, Objects.requireNonNull(htmlToByte(fileName)).length, fileType);
             responseBody(dos, htmlToByte(fileName));
+
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

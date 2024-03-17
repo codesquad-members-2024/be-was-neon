@@ -2,12 +2,10 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.HttpResponse;
-import utils.IOUtils;
-import utils.RegistrationResponse;
 
 public class RequestHandler implements Runnable {
     private static final String RELATIVE_PATH = "./src/main/resources/static";
@@ -15,7 +13,7 @@ public class RequestHandler implements Runnable {
     private static final String TEXT_CSS = "text/css";
     private static final String IMAGE_SVG_XML = "image/svg+xml";
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -25,23 +23,30 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = br.readLine();
-            String fileName = IOUtils.getFileName(line);
-            DataOutputStream dos = new DataOutputStream(out);
+            String requestLine = br.readLine();
+            // httpRequest 와 header 들을 읽어와 logger 로 console 에 출력해주었습니다.
+            String requestURL = HttpRequest.getURL(requestLine);
+            //HttpRequest.getRequestHeader(br);
 
-            IOUtils.showEveryHeaders(logger,br,line);
-            // request 의 종류에 따라 다른 response 를 보내줄수있게 해주었습니다.
-            if (fileName.endsWith(".html")) {
-                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, TEXT_HTML);
-            }else if (fileName.endsWith(".css")) {
-                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, TEXT_CSS);
-            }else if (fileName.endsWith(".svg")) {
-                HttpResponse.respondHtmlFile(dos, RELATIVE_PATH + fileName, IMAGE_SVG_XML);
-            }else if (fileName.startsWith("/create")){
-                RegistrationResponse.respondRegistration(dos,fileName);
-            }
+            DataOutputStream dos = new DataOutputStream(out);
+            // httpRequest 의 타입에 따라 다른 response 를 보내줄수있게 해주었습니다.
+            RequestHandler.handleRequest(requestURL,dos);
+
         } catch (IOException e) {
             logger.error(e.getMessage());
+        }
+    }
+    public static void handleRequest(String requestURL, DataOutputStream dos) throws IOException {
+        if (requestURL.endsWith(".html")) {
+            HttpResponse.respondHtmlFile(dos,RELATIVE_PATH + requestURL, TEXT_HTML);
+        } else if (requestURL.endsWith(".css")) {
+            HttpResponse.respondHtmlFile(dos,RELATIVE_PATH + requestURL, TEXT_CSS);
+        } else if (requestURL.endsWith(".svg")) {
+            HttpResponse.respondHtmlFile(dos,RELATIVE_PATH + requestURL, IMAGE_SVG_XML);
+        }
+
+        if (requestURL.startsWith("/create")) {
+            RegistrationResponse.respondRegistration(dos, requestURL);
         }
     }
 }
