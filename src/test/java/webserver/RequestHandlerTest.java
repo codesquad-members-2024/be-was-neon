@@ -14,12 +14,13 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RequestHandlerTest {
+    HttpRequest httpRequest = new HttpRequest();
     @Test
     @DisplayName("Request line 에서 원하는 파일 이름을 추출하였습니다.")
     void getFileNameTest() throws IOException {
-        String httpRequest = "GET /index.html HTTP/1.1\nHost: localhost:8080\n";
+        String requestLine = "GET /index.html HTTP/1.1\nHost: localhost:8080\n";
         String expectedPath = "/index.html";
-        assertThat(HttpRequest.getURL(httpRequest)).isEqualTo(expectedPath);
+        assertThat(httpRequest.getURL(requestLine)).isEqualTo(expectedPath);
     }
     @ParameterizedTest
     @CsvSource({"username, MirID", "nickname, 미르", "password, password"})
@@ -32,8 +33,8 @@ class RequestHandlerTest {
     @ParameterizedTest
     @MethodSource("headerData")
     @DisplayName("Request Header 에서 해당하는 키 값을 추출")
-    void parseHeadersTest(String key, String value, String httpRequest) throws IOException {
-        Map<String, String> httpData = HttpRequest.parseHeader(httpRequest);
+    void parseHeadersTest(String key, String value, String requestHeader) throws IOException {
+        Map<String, String> httpData = httpRequest.parseHeader(requestHeader);
         assertThat(httpData.get(key)).isEqualTo(value);
     }
 
