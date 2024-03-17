@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class MessageBody {
-    private byte[] body;
-    private FileType contentType;
+    private final byte[] body;
+    private final FileType contentType;
 
     public MessageBody(String body , FileType contentType){
         this.body = body.getBytes();
