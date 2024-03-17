@@ -6,10 +6,7 @@ import webserver.HttpMessage.RequestStartLine;
 import webserver.HttpMessage.Response;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 public class MappingMatcher {
     private final Request request;

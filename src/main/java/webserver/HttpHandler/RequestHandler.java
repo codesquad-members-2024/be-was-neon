@@ -20,6 +20,7 @@ public class RequestHandler {
     ResponseStartLine startLine;
     MessageHeader header;
     MessageBody body;
+
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     @GetMapping(path = "/create")
@@ -31,8 +32,12 @@ public class RequestHandler {
                 request.getRequestQuery("email")
         );
 
-        Database.addUser(user);
-        log.info("User Created : " + user.getUserId());
+        try{
+            Database.addUser(user);
+            log.info("User Created : " + user.getUserId());
+        }catch (IllegalArgumentException alreadyExists){
+            log.info("Fail to create new user : " + alreadyExists.getMessage());
+        }
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
         writeResponseHeader(FOUND, FileType.NONE, 0);
