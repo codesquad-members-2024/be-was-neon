@@ -1,4 +1,4 @@
-package utils;
+package webserver;
 
 import db.Database;
 import model.User;
@@ -42,17 +42,18 @@ public class RegistrationResponse {
     private static void response302Header(DataOutputStream dos, String location){
         // 302 response 는 get 으로 유저 데이터를 받아온후에 redirect 하여 클라이언트를 로그인 페이지로 연결시켜줍니다.
         try{
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("HTTP/1.1 301 Found \r\n");
             dos.writeBytes("Location: " + location);
             dos.writeBytes("\r\n");
+            dos.flush();
         }catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
     private static void createUser(Map<String, String> paramMap){
         User user = new User(paramMap.get("username"), paramMap.get("password"), paramMap.get("nickname"));
-        logger.debug("신규 유저가 생성되었습니다. {}", user);
+        logger.debug("New User Made: {}", user);
         Database.addUser(user);
-        logger.debug("모든 유저 {}", Database.findAll());
+        logger.debug("Every User: {}", Database.findAll());
     }
 }
