@@ -1,7 +1,10 @@
 package webserver.HttpMessage;
 
+import db.SessionStore;
+
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringJoiner;
 
 public class MessageHeader {
@@ -22,5 +25,27 @@ public class MessageHeader {
         StringJoiner sj = new StringJoiner("\r\n");
         headerFields.keySet().forEach(key -> sj.add(key + ": " + headerFields.get(key)));
         return sj + "\r\n";
+    }
+
+    public String addCookie(int length){
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        String newCookie;
+
+        while (true) {
+            sb.setLength(0);
+            while (sb.length() < length) {
+                int index = random.nextInt(characters.length());
+                char randomChar = characters.charAt(index);
+                sb.append(randomChar);
+            }
+           newCookie = sb.toString();
+
+            if(SessionStore.getSession(newCookie) == null) break;
+        }
+
+        addHeaderField("Set-Cookie", "sid="+ newCookie + "; Path=/");
+        return newCookie;
     }
 }
