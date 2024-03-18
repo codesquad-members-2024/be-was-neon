@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +39,7 @@ public class HttpRequestConverter {
             int contentLength = 0;
 
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                if (!CONTENT_LENGTH.parse(line).isEmpty()) {
-                    contentLength = Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
-                }
+                contentLength = calculateContentLength(line);
                 requestHeader.append(decode(line)).append(NEWLINE);
             }
 
@@ -55,6 +52,16 @@ public class HttpRequestConverter {
             logger.error("[REQUEST CONVERTER ERROR] {}", e.getMessage());
         }
         return decode(requestHeader.toString());
+    }
+
+    private static int calculateContentLength(String line) {
+        int contentLength = 0;
+
+        if (CONTENT_LENGTH.parse(line).isEmpty()) {
+            return contentLength;
+        }
+
+        return Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
     }
 
     private static String decode(String header) {
@@ -113,10 +120,10 @@ public class HttpRequestConverter {
 
         /* parameter */
         if (method == HttpMethod.GET) {
-            builder.setParameter(parseParameter(getQueryParameter(requestLine)));
+            builder.setParameter(parseParams(getFullUri(requestLine)));
         }
         if (method == HttpMethod.POST) {
-            builder.setParameter(parseParameter(getHttpBody(header)));
+            builder.setParameter(parseParams(getHttpBody(header)));
         }
 
         return builder.build();
@@ -127,40 +134,22 @@ public class HttpRequestConverter {
     }
 
     private static HttpMethod getMethod(String[] requestLine) {
-        if (requestLine.length < 3) {
-            return HttpMethod.GET;
-        }
         return HttpMethod.valueOf(requestLine[METHOD_INDEX]);
     }
 
     private static String getRequestURI(String[] requestLine) {
-        if (requestLine.length < 3) {
-            return "/";
-        }
         return requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[0]; // '/registration?id=test&password=1234'에서 ? 기준 앞 부분
     }
 
     private static String getHttpVersion(String[] requestLine) {
-        if (requestLine.length < 3) {
-            return "/";
-        }
         return requestLine[HTTP_VERSION_INDEX];
-    }
-
-    private static String getQueryParameter(String[] requestLine) {
-        String query = "";
-        if (requestLine.length < 3 || !requestLine[URL_INDEX].contains("?")) {
-            return query;
-        }
-
-        return requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[1];
     }
 
     private static String getHttpBody(String header) {
         return header.substring(header.lastIndexOf(NEWLINE));
     }
 
-    private static Map<String, String> parseParameter(String queryParameter) {
-        return parseParams(queryParameter);
+    private static String getFullUri(String[] requestLine) {
+        return String.join(BLANK, requestLine);
     }
 }
