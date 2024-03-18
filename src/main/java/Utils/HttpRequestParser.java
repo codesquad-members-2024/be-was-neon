@@ -75,7 +75,6 @@ public class HttpRequestParser {
         }
         return completePath.toString();
     }
-    // HttpRequestParser 클래스 내에 추가
     public Optional<User> parseUserFromGetRequest() {
         try {
             String path = extractPath();

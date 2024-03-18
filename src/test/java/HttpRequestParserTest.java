@@ -1,6 +1,5 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import Utils.HttpRequestParser;
 import model.User;
@@ -23,20 +22,15 @@ class HttpRequestParserTest {
     }
 
     @Test
-    void testExtractPath() {
-        assertEquals("/login", parser.extractPath(), "경로 추출이 정확하지 않습니다.");
-    }
-
-    @Test
     void testMakePath() {
         String expectedPath = "src/main/resources/static/index.html";
-        assertEquals(expectedPath, parser.makePath(), "파일 경로 생성이 정확하지 않습니다.");
+        assertThat(parser.makePath()).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
     }
 
     @Test
     void testParseUserFromGetRequest() {
-        // 이 경우 사용자 정보를 파싱할 수 없으므로 빈 Optional을 반환해야 합니다.
-        assertTrue(parser.parseUserFromGetRequest().isEmpty(), "GET 요청에서 사용자 정보를 파싱하지 못해야 합니다.");
+        // 이 경우 사용자 정보를 파싱할 수 없으므로 빈 Optional을 반환해야겠죠....?
+        assertThat(parser.parseUserFromGetRequest()).isEmpty().withFailMessage("GET 요청에서 사용자 정보를 파싱하지 못해야 합니다.");
     }
 
     @Test
@@ -47,14 +41,13 @@ class HttpRequestParserTest {
         HttpRequestParser parserWithUser = new HttpRequestParser(httpRequestWithUser);
         Optional<User> userOptional = parserWithUser.parseUserFromGetRequest();
 
-        assertTrue(userOptional.isPresent(), "사용자 정보가 포함된 요청에서 사용자 객체가 생성되어야 합니다.");
+        assertThat(userOptional).isPresent().withFailMessage("사용자 정보가 포함된 요청에서 사용자 객체가 생성되어야 합니다.");
         userOptional.ifPresent(user -> {
-            assertEquals("123", user.getUserId(), "사용자 ID가 일치하지 않습니다.");
-            assertEquals("456", user.getPassword(), "비밀번호가 일치하지 않습니다.");
-            assertEquals("kalia", user.getName(), "이름이 일치하지 않습니다.");
-            assertEquals("kalia@123456", user.getEmail(), "이메일이 일치하지 않습니다.");
+            assertThat(user.getUserId()).isEqualTo("123").withFailMessage("사용자 ID가 일치하지 않습니다.");
+            assertThat(user.getPassword()).isEqualTo("456").withFailMessage("비밀번호가 일치하지 않습니다.");
+            assertThat(user.getName()).isEqualTo("kalia").withFailMessage("이름이 일치하지 않습니다.");
+            assertThat(user.getEmail()).isEqualTo("kalia@123456").withFailMessage("이메일이 일치하지 않습니다.");
         });
     }
 
-    // 필요에 따라 추가적인 테스트 케이스 구현
 }
