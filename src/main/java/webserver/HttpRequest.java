@@ -8,7 +8,7 @@ public class HttpRequest {
     public static final String METHOD_GET = "GET";
     private static final String DOT = "\\.";
     private static final String SPACE = " ";
-    private static final String EQUAL = "=";
+    private static final String COLON_SPACE = ": ";
 
 
     private String startLine;
@@ -27,7 +27,7 @@ public class HttpRequest {
     }
 
     public void storeHeadersData(String headerLine){ // headers 한줄마다 HashMap에 저장
-        String[] splitHeaderLine = headerLine.split(EQUAL);
+        String[] splitHeaderLine = headerLine.split(COLON_SPACE);
         headersData.put(splitHeaderLine[0], splitHeaderLine[1]);
     }
 
@@ -84,5 +84,9 @@ public class HttpRequest {
 
     public String getVersion(){
         return startLineData.get("version");
+    }
+
+    public int getContentLength(){
+        return Integer.parseInt(headersData.get("Content-Length"));
     }
 }
