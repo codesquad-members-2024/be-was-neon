@@ -19,7 +19,8 @@ public enum HttpHeaderParser {
     CACHE_CONTROL(Pattern.compile("Cache-Control:.*")),
     COOKIE(Pattern.compile("Cookie:.*")),
     PRAGMA(Pattern.compile("Pragma:.*")),
-    QUERY_PARAMETER(Pattern.compile("[?&]([^=]+)=([^&]+)")),
+    CONTENT_LENGTH(Pattern.compile("Content-Length:.*")),
+    QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&\\s]+)")),
     OTHER(Pattern.compile(".*:.*")),
     ;
 
