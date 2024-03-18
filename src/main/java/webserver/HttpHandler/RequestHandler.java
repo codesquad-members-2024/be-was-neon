@@ -20,7 +20,7 @@ import static webserver.eums.ResponseStatus.*;
 
 public class RequestHandler {
     ResponseStartLine startLine;
-    MessageHeader header;
+    MessageHeader header = new MessageHeader(new HashMap<>());
     MessageBody body;
 
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -51,8 +51,6 @@ public class RequestHandler {
     @PostMapping(path = "/login")
     public Response login(Request request) {
         MessageBody reqBody = request.getBody();
-        header = new MessageHeader(new HashMap<>());
-
         User user = Database.findUserById(reqBody.getContentByKey("userId"));
 
         try {
@@ -64,7 +62,7 @@ public class RequestHandler {
                 header.addHeaderField("Location", "/main");
                 header.addHeaderField("Set-Cookie", "sid=123456; Path=/");
             } else {
-                log.info("login failed : password mismatch" );
+                log.info("login failed : password mismatch");
                 header.addHeaderField("Location", "/");
             }
         } catch (NullPointerException notExistUser) {
@@ -78,10 +76,12 @@ public class RequestHandler {
 
     @PostMapping(path = "/logout")
     public Response logout(Request request) {
-        // 쿠키를 세션에서 삭제 , index.html 로 보냄
+        MessageBody body = request.getBody();
+        SessionStore.removeSession(body.getContentByKey("cookie"));
+        log.info("logout" );
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        writeResponseHeader(FOUND, FileType.NONE, 0); // main/index.html 로 보내야함
+        header.addHeaderField("Location", "/");
         return new Response(startLine).header(header);
     }
 
@@ -116,8 +116,6 @@ public class RequestHandler {
     }
 
     private void writeResponseHeader(ResponseStatus status, FileType contentType, long contentLength) {
-        header = new MessageHeader(new HashMap<>());
-
         if (status == FOUND) header.addHeaderField("Location", "/index.html");
 
         else {
