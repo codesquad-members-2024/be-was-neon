@@ -22,18 +22,19 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
+            HttpRequest httpRequest = new HttpRequest();
+
             String requestLine = br.readLine();
-
-            HttpRequest httpRequest = new HttpRequest(requestLine);
-
+            httpRequest.storeStartLineData(requestLine);
             logger.debug("request method : {}", httpRequest.getStartLine());
 
-            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보라면
-                storeUser(httpRequest); // user 생성 후 저장
-            }
+//            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보라면
+//                storeUser(httpRequest); // user 생성 후 저장
+//            }
 
             requestLine = br.readLine();
             while(!requestLine.isEmpty()){ // 나머지 header 출력
+                httpRequest.storeHeadersData(requestLine);
                 logger.debug("request header : {}", requestLine);
                 requestLine = br.readLine();
             }
