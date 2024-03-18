@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import webserver.HttpHandler.RequestHandler;
+import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
+import webserver.eums.FileType;
 
 import java.util.Map;
 
@@ -48,8 +50,9 @@ public class RequestHandlerTest {
     @Test
     @DisplayName("createUser 요청이 들어오면 유저가 DB에 추가되고 , 302 응답을 보낸다")
     void createUserTest() {
-        String startLine = "GET /create?userId=test&password=test&name=test&email=test%40naver.com HTTP/1.1";
-        Request request = new Request(startLine);
+        String startLine = "POST /create HTTP/1.1";
+        Request request = new Request(startLine)
+                .body(new MessageBody("userId=test&password=test&name=test&email=test%40naver", FileType.URLENCODED));
         Response response = requestHandler.createUser(request);
 
         assertSoftly(softly -> {
