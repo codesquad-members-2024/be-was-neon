@@ -35,10 +35,10 @@ public class RequestHandler {
                 reqBody.getContentByKey("email")
         );
 
-        try{
+        try {
             Database.addUser(user);
             log.info("User Created : " + user.getUserId());
-        }catch (IllegalArgumentException alreadyExists){
+        } catch (IllegalArgumentException alreadyExists) {
             log.info("Fail to create new user : " + alreadyExists.getMessage());
         }
 
@@ -49,26 +49,35 @@ public class RequestHandler {
     }
 
     @PostMapping(path = "/login")
-    public Response login(Request request){
+    public Response login(Request request) {
         MessageBody reqBody = request.getBody();
+        header = new MessageHeader(new HashMap<>());
+
         User user = Database.findUserById(reqBody.getContentByKey("userId"));
 
-        if(user.getPassword().equals(reqBody.getContentByKey("password"))){
-            String cookie = user.getUserId();
-            SessionStore.addSession(cookie , user , 60000);
-            log.info("login : " + user.getName());
+        try {
+            if (user.getPassword().equals(reqBody.getContentByKey("password"))) {
+                String cookie = user.getUserId();
+                SessionStore.addSession(cookie, user, 60000);
+                log.info("login : " + user.getName());
+
+                header.addHeaderField("Location", "/main");
+                header.addHeaderField("Set-Cookie", "sid=123456; Path=/");
+            } else {
+                log.info("login failed : password mismatch" );
+                header.addHeaderField("Location", "/");
+            }
+        } catch (NullPointerException notExistUser) {
+            log.info("login failed : notExistUser");
+            header.addHeaderField("Location", "/");
         }
 
-        // 실패시 fail.html ...
-
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        writeResponseHeader(FOUND, FileType.NONE, 0);
-        // setCookie
         return new Response(startLine).header(header);
     }
 
     @PostMapping(path = "/logout")
-    public Response logout(Request request){
+    public Response logout(Request request) {
         // 쿠키를 세션에서 삭제 , index.html 로 보냄
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
@@ -79,14 +88,14 @@ public class RequestHandler {
     @GetMapping(path = "/")
     public Response responseGet(Request request) {
         String path = request.getStartLine().getUri();
-        log.debug("path : " +path);
+        log.debug("path : " + path);
 
         File file = new File(getFilePath(path));
         log.debug("filepath : " + getFilePath(path));
         try {
             body = new MessageBody(file);
             startLine = new ResponseStartLine("HTTP/1.1", OK);
-            writeResponseHeader(OK , body.getContentType() , body.getContentLength());
+            writeResponseHeader(OK, body.getContentType(), body.getContentLength());
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
             body = new MessageBody(NotFound.getMessage(), FileType.TXT);
@@ -99,9 +108,9 @@ public class RequestHandler {
 
     private String getFilePath(String path) {
         String[] splitPath = path.split("/");
-        if (splitPath.length == 0 || !splitPath[splitPath.length-1].contains(".")) {
+        if (splitPath.length == 0 || !splitPath[splitPath.length - 1].contains(".")) {
             // 파일이 아니라 경로라면 그 경로의 index.html 을 요청한 것으로 간주
-             return staticSourcePath + path + "/index.html";
+            return staticSourcePath + path + "/index.html";
         }
         return staticSourcePath + path;
     }
