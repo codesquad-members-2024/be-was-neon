@@ -8,7 +8,8 @@ public enum FileType {
         ICO("image/x-icon"),
         TXT("text/plain"),
         NONE("none"),
-        JS("Application/javascript");
+        JS("Application/javascript"),
+        URLENCODED("application/x-www-form-urlencoded");
 
 
         private final String mimeType;

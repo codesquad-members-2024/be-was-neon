@@ -11,6 +11,7 @@ import webserver.eums.FileType;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,10 @@ public class SocketMessageHandler implements Runnable {
         if (headerFields.containsKey("Content-Length")) {
             body = new char[Integer.parseInt(headerFields.get("Content-Length"))];
             br.read(body);
-            request.body(new MessageBody(new String(body), FileType.valueOf(headerFields.get("Content-Type"))));
+
+            FileType fileType = Arrays.stream(FileType.values())
+                    .filter(t -> t.getMimeType().equals(headerFields.get("Content-Type"))).findFirst().get();
+            request.body(new MessageBody(new String(body), fileType));
         }
 
         return request;

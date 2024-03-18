@@ -50,8 +50,8 @@ public class MappingMatcher {
     }
 
     private boolean matchPostMapping(Method method, String uri) {
-        if (method.isAnnotationPresent(GetMapping.class)) {
-            String path = method.getAnnotation(GetMapping.class).path();
+        if (method.isAnnotationPresent(PostMapping.class)) {
+            String path = method.getAnnotation(PostMapping.class).path();
             return path.equals(uri);
         }
         return false;

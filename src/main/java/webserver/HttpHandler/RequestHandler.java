@@ -1,11 +1,13 @@
 package webserver.HttpHandler;
 
 import db.Database;
+import db.SessionStore;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.HttpMessage.*;
 import webserver.Mapping.GetMapping;
+import webserver.Mapping.PostMapping;
 import webserver.eums.FileType;
 import webserver.eums.ResponseStatus;
 
@@ -23,13 +25,36 @@ public class RequestHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
-    @GetMapping(path = "/create")
+//    @GetMapping(path = "/create")
+//    public Response createUser(Request request) {
+//        User user = new User(
+//                request.getRequestQuery("userId"),
+//                request.getRequestQuery("password"),
+//                request.getRequestQuery("name"),
+//                request.getRequestQuery("email")
+//        );
+//
+//        try{
+//            Database.addUser(user);
+//            log.info("User Created : " + user.getUserId());
+//        }catch (IllegalArgumentException alreadyExists){
+//            log.info("Fail to create new user : " + alreadyExists.getMessage());
+//        }
+//
+//        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
+//        writeResponseHeader(FOUND, FileType.NONE, 0);
+//
+//        return new Response(startLine).header(header);
+//    }
+
+    @PostMapping(path = "/create")
     public Response createUser(Request request) {
+        MessageBody reqBody = request.getBody();
         User user = new User(
-                request.getRequestQuery("userId"),
-                request.getRequestQuery("password"),
-                request.getRequestQuery("name"),
-                request.getRequestQuery("email")
+                reqBody.getContentByKey("userId"),
+                reqBody.getContentByKey("password"),
+                reqBody.getContentByKey("name"),
+                reqBody.getContentByKey("email")
         );
 
         try{
@@ -42,6 +67,29 @@ public class RequestHandler {
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
         writeResponseHeader(FOUND, FileType.NONE, 0);
 
+        return new Response(startLine).header(header);
+    }
+
+    @PostMapping(path = "/login")
+    public Response login(Request request){
+        // body 정보를 읽어 id password
+        // 존재하는 유저이며 , password 가 일치하는지 확인
+        // 성공했다면
+        User user = Database.findUserById("test");
+        String cookie = request.getHeaderValue("cookie");
+        SessionStore.addSession(cookie , user);
+
+        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
+        writeResponseHeader(FOUND, FileType.NONE, 0); // main/index.html 로 보내야함
+        return new Response(startLine).header(header);
+    }
+
+    @PostMapping(path = "/logout")
+    public Response logout(Request request){
+        // 쿠키를 세션에서 삭제 , index.html 로 보냄
+
+        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
+        writeResponseHeader(FOUND, FileType.NONE, 0); // main/index.html 로 보내야함
         return new Response(startLine).header(header);
     }
 
