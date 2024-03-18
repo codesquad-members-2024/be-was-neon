@@ -20,7 +20,7 @@ class UserRegistrationTest {
         testMap.put("password", "1234");
         testMap.put("email", "tmdgus717@naver.com");
 
-        UserRegistration.registration(testMap);
+        UserRegistration.register(testMap);
         User user = Database.findUserById("1");
         System.out.println(user);
         assertThat(user.getUserId()).isEqualTo("1");

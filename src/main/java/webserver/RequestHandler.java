@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import java.util.HashMap;
 import java.util.Map;
 import model.UserRegistration;
 import org.slf4j.Logger;
@@ -34,15 +33,11 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            //startLine에서 request타겟을 다 분리해서 path와 query스트링으로 나눠서 가져오는게 좋겠는데?
-            String[] pathAndQuery = HttpRequest.getRequestTarget(in, logger);
-
-            String path = pathAndQuery[0];
-            Map<String, String> queryString = new HashMap<>();
-
-            if (pathAndQuery.length == 2) {
-                queryString = HttpRequest.getQueryString(pathAndQuery[1]);
-            }
+            //requestTarget 추출
+            Map<String, String> queryString;
+            String requestTarget = HttpRequest.getRequestTarget(in);
+            String path = HttpRequest.getPath(requestTarget);
+            queryString = HttpRequest.getQueryString(requestTarget);
 
             //여기에 경로를 설정해주는 코드 작성
             // registration이 들어오면?
@@ -60,7 +55,7 @@ public class RequestHandler implements Runnable {
                 HttpResponse.sendHttpResponse(out, filePath);
             }
             if (path.equals(CREATE)) {
-                boolean isSuccess = UserRegistration.registration(queryString);
+                boolean isSuccess = UserRegistration.register(queryString);
                 //redirect구현
                 if (isSuccess) {
                     HttpResponse.redirectHttpResponse(out, INDEX_HTML);

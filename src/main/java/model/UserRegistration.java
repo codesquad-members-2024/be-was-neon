@@ -6,26 +6,18 @@ import java.util.Map;
 
 public class UserRegistration {
 
-    enum UserInfo {
-        ID("id"), NICKNAME("nickname"), PASSWORD("password"), EMAIL("email");
+    //문자열 상수로 변경
+    private static final String USER_ID ="id";
+    private static final String NICKNAME = "nickname";
+    private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
 
-        private String info;
-
-        UserInfo(String info) {
-            this.info = info;
-        }
-
-        public String getInfo() {
-            return info;
-        }
-    }
-
-    public static boolean registration(Map<String, String> queryString)
+    public static boolean register(Map<String, String> queryString)
         throws UnsupportedEncodingException {
-        String userId = queryString.get(UserInfo.ID.getInfo());
-        String name = queryString.get(UserInfo.NICKNAME.getInfo());
-        String password = queryString.get(UserInfo.PASSWORD.getInfo());
-        String email = queryString.get(UserInfo.EMAIL.getInfo());
+        String userId = queryString.get(USER_ID);
+        String name = queryString.get(NICKNAME);
+        String password = queryString.get(PASSWORD);
+        String email = queryString.get(EMAIL);
 
         //유저 객체 생성
         User user = new User(userId, password, name, email);
