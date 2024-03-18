@@ -7,21 +7,8 @@ import java.util.regex.Pattern;
 
 public enum HttpHeaderParser {
     REQUEST_LINE(Pattern.compile("(^GET|^POST) (/.*) (HTTP/.{1,3})")),
-    HOST(Pattern.compile("Host:.*")),
-    USER_AGENT(Pattern.compile("User-Agent:.*")),
-    ACCEPT(Pattern.compile("Accept:.*")),
-    ACCEPT_LANGUAGE(Pattern.compile("Accept-Language:.*")),
-    ACCEPT_ENCODING(Pattern.compile("Accept-Encoding:.*")),
-    REFERER(Pattern.compile("Referer:.*")),
-    CONNECTION(Pattern.compile("Connection:.*")),
-    IF_MODIFIED_SINCE(Pattern.compile("If-Modified-Since:.*")),
-    IF_NONE_MATCH(Pattern.compile("If-None-Match:.*")),
-    CACHE_CONTROL(Pattern.compile("Cache-Control:.*")),
-    COOKIE(Pattern.compile("Cookie:.*")),
-    PRAGMA(Pattern.compile("Pragma:.*")),
-    CONTENT_LENGTH(Pattern.compile("Content-Length:.*")),
+    HEADERS(Pattern.compile("([^:\\s]+):\\s?(.+)\\s")),
     QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&\\s]+)")),
-    OTHER(Pattern.compile(".*:.*")),
     ;
 
     private final Pattern compiledPattern;
@@ -30,12 +17,22 @@ public enum HttpHeaderParser {
         this.compiledPattern = compiledPattern;
     }
 
-    public String parse(String header) {
-        Matcher headerMatcher = compiledPattern.matcher(header);
-        if (headerMatcher.find()) {
-            return headerMatcher.group();
+    public static String parseRequestLine(String header) {
+        Matcher requestLineMatcher = REQUEST_LINE.compiledPattern.matcher(header);
+        if (requestLineMatcher.find()) {
+            return requestLineMatcher.group();
         }
         return "";
+    }
+
+    public static Map<String, String> parseHeader(String header) {
+        Map<String, String> headers = new HashMap<>();
+
+        Matcher headerMatcher = HEADERS.compiledPattern.matcher(header);
+        while (headerMatcher.find()) {
+            headers.put(headerMatcher.group(1), headerMatcher.group(2));
+        }
+        return headers;
     }
 
     public static Map<String, String> parseParams(String header) {
