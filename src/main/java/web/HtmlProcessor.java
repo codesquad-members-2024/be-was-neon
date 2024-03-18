@@ -30,18 +30,18 @@ public class HtmlProcessor extends HttpProcessor {
     }
 
     public void responseHeader200(HttpResponse response, String contentType) {
-        response.setHttpVersion("HTTP/1.1")
+        response.setHttpVersion(BASIC_HTTP_VERSION)
                 .setStatusCode(HttpStatus.STATUS_OK)
                 .setContentType(contentType)
-                .setCharset("utf-8");
+                .setCharset(BASIC_CHAR_SET);
     }
 
     public void responseHeader302(HttpResponse response, String contentType, String location) {
-        response.setHttpVersion("HTTP/1.1")
+        response.setHttpVersion(BASIC_HTTP_VERSION)
                 .setStatusCode(HttpStatus.STATUS_FOUND)
                 .setLocation(location)
                 .setContentType(contentType)
-                .setCharset("utf-8");
+                .setCharset(BASIC_CHAR_SET);
     }
 
     public void responseMessage(HttpResponse response, byte[] resource) {
