@@ -17,8 +17,10 @@
   - 리다이렉션
     - 리다이렉션하면 브라우저 URI에 쿼리파라미터가 남지 않게할 수 있다. 
     - `301 Moved Permanently`는 요청 메서드가 GET이 되고, 요청 메시지 바디가 제거될 수 있음
+    - `302 Found`는 `GET` 메서드로 바뀌고, 본문을 제거한다.
+    - `303 See Other`은 `302`와 동작은 같지만, 메서드 변경과 본문제거가 보장된다.
     - `308 Permanent Redirect`는 요청 메서드와 바디가 유지
-    - `307 Temporary Redirect`는 
+    - `307 Temporary Redirect`는 `308`과 달리 리다이렉트 요청이 캐싱되지 않는다.
 
 ## 구현 내용
 - Thread 대신 ExecutorService 를 사용하도록 리팩토링
