@@ -51,7 +51,7 @@ public class RequestHandler implements Runnable {
         HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
         HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
 
-        File file = new File(httpRequest.getCompletePath());
+        File file = new File(GetPath.getCompletePath(httpRequest.getUrl()));
         if(checkValidFile(file)){ // 파일이 존재하면 해당 파일을 읽어 응답.
             FileInputStream fis = new FileInputStream(file);
             byte[] fileContent = fis.readAllBytes();
