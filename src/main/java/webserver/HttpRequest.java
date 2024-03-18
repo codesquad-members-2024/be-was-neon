@@ -1,16 +1,10 @@
 package webserver;
 
-import db.Database;
-import model.User;
-
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
 public class HttpRequest {
-//    private static final String BASIC_FILE_PATH = "src/main/resources/static";
-//    private static final String INDEX_FILE_NAME = "/index.html";
-//    public static final String REGISTER_ACTION = "/user/create";
     public static final String METHOD_GET = "GET";
     private static final String DOT = "\\.";
     private static final String SPACE = " ";
@@ -64,6 +58,10 @@ public class HttpRequest {
 //        return (method.equals(METHOD_GET) && url.startsWith(REGISTER_ACTION));
 //    }
 
+//    public String getFileType(){
+//        String[] splitPath = getCompletePath().split(DOT);
+//        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
+//    }
 
     private void parseStartLine(String startLine){
         String[] splitStartLine = startLine.split(SPACE);
@@ -71,23 +69,6 @@ public class HttpRequest {
         startLineData.put("url", splitStartLine[1]);
         startLineData.put("version", splitStartLine[2]);
     }
-
-//    public String getCompletePath(){ // /registraion
-//        StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
-//        if(!url.contains(REGISTER_ACTION)){
-//            completePath.append(url);
-//        }
-//        File file = new File(completePath.toString());
-//        if(file.isDirectory()){ // file이 아니라 폴더이면 "/index.html" 추가
-//            completePath.append(INDEX_FILE_NAME);
-//        }
-//        return completePath.toString();
-//    }
-
-//    public String getFileType(){
-//        String[] splitPath = getCompletePath().split(DOT);
-//        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
-//    }
 
     public String getStartLine(){
         return startLine;
@@ -104,20 +85,4 @@ public class HttpRequest {
     public String getVersion(){
         return startLineData.get("version");
     }
-
-//    public String getUserId(){
-//        return registerUserData.get("userId");
-//    }
-//
-//    public String getPassword(){
-//        return registerUserData.get("password");
-//    }
-//
-//    public String getName(){
-//        return registerUserData.get("name");
-//    }
-//
-//    public String getEmail(){
-//        return registerUserData.get("email");
-//    }
 }
