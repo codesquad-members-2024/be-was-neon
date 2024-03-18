@@ -50,15 +50,20 @@ public class RequestHandler {
 
     @PostMapping(path = "/login")
     public Response login(Request request){
-        // body 정보를 읽어 id password
-        // 존재하는 유저이며 , password 가 일치하는지 확인
-        // 성공했다면
-        User user = Database.findUserById("test");
-        String cookie = request.getHeaderValue("cookie");
-        SessionStore.addSession(cookie , user , 60000);
+        MessageBody reqBody = request.getBody();
+        User user = Database.findUserById(reqBody.getContentByKey("userId"));
+
+        if(user.getPassword().equals(reqBody.getContentByKey("password"))){
+            String cookie = user.getUserId();
+            SessionStore.addSession(cookie , user , 60000);
+            log.info("login : " + user.getName());
+        }
+
+        // 실패시 fail.html ...
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        writeResponseHeader(FOUND, FileType.NONE, 0); // main/index.html 로 보내야함
+        writeResponseHeader(FOUND, FileType.NONE, 0);
+        // setCookie
         return new Response(startLine).header(header);
     }
 
