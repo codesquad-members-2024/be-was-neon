@@ -31,9 +31,31 @@
   - 유저 정보가 들어있는 `Map` 객체를 받아 `User` 객체를 반환하는 정적 팩토리 메서드 구현  
   - 회원 가입 시 로그인 페이지로 리다이렉션
 - 테스트 코드 작성
+- POST 회원가입 구현
+- 회원가입 성공 시 홈 화면으로 리다이렉션  
 
 ## 요청 타겟 별 기능
 - `/` : `index.html` 을 반환
 - `/login` : `login/index.html` 반환
 - `/registration` : `registration/index.html`
 - `/create` : 쿼리 파라미터의 값으로 User 객체를 만들어 저장 후 로그인 페이지로 리다이렉트
+
+
+## 고민사항
+- HTTP 요청의 body가 비어있을 경우 처리
+HTTP 요청의 바디가 없을 경우 빈 `Map`을 리턴하는 로직을 작성하던 중 `contentLength == null`과 `return Map.of()` 부분이 어색하게 느껴집니다.  
+```java
+private static Map<String, String> readBody(BufferedReader br, String contentLength) throws IOException {
+        if (contentLength == null) {
+            return Map.of();
+        }
+
+        String body = readBodyContent(br, contentLength);
+        return Parser.parseKeyValuePairs(body);
+    }
+```
+
+- 리소스 파일 경로
+현재는 리소스 파일에 접근할 때 경로를 다음과 같이 상수로 정의하고 있습니다.  
+`private static final String STATIC_PATH = "src/main/resources/static"`
+경로를 상수로 정의해두면 실행 환경에 따라 문제가 생길 수 있다고 하는데, 실제로도 상수로 경로를 정의해두는 방법은 잘 사용하지 않는지 궁금합니다.

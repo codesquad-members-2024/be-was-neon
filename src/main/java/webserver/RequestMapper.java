@@ -60,6 +60,6 @@ public class RequestMapper {
         User user = User.from(userForm);
         Database.addUser(user);
         logger.debug("User created : {}", Database.findUserById(user.getUserId()));
-        return HttpResponse.redirect(LOGIN);
+        return HttpResponse.redirect(INDEX_HTML);
     }
 }
