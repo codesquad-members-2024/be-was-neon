@@ -53,4 +53,24 @@ class HttpRequestConverterTest {
         assertThat(httpRequest.getIfModifiedSince()).isEqualTo("If-Modified-Since: none;");
         assertThat(httpRequest.getIfNoneMatch()).isEqualTo("If-None-Match: none;");
     }
+
+    @DisplayName("post 요청일 때 http body인 'id=yelly&password=myPassword&username=testName&email=test@test.com'를 쿼리 파라미터로 가져올 수 있다")
+    @Test
+    void post_convert() {
+        // given
+        String header = """
+                POST /registration HTTP/1.1
+                Host: localhost:8080
+                Content-Length: 66
+                id=yelly&password=myPassword&username=testName&email=test@test.com""";
+
+        // when
+        HttpRequest httpRequest = HttpRequestConverter.convert(header);
+
+        // then
+        assertThat(httpRequest.getParameter("id")).isEqualTo("yelly");
+        assertThat(httpRequest.getParameter("password")).isEqualTo("myPassword");
+        assertThat(httpRequest.getParameter("username")).isEqualTo("testName");
+        assertThat(httpRequest.getParameter("email")).isEqualTo("test@test.com");
+    }
 }

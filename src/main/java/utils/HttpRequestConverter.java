@@ -32,18 +32,37 @@ public class HttpRequestConverter {
     }
 
     public static String makeOneLine(Socket connection) {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder requestHeader = new StringBuilder();
         try {
             InputStream in = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line;
+            int contentLength = 0;
+
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                builder.append(line).append(NEWLINE); // request string를 한 줄씩 추가하고 마지막에 개행 문자 추가
+                if (!CONTENT_LENGTH.parse(line).isEmpty()) {
+                    contentLength = Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
+                }
+                requestHeader.append(decode(line)).append(NEWLINE);
+            }
+
+            if (contentLength > 0) {
+                char[] body = new char[contentLength];
+                reader.read(body, 0, contentLength);
+                requestHeader.append(body);
             }
         } catch (IOException e) {
             logger.error("[REQUEST CONVERTER ERROR] {}", e.getMessage());
         }
-        return builder.toString();
+        return decode(requestHeader.toString());
+    }
+
+    private static String decode(String header) {
+        try {
+            return URLDecoder.decode(header, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static HttpRequest convert(String header) {
@@ -93,7 +112,12 @@ public class HttpRequestConverter {
         builder.setPragma(PRAGMA.parse(header));
 
         /* parameter */
-        builder.setParameter(parseParameter(getQueryParameter(requestLine)));
+        if (method == HttpMethod.GET) {
+            builder.setParameter(parseParameter(getQueryParameter(requestLine)));
+        }
+        if (method == HttpMethod.POST) {
+            builder.setParameter(parseParameter(getHttpBody(header)));
+        }
 
         return builder.build();
     }
@@ -129,13 +153,11 @@ public class HttpRequestConverter {
             return query;
         }
 
-        try {
-            String queryParameter = "?" + requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[1];
-            query = URLDecoder.decode(queryParameter, "UTF-8"); // '/registration?id=test&password=1234'에서 ? 기준 뒷 부분
-        } catch (UnsupportedEncodingException e) {
-            logger.error("[REQUEST CONVERTER] {}", e.getMessage());
-        }
-        return query;
+        return requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[1];
+    }
+
+    private static String getHttpBody(String header) {
+        return header.substring(header.lastIndexOf(NEWLINE));
     }
 
     private static Map<String, String> parseParameter(String queryParameter) {
