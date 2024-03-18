@@ -2,22 +2,23 @@ package http;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class FileReaderTest {
-    @DisplayName("파일이나 오류메시지를 읽어 바이트 배열을 생성할 수 있다.")
+    @DisplayName("파일을 읽어 바이트 배열을 생성할 수 있다.")
     @Test
     void readAllBytes() throws IOException {
-        String errorHtml = "<h1>Not Found</h1>";
-        byte[] nonExistingFileBytes = FileReader.readAllBytes(errorHtml);
-        assertThat(nonExistingFileBytes).isNotNull();
-        assertThat(new String(nonExistingFileBytes)).isEqualTo(errorHtml);
-
-        String filePath = "<h1>Not Found</h1>";
-        byte[] existingFileBytes = FileReader.readAllBytes(filePath);
-        assertThat(existingFileBytes).isNotNull();
-        assertThat(new String(existingFileBytes)).isEqualTo(filePath);
+        String filePath = "src/main/resources/static/index.html";
+        File file = new File(filePath);
+        FileReader fileReader = new FileReader(file);
+        byte[] fileBytes = fileReader.readAllBytes();
+        byte[] expectedBytes = Files.readAllBytes(Paths.get(filePath));
+        assertThat(fileBytes).isNotNull();
+        assertThat(fileBytes).isEqualTo(expectedBytes);
     }
 }

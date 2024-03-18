@@ -11,20 +11,19 @@ public class DirectoryMatcher {
     private static final String LOGIN_PATH = "/login";
     private static final String LOGIN_HTML = "/login.html";
 
-    public static String mathDirectory(String url) {
-        String filePath = BASE_PATH;
-        if (url.equals(ARTICLE_HTML)) {
-            return filePath + ARTICLE_PATH + url;
+    public static String mathDirectory(String filePath) {
+        if (filePath.equals(ARTICLE_PATH) || filePath.equals(ARTICLE_HTML)) {
+            return BASE_PATH + ARTICLE_PATH + filePath;
         }
-        if (url.equals(COMMENT_HTML)) {
-            return filePath + COMMENT_PATH + url;
+        if (filePath.equals(COMMENT_PATH) || filePath.equals(COMMENT_HTML)) {
+            return BASE_PATH + COMMENT_PATH + filePath;
         }
-        if (url.equals(REGISTRATION_HTML)) {
-            return filePath + REGISTRATION_PATH + url;
+        if (filePath.equals(REGISTRATION_PATH) || filePath.equals(REGISTRATION_HTML)) {
+            return BASE_PATH + REGISTRATION_PATH + filePath;
         }
-        if (url.equals(LOGIN_HTML)) {
-            return filePath + LOGIN_PATH + url;
+        if (filePath.equals(LOGIN_PATH) || filePath.equals(LOGIN_HTML)) {
+            return BASE_PATH + LOGIN_PATH + filePath;
         }
-        return filePath + url; // 폴더 안에 생성된 파일이 아닌 경우
+        return BASE_PATH + filePath; // 폴더 안에 생성된 파일이 아닌 경우
     }
 }

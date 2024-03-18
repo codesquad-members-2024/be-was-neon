@@ -1,10 +1,10 @@
-package http;
+package http.response;
 
 public enum ContentType {
-    text("text/plain"),
-    html("text/html"),
-    css("text/css"),
-    js("application/javascript"),
+    txt("text/plain;charset=utf-8"),
+    html("text/html;charset=utf-8"),
+    css("text/css;charset=utf-8"),
+    js("application/javascript;charset=utf-8"),
     ico("image/x-icon"),
     png("image/png"),
     jpg("image/jpeg"),
