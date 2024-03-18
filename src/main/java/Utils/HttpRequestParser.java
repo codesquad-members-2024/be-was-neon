@@ -116,7 +116,6 @@ public class HttpRequestParser {
     }
 
 
-
     // 필요에 따라 추가적인 메소드 구현 가능
     // 예: getHeaders(), getBody(), getRequestMethod() 등
 }
