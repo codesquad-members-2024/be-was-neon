@@ -25,28 +25,6 @@ public class RequestHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
-//    @GetMapping(path = "/create")
-//    public Response createUser(Request request) {
-//        User user = new User(
-//                request.getRequestQuery("userId"),
-//                request.getRequestQuery("password"),
-//                request.getRequestQuery("name"),
-//                request.getRequestQuery("email")
-//        );
-//
-//        try{
-//            Database.addUser(user);
-//            log.info("User Created : " + user.getUserId());
-//        }catch (IllegalArgumentException alreadyExists){
-//            log.info("Fail to create new user : " + alreadyExists.getMessage());
-//        }
-//
-//        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-//        writeResponseHeader(FOUND, FileType.NONE, 0);
-//
-//        return new Response(startLine).header(header);
-//    }
-
     @PostMapping(path = "/create")
     public Response createUser(Request request) {
         MessageBody reqBody = request.getBody();
@@ -77,7 +55,7 @@ public class RequestHandler {
         // 성공했다면
         User user = Database.findUserById("test");
         String cookie = request.getHeaderValue("cookie");
-        SessionStore.addSession(cookie , user);
+        SessionStore.addSession(cookie , user , 60000);
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
         writeResponseHeader(FOUND, FileType.NONE, 0); // main/index.html 로 보내야함
