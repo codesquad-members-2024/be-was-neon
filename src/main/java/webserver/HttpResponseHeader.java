@@ -25,17 +25,17 @@ public class HttpResponseHeader {
         }
     }
 
-    public void setContentType(String contentType) {
+    public void setLocation(String location) {
         try {
-            dos.writeBytes("Content-Type:" + SPACE + contentType + ESCAPE_SEQUENCE);
+            dos.writeBytes("Location:" + SPACE + location + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    public void setLocation(String location) {
+    public void setContentType(String contentType) {
         try {
-            dos.writeBytes("Location:" + SPACE + location + ESCAPE_SEQUENCE);
+            dos.writeBytes("Content-Type:" + SPACE + contentType + ESCAPE_SEQUENCE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

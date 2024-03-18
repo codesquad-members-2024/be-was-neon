@@ -24,26 +24,23 @@ public class RequestHandler implements Runnable {
 
             HttpRequest httpRequest = new HttpRequest();
 
-            String requestLine = br.readLine();
-            httpRequest.storeStartLineData(requestLine);
-            logger.debug("request method : {}", httpRequest.getStartLine());
+            String line = br.readLine();
+            httpRequest.storeStartLineData(line); // start line 저장
+            logger.debug("request line : {}", httpRequest.getStartLine());
 
-//            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보라면
-//                storeUser(httpRequest); // user 생성 후 저장
-//            }
-
-            requestLine = br.readLine();
-            while(!requestLine.isEmpty()){ // 나머지 header 출력
-                httpRequest.storeHeadersData(requestLine);
-                logger.debug("request header : {}", requestLine);
-                requestLine = br.readLine();
+            line = br.readLine();
+            while(!line.isEmpty()){ // 나머지 header 출력
+                httpRequest.storeHeadersData(line); // header 저장
+                logger.debug("request header : {}", line);
+                line = br.readLine();
             }
 
-            if(httpRequest.getMethod().equals("POST")){
-                char[] buffer = new char[httpRequest.getContentLength()]; // 읽을 바이트 수
-                br.read(buffer, 0, buffer.length); // 특정 바이트 수만큼 읽기
-                String result = new String(buffer);
-                System.out.println("읽은 문자열: " + result);
+            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // Post, /user/create 라면
+                char[] buffer = new char[httpRequest.getContentLength()];
+                br.read(buffer, 0, buffer.length); // context length 만큼 읽기
+
+                httpRequest.storeBodyData(new String(buffer)); // body 저장
+                httpRequest.storeDatabase(); // user db에 저장
             }
 
             DataOutputStream dos = new DataOutputStream(out);
@@ -57,38 +54,39 @@ public class RequestHandler implements Runnable {
     private void sendResponse(DataOutputStream dos, HttpRequest httpRequest) throws IOException {
         HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
         HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
+        String completePath = GetPath.getCompletePath(httpRequest.getUrl());
+        String contentType = ContentType.getContentType(getFileType(completePath));
 
-        File file = new File(GetPath.getCompletePath(httpRequest.getUrl()));
-        if(checkValidFile(file)){ // 파일이 존재하면 해당 파일을 읽어 응답.
+        File file = new File(completePath);
+        if(checkValidFile(file)){ // 파일이 존재하는지 확인
             FileInputStream fis = new FileInputStream(file);
             byte[] fileContent = fis.readAllBytes();
             fis.close();
 
-//            if(httpRequest.checkRegisterDataEnter()){
-//                httpResponseHeader.setStartLine("302", "FOUND");
-//                httpResponseHeader.setLocation("/index.html"); // redirect 경로 지정
-//            }else{
-//                httpResponseHeader.setStartLine("200", "OK");
-//            }
-            httpResponseHeader.setStartLine("200", "OK"); //삭제
-            httpResponseHeader.setContentType(ContentType.getContentType(getFileType(GetPath.getCompletePath(httpRequest.getUrl()))));
-            httpResponseHeader.setContentLength(fileContent.length);
-            httpResponseBody.setBody(fileContent);
+            if(httpRequest.isPost() && httpRequest.isUserCreate()){
+                writeResponseHeader(httpResponseHeader, "302", "FOUND", "/index.html", contentType, fileContent.length);
+                httpResponseBody.setBody(fileContent);
+            }else{
+                writeResponseHeader(httpResponseHeader, "200", "OK", null, contentType, fileContent.length);
+                httpResponseBody.setBody(fileContent);
+            }
+
         }else{
             byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
-
-            httpResponseHeader.setStartLine("404", "Not Found");
-            httpResponseHeader.setContentType(ContentType.getContentType(getFileType(GetPath.getCompletePath(httpRequest.getUrl()))));
-            httpResponseHeader.setContentLength(fileContent.length);
+            writeResponseHeader(httpResponseHeader, "404", "Not Found", null, contentType, fileContent.length);
             httpResponseBody.setBody(fileContent);
         }
         dos.flush();
     }
 
-//    private void storeUser(HttpRequest httpRequest){
-//        httpRequest.parseRegisterData();
-//        httpRequest.storeDatabase();
-//    }
+    private void writeResponseHeader(HttpResponseHeader httpResponseHeader, String statusCode, String statusMessage, String location, String contentType, int contentLength){
+        httpResponseHeader.setStartLine(statusCode, statusMessage);
+        if(location != null){
+            httpResponseHeader.setLocation(location);
+        }
+        httpResponseHeader.setContentType(contentType);
+        httpResponseHeader.setContentLength(contentLength);
+    }
 
     private boolean checkValidFile(File file){
         return (file.exists() && !file.isDirectory());
