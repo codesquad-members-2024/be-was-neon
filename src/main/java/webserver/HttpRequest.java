@@ -3,6 +3,8 @@ package webserver;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import db.Database;
+import model.User;
 
 public class HttpRequest {
     public static final String METHOD_GET = "GET";
@@ -12,13 +14,16 @@ public class HttpRequest {
 
 
     private String startLine;
+    private String body;
 
     private HashMap<String, String> startLineData;
     private HashMap<String, String> headersData;
+    private HashMap<String, String> bodyData;
 
     HttpRequest() {
         this.startLineData = new HashMap<String, String>();
         this.headersData = new HashMap<String, String>();
+        this.bodyData = new HashMap<String, String>();
     }
 
     public void storeStartLineData(String startLine){
@@ -31,38 +36,6 @@ public class HttpRequest {
         headersData.put(splitHeaderLine[0], splitHeaderLine[1]);
     }
 
-    // 회원가입 정보 파싱
-//    public void parseRegisterData() {
-//        for(String token : extractUserData().split("[& ]")){
-//            String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
-//            try {
-//                registerUserData.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
-    // 회원가입 정보 파싱
-//    private String extractUserData(){ // 사용자 입력 정보 부분만 반환
-//        String[] splitStartLine = url.split("[?]");
-//        return splitStartLine[1];
-//    }
-
-    // 회원가입 데이터 DB에 추가
-//    public void storeDatabase(){
-//        Database.addUser(new User(registerUserData.get("userId"), registerUserData.get("password"), registerUserData.get("name"), registerUserData.get("email")));
-//    }
-
-//    public boolean checkRegisterDataEnter(){ // 회원가입에서 보낸 GET인지 확인
-//        return (method.equals(METHOD_GET) && url.startsWith(REGISTER_ACTION));
-//    }
-
-//    public String getFileType(){
-//        String[] splitPath = getCompletePath().split(DOT);
-//        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
-//    }
-
     private void parseStartLine(String startLine){
         String[] splitStartLine = startLine.split(SPACE);
         startLineData.put("method", splitStartLine[0]);
@@ -70,6 +43,32 @@ public class HttpRequest {
         startLineData.put("version", splitStartLine[2]);
     }
 
+
+    // ------------------------- request body 데이터 파싱&저장 -------------------------
+    public void storeBody(String body){
+        this.body = body;
+        parseBodyData();
+    }
+
+     // 회원가입 정보 파싱
+    public void parseBodyData() {
+        for(String token : body.split("&")){
+            String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
+            try {
+                bodyData.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 회원가입 데이터 DB에 추가
+    public void storeDatabase(){
+        Database.addUser(new User(bodyData.get("userId"), bodyData.get("password"), bodyData.get("name"), bodyData.get("email")));
+    }
+
+
+    // -------------------------  getter -------------------------
     public String getStartLine(){
         return startLine;
     }
@@ -88,5 +87,13 @@ public class HttpRequest {
 
     public int getContentLength(){
         return Integer.parseInt(headersData.get("Content-Length"));
+    }
+
+    public boolean isPost(){
+        return startLineData.get("method").equals("POST");
+    }
+
+    public boolean isUserCreate(){
+        return startLineData.get("url").equals("/user/create");
     }
 }
