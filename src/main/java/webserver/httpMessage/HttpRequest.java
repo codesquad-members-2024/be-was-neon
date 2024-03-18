@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
@@ -17,6 +18,7 @@ public class HttpRequest {
     public static final String BLANK = " ";
     public static final String REQUEST_TARGET_DELIMITER = "?";
     public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String HEADER_DELIMITER = ":?\\s";
 
     private final String startLine;
     private final String requestTarget;
@@ -58,12 +60,13 @@ public class HttpRequest {
     }
 
     private static Map<String, String> readHeader(BufferedReader br) throws IOException {
-        StringBuilder headerBuffer = new StringBuilder();
+        Map<String, String> header = new HashMap<>();
         String line;
         while (!(line = br.readLine()).isEmpty()) {
-            headerBuffer.append(line);
+            String[] split = line.split(HEADER_DELIMITER);
+            header.put(split[0], split[1]);
         }
-        return HttpRequestParser.parseKeyValuePairs(headerBuffer.toString());
+        return header;
     }
 
     public void log() {
