@@ -5,6 +5,35 @@
 - 학습 내용 정리: [WAS1 - Wiki](https://github.com/Yeriimii/be-was-neon/wiki/Java-Concurrent-%E2%80%90-CompletableFuture)
 
 # 전체 요청 흐름
+```mermaid
+---
+title: 요청 흐름도 
+---
+flowchart LR
+    subgraph RequestHandler
+        direction LR
+        subgraph convert
+            direction TB
+            HttpHeaderParser --Header 정보--> HttpConverter
+            HttpConverter --파싱 요청--> HttpHeaderParser
+        end
+        subgraph mapping
+            UriMapper
+        end
+        subgraph process
+            direction TB
+            ResourceHandler --byte array--> HttpProcessor
+            HttpProcessor --static file path--> ResourceHandler
+        end
+        HttpRequest
+        HttpResponse
+    end
+WebServer --Socket--> RequestHandler
+HttpConverter --> HttpRequest
+HttpConverter --> HttpResponse
+HttpRequest --URI--> UriMapper --> HttpProcessor --write--> HttpResponse --> Client
+```
+
 ## HTTP GET 요청 흐름 (`/index.html`, `/registration`)
 ```mermaid
 sequenceDiagram
