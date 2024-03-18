@@ -86,6 +86,7 @@ sequenceDiagram
 ## HttpRequestConverter
 - [x] Socket의 connection으로부터 requestString을 한 줄로 만들 수 있다
 - [x] 한 줄의 requestString으로부터 HttpRequest 객체로 컨버팅 할 수 있다
+- [x] http 요청에 body가 있을 경우 body 내용을 쿼리 파라미터로 가져올 수 있다
 
 ## HttpResponseConverter
 - [x] Socket의 connection으로부터 HttpResponse를 생성할 수 있다
