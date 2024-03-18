@@ -18,6 +18,7 @@ public class HttpResponse {
     private String contentLength = "Content-Length: ";
     private String lastModified = "Last-Modified: ";
     private String setCookie = "Set-Cookie: ";
+    private String location = "Location: ";
     private final DataOutputStream dos;
 
     public HttpResponse(DataOutputStream dos) {
@@ -63,6 +64,12 @@ public class HttpResponse {
         return this;
     }
 
+    public HttpResponse setLocation(String location) {
+        this.location += location;
+        writeString(this.location + CRLF);
+        return this;
+    }
+
     public HttpResponse setMessageBody(String stringMessageBody) {
         writeString(CRLF);
         writeString(stringMessageBody + CRLF);
@@ -83,6 +90,7 @@ public class HttpResponse {
             logger.error("[RESPONSE ERROR] flush error: {}", e.getMessage());
         }
     }
+
     private void writeString(String string) {
         try {
             dos.writeBytes(string);
