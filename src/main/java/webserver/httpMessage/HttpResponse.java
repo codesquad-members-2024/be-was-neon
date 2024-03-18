@@ -67,7 +67,7 @@ public class HttpResponse {
     private static List<String> getRedirectHeader(String location) {
         List<String> header = new ArrayList<>();
 
-        header.add(HttpStatus.TEMPORARY_REDIRECTION.getStatusMessage());
+        header.add(HttpStatus.SEE_OTHER.getStatusMessage());
         header.add("Location: " + location + " \r\n");
         header.add("\r\n");
 
