@@ -54,8 +54,8 @@ public class RequestHandler implements Runnable {
     private void sendResponse(DataOutputStream dos, HttpRequest httpRequest) throws IOException {
         HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
         HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
-        String completePath = GetPath.getCompletePath(httpRequest.getUrl());
-        String contentType = ContentType.getContentType(getFileType(completePath));
+        String completePath = FileInfo.getCompletePath(httpRequest.getUrl());
+        String contentType = ContentType.getContentType(FileInfo.getFileType(completePath));
 
         File file = new File(completePath);
         if(checkValidFile(file)){ // 파일이 존재하는지 확인
@@ -90,11 +90,6 @@ public class RequestHandler implements Runnable {
 
     private boolean checkValidFile(File file){
         return (file.exists() && !file.isDirectory());
-    }
-
-    public String getFileType(String getCompletePath){
-        String[] splitPath = getCompletePath.split("\\.");
-        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
     }
 
 }
