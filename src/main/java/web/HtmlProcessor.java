@@ -36,13 +36,24 @@ public class HtmlProcessor extends HttpProcessor {
                 .setCharset("utf-8");
     }
 
-    private void responseMessage(HttpResponse response, byte[] resource) {
+    public void responseHeader302(HttpResponse response, String contentType, String location) {
+        response.setHttpVersion("HTTP/1.1")
+                .setStatusCode(HttpStatus.STATUS_FOUND)
+                .setLocation(location)
+                .setContentType(contentType)
+                .setCharset("utf-8");
+    }
+
     public void responseMessage(HttpResponse response, byte[] resource) {
         response.setContentLength(resource.length)
                 .setMessageBody(resource);
     }
 
-    private String getContentType(HttpRequest request) {
+    public void responseMessage(HttpResponse response, String message) {
+        response.setContentLength(message.length())
+                .setMessageBody(message);
+    }
+
     public String getContentType(HttpRequest request) {
         String extension = getExtension(request.getRequestURI());
         return FILE_EXTENSION_MAP.getOrDefault(extension, "text/html");
