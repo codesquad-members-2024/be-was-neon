@@ -45,7 +45,7 @@ public class HttpRequest {
 
 
     // ------------------------- request body 데이터 파싱&저장 -------------------------
-    public void storeBody(String body){
+    public void storeBodyData(String body){
         this.body = body;
         parseBodyData();
     }
