@@ -29,7 +29,7 @@ public class HtmlProcessor extends HttpProcessor {
         return read(RESOURCE_PATH + request.getRequestURI() + "/" + INDEX_HTML); // /registration
     }
 
-    private void responseHeader200(HttpResponse response, String contentType) {
+    public void responseHeader200(HttpResponse response, String contentType) {
         response.setHttpVersion("HTTP/1.1")
                 .setStatusCode(HttpStatus.STATUS_OK)
                 .setContentType(contentType)
@@ -37,11 +37,13 @@ public class HtmlProcessor extends HttpProcessor {
     }
 
     private void responseMessage(HttpResponse response, byte[] resource) {
+    public void responseMessage(HttpResponse response, byte[] resource) {
         response.setContentLength(resource.length)
                 .setMessageBody(resource);
     }
 
     private String getContentType(HttpRequest request) {
+    public String getContentType(HttpRequest request) {
         String extension = getExtension(request.getRequestURI());
         return FILE_EXTENSION_MAP.getOrDefault(extension, "text/html");
     }
