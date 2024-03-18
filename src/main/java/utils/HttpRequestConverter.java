@@ -57,7 +57,7 @@ public class HttpRequestConverter {
     private static int calculateContentLength(String line) {
         int contentLength = 0;
 
-        if (CONTENT_LENGTH.parse(line).isEmpty()) {
+        if (!line.startsWith("Content-Length")) {
             return contentLength;
         }
 
@@ -86,37 +86,8 @@ public class HttpRequestConverter {
         builder.setRequestURI(requestURI);
         builder.setHttpVersion(httpVersion);
 
-        /* Host */
-        builder.setHost(HOST.parse(header));
-
-        /* User-Agent */
-        builder.setUserAgent(USER_AGENT.parse(header));
-
-        /* Connection */
-        builder.setConnection(CONNECTION.parse(header));
-
-        /* Accept */
-        builder.setAccept(ACCEPT.parse(header));
-
-        /* Accept-Encoding */
-        builder.setAcceptEncoding(ACCEPT_ENCODING.parse(header));
-
-        /* Accept-Language */
-        builder.setAcceptLanguage(ACCEPT_LANGUAGE.parse(header));
-
-        /* Referer */
-        builder.setReferer(REFERER.parse(header));
-
-        /* If-Modified-Since */
-        builder.setIfModifiedSince(IF_MODIFIED_SINCE.parse(header));
-
-        /* If-None-Match */
-        builder.setIfNoneMatch(IF_NONE_MATCH.parse(header));
-
-        /* Cache-Control */
-        builder.setCacheControl(CACHE_CONTROL.parse(header));
-        builder.setCookie(COOKIE.parse(header));
-        builder.setPragma(PRAGMA.parse(header));
+        /* headers */
+        builder.setHeaders(parseHeader(header));
 
         /* parameter */
         if (method == HttpMethod.GET) {
@@ -130,7 +101,7 @@ public class HttpRequestConverter {
     }
 
     private static String[] splitRequestLine(String header) {
-        return REQUEST_LINE.parse(header).split(BLANK); // 'GET /registration?id=test&password=1234 HTTP/1.1'
+        return parseRequestLine(header).split(BLANK); // 'GET /registration?id=test&password=1234 HTTP/1.1'
     }
 
     private static HttpMethod getMethod(String[] requestLine) {
