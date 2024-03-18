@@ -7,8 +7,10 @@ import db.Database;
 import model.User;
 
 public class HttpRequest {
-    public static final String METHOD_GET = "GET";
+    public static final String METHOD_POST = "POST";
     private static final String SPACE = " ";
+    private static final String AMPERSAND = "&";
+    private static final String EQUAL = "=";
     private static final String COLON_SPACE = ": ";
 
 
@@ -51,8 +53,8 @@ public class HttpRequest {
 
      // 회원가입 정보 파싱
     public void parseBodyData() {
-        for(String token : body.split("&")){
-            String[] splitInfo = token.split("="); // 이름과 값을 = 로 분리
+        for(String token : body.split(AMPERSAND)){
+            String[] splitInfo = token.split(EQUAL); // 이름과 값을 = 로 분리
             try {
                 bodyData.put(splitInfo[0], URLDecoder.decode(splitInfo[1], "UTF-8")); // 해쉬 맵에 정보 저장
             } catch (UnsupportedEncodingException e) {
@@ -89,7 +91,7 @@ public class HttpRequest {
     }
 
     public boolean isPost(){
-        return startLineData.get("method").equals("POST");
+        return startLineData.get("method").equals(METHOD_POST);
     }
 
     public boolean isUserCreate(){
