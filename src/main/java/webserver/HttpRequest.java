@@ -8,7 +8,6 @@ import model.User;
 
 public class HttpRequest {
     public static final String METHOD_GET = "GET";
-    private static final String DOT = "\\.";
     private static final String SPACE = " ";
     private static final String COLON_SPACE = ": ";
 

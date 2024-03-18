@@ -2,10 +2,11 @@ package webserver;
 
 import java.io.File;
 
-public class GetPath {
+public class FileInfo {
     private static final String BASIC_STATIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
     public static final String REGISTER_ACTION = "/user/create";
+    private static final String DOT = "\\.";
 
     public static String getCompletePath(String url){ // /registration
         StringBuilder completePath = new StringBuilder(BASIC_STATIC_FILE_PATH);
@@ -19,4 +20,8 @@ public class GetPath {
         return completePath.toString();
     }
 
+    public static String getFileType(String getCompletePath){
+        String[] splitPath = getCompletePath.split(DOT);
+        return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
+    }
 }
