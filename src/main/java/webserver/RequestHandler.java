@@ -3,15 +3,10 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import utils.StringUtils;
-
 public class RequestHandler implements Runnable {
-    public static final String REGISTER_ACTION = "/user/create";
-
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
@@ -28,14 +23,14 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 
             String requestLine = br.readLine();
-            logger.debug("request method : {}", requestLine);
-            if(checkRegisterInput(requestLine)){
-                RegisterRequestHandler registerRH = new RegisterRequestHandler(requestLine);
-            }
 
-            // 요청 받은 URL을 파싱하여 파일 경로를 결정한다.
-            String requestURL = StringUtils.separatePath(requestLine);
-            String filePath = StringUtils.makeCompletePath(requestURL);
+            HttpRequest httpRequest = new HttpRequest(requestLine);
+
+            logger.debug("request method : {}", httpRequest.getStartLine());
+
+            if(httpRequest.checkRegisterDataEnter()){ // 회원가입에서 보낸 정보라면
+                storeUser(httpRequest); // user 생성 후 저장
+            }
 
             requestLine = br.readLine();
             while(!requestLine.isEmpty()){ // 나머지 header 출력
@@ -43,61 +38,50 @@ public class RequestHandler implements Runnable {
                 requestLine = br.readLine();
             }
 
-            // 파일이 존재하면 해당 파일을 읽어 응답.
             DataOutputStream dos = new DataOutputStream(out);
-            File file = new File(filePath);
-            if (file.exists() && !file.isDirectory()) {
-                FileInputStream fis = new FileInputStream(file);
-                byte[] fileContent = new byte[(int) file.length()];
-                fis.read(fileContent);
-                fis.close();
+            sendResponse(dos, httpRequest);
 
-                response200Header(dos, fileContent.length);
-                responseBody(dos, fileContent);
-            } else {
-                // 파일이 존재하지 않으면 404 응답.
-                byte[] notFoundContent = "<h1>404 Not Found</h1>".getBytes();
-                response404Header(dos, notFoundContent.length);
-                responseBody(dos, notFoundContent);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void sendResponse(DataOutputStream dos, HttpRequest httpRequest) throws IOException {
+        HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
+        HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
+
+        File file = new File(httpRequest.getCompletePath());
+        if(checkValidFile(file)){ // 파일이 존재하면 해당 파일을 읽어 응답.
+            FileInputStream fis = new FileInputStream(file);
+            byte[] fileContent = fis.readAllBytes();
+            fis.close();
+
+            if(httpRequest.checkRegisterDataEnter()){
+                httpResponseHeader.setStartLine("302", "FOUND");
+                httpResponseHeader.setLocation("/index.html"); // redirect 경로 지정
+            }else{
+                httpResponseHeader.setStartLine("200", "OK");
             }
+            httpResponseHeader.setContentType(ContentType.getContentType(httpRequest.getFileType()));
+            httpResponseHeader.setContentLength(fileContent.length);
+            httpResponseBody.setBody(fileContent);
+        }else{
+            byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
 
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+            httpResponseHeader.setStartLine("404", "Not Found");
+            httpResponseHeader.setContentType(ContentType.getContentType(httpRequest.getFileType()));
+            httpResponseHeader.setContentLength(fileContent.length);
+            httpResponseBody.setBody(fileContent);
         }
+        dos.flush();
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    private void storeUser(HttpRequest httpRequest){
+        httpRequest.parseRegisterData();
+        httpRequest.storeDatabase();
     }
 
-    private void response404Header(DataOutputStream dos, int lengthOfBodyContent) {
-        try {
-            dos.writeBytes("HTTP/1.1 404 Not Found \r\n");
-            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-            dos.writeBytes("\r\n");
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private void responseBody(DataOutputStream dos, byte[] body) {
-        try {
-            dos.write(body, 0, body.length);
-            dos.flush();
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    private boolean checkRegisterInput(String startLine){ // 회원가입에서 보낸 GET인지 확인
-        return startLine.contains(REGISTER_ACTION);
+    private boolean checkValidFile(File file){
+        return (file.exists() && !file.isDirectory());
     }
 }
