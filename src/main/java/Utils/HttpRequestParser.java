@@ -1,7 +1,11 @@
 package Utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import model.User;
 /**
  * HTTP 요청을 파싱하여 다양한 정보를 추출하고, 요청된 URL의 경로에 따른 파일 경로를 생성하는 클래스
@@ -71,28 +75,45 @@ public class HttpRequestParser {
         }
         return completePath.toString();
     }
-//    public User parseUserFromRequest() {
-//        String path = extractPath();
-//        if (!path.startsWith("/create")) {
-//            throw new IllegalArgumentException("회원가입 요청이 아닙니다.");
-//        }
-//
-//        Map<String, String> queryParams = new HashMap<>();
-//        String[] params = path.split("\\?")[1].split("&");
-//        for (String param : params) {
-//            String[] keyValue = param.split("=");
-//            String key = keyValue[0];
-//            String value
-//            queryParams.put(key, value);
-//        }
-//
-//        return new User(
-//                queryParams.get("userId"),
-//                queryParams.get("password"),
-//                queryParams.get("name"),
-//                queryParams.get("email")
-//        );
-//    }
+    // HttpRequestParser 클래스 내에 추가
+    public Optional<User> parseUserFromGetRequest() {
+        try {
+            String path = extractPath();
+            if (!path.startsWith("/create")) {
+                return Optional.empty();
+            }
+
+            String query = path.split("\\?", 2).length > 1 ? path.split("\\?", 2)[1] : "";
+            if (query.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Map<String, String> queryParams = new HashMap<>();
+            String[] params = query.split("&");
+
+            for (String param : params) {
+                String[] keyValue = param.split("=", 2);
+                if (keyValue.length < 2) {
+                    continue; // 값이 없는 파라미터는 무시
+                }
+                String key = keyValue[0];
+                String value = URLDecoder.decode(keyValue[1], "UTF-8");
+                queryParams.put(key, value);
+            }
+
+            User user = new User(
+                    queryParams.getOrDefault("userId", ""),
+                    queryParams.getOrDefault("password", ""),
+                    queryParams.getOrDefault("name", ""),
+                    queryParams.getOrDefault("email", "")
+            );
+
+            return Optional.of(user);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
 
 
 
