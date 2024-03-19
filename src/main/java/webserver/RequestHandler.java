@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
                 br.read(buffer, 0, buffer.length); // context length 만큼 읽기
 
                 httpRequest.storeBodyData(new String(buffer)); // body 저장
-                httpRequest.storeDatabase(); // user db에 저장
+                httpRequest.storeDatabase(httpRequest.createUser()); // user 생성 후 db에 저장
             }
 
             DataOutputStream dos = new DataOutputStream(out);

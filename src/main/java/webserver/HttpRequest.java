@@ -63,9 +63,13 @@ public class HttpRequest {
         }
     }
 
+    public User createUser(){
+        return new User(bodyData.get("userId"), bodyData.get("password"), bodyData.get("name"), bodyData.get("email"));
+    }
+
     // 회원가입 데이터 DB에 추가
-    public void storeDatabase(){
-        Database.addUser(new User(bodyData.get("userId"), bodyData.get("password"), bodyData.get("name"), bodyData.get("email")));
+    public void storeDatabase(User user){
+        Database.addUser(user);
     }
 
 
