@@ -3,13 +3,11 @@ package webserver;
 import Utils.FileUtils;
 import Utils.HttpRequestParser;
 import Utils.RouteManager;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Optional;
 
 import static Utils.RouteManager.makePath;
 
@@ -55,21 +53,10 @@ public class RequestHandler implements Runnable {
     private void handleResponse() throws IOException {
         try {
             HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
-            Optional<User> userOptional = httpRequestParser.parseUserFromGetRequest();
-
-            if (userOptional.isPresent()) {
-                handleUserRequest(userOptional.get());
-            } else {
-                handleFileRequest(httpRequestParser);
-            }
+            handleFileRequest(httpRequestParser);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private void handleUserRequest(User user) {
-        // 회원가입 처리 로직
-        logger.debug("회원가입 요청 처리: {}", user);
     }
 
     private void handleFileRequest(HttpRequestParser httpRequestParser) throws IOException {
