@@ -37,6 +37,7 @@ class HttpResponseTest {
                         LocalDateTime.parse(
                                 "2024-03-13 13:00:12",
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .setPath("/index.html")
                 .setMessageBody("Hi");
 
         // then
@@ -48,6 +49,7 @@ class HttpResponseTest {
                         Location: /myLocation.html\r
                         Set-Cookie: myCookie=myValue;\r
                         Last-Modified: 2024-03-13T13:00:12\r
+                        Path= /index.html\r
                         \r
                         Hi\r
                         """
