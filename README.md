@@ -98,3 +98,6 @@ sequenceDiagram
 ## StaticMapper
 - [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
 - [x] 존재하지 않는 URI는 빈 Optional을 반환할 수 있다
+
+## LoginManager
+- [x] 데이터베이스에 등록된 유저인지 검증할 수 있다
