@@ -1,8 +1,8 @@
 package utils;
 
+import static http.HttpRequest.*;
 import static org.assertj.core.api.Assertions.*;
 
-import http.HttpMethod;
 import http.HttpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

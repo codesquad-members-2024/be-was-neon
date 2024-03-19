@@ -1,8 +1,8 @@
 package web;
 
+import static http.HttpRequest.*;
 import static utils.ResourceHandler.*;
 
-import http.HttpMethod;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;

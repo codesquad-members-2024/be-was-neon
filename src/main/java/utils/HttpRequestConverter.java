@@ -1,8 +1,8 @@
 package utils;
 
+import static http.HttpRequest.*;
 import static utils.HttpRequestParser.*;
 
-import http.HttpMethod;
 import http.HttpRequest;
 import http.HttpRequestBuilder;
 import java.io.BufferedReader;
