@@ -13,7 +13,6 @@ public class HttpRequest {
     private static final String EQUAL = "=";
     private static final String COLON_SPACE = ": ";
 
-
     private String startLine;
     private String body;
 
@@ -27,7 +26,7 @@ public class HttpRequest {
         this.bodyData = new HashMap<String, String>();
     }
 
-    public void storeStartLineData(String startLine){
+    public void storeStartLineData(String startLine){ // start line HashMap에 저장
         this.startLine = startLine;
         parseStartLine(startLine);
     }
