@@ -1,4 +1,4 @@
-package webserver.requesthandler;
+package webserver.requesthandler.handlerimpl;
 
 import db.Database;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.url.URLConst;
 
 public class RegistrationHandler implements RequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(RegistrationHandler.class);

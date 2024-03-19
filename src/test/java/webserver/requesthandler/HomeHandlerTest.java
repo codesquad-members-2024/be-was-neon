@@ -12,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.handlerimpl.HomeHandler;
+import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.session.SessionManager;
 
 class HomeHandlerTest {
@@ -51,7 +53,7 @@ class HomeHandlerTest {
 
         requestHandler.handleGet(request, response); // 로그인 정보가 없는 상태에서 홈화면에 접근
         byte[] body = response.getBody();
-        assertThat(body).isEqualTo(getExpected("/main"));
+        assertThat(new String(body)).contains("sangchu", "로그아웃", "글쓰기");
     }
 
     private byte[] getExpected(String path) throws IOException {

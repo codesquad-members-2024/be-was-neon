@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.handlerimpl.RegistrationHandler;
 
 class RegistrationTest {
 

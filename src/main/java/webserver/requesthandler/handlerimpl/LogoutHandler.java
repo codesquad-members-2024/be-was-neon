@@ -1,4 +1,4 @@
-package webserver.requesthandler;
+package webserver.requesthandler.handlerimpl;
 
 import model.User;
 import org.slf4j.Logger;
@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
+import webserver.requesthandler.url.URLConst;
 import webserver.session.SessionManager;
 
 public class LogoutHandler implements RequestHandler {

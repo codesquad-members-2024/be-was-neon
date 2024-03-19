@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
+import webserver.requesthandler.url.UnauthenticatedURLs;
 import webserver.session.SessionManager;
 
 class AuthenticatorTest {
@@ -23,7 +24,7 @@ class AuthenticatorTest {
 
     @BeforeEach
     void setUp() {
-        authenticator = new Authenticator();
+        authenticator = new Authenticator(new UnauthenticatedURLs());
         request = new HttpRequest();
         response = new HttpResponse(new ByteArrayOutputStream());
     }

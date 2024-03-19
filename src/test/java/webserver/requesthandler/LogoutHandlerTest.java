@@ -13,6 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.handlerimpl.LogoutHandler;
+import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.session.SessionManager;
 
 class LogoutHandlerTest {

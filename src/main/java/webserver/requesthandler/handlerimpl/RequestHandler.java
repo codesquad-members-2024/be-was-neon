@@ -1,7 +1,7 @@
-package webserver.requesthandler;
+package webserver.requesthandler.handlerimpl;
 
-import static webserver.requesthandler.URLConst.INDEX_HTML_FILE;
-import static webserver.requesthandler.URLConst.STATIC_DIRECTORY;
+import static webserver.requesthandler.url.URLConst.INDEX_HTML_FILE;
+import static webserver.requesthandler.url.URLConst.STATIC_DIRECTORY;
 
 import java.io.IOException;
 import java.util.Objects;

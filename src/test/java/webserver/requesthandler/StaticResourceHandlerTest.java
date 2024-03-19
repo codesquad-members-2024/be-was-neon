@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
+import webserver.requesthandler.handlerimpl.StaticResourceHandler;
 
 class StaticResourceHandlerTest {
     StaticResourceHandler staticResourceHandler;

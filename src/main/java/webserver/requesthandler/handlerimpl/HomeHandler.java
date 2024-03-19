@@ -1,4 +1,4 @@
-package webserver.requesthandler;
+package webserver.requesthandler.handlerimpl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +8,7 @@ import model.User;
 import webserver.http.ContentType;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.url.URLConst;
 import webserver.session.SessionManager;
 
 public class HomeHandler implements RequestHandler {
