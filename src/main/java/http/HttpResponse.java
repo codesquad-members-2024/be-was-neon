@@ -13,6 +13,7 @@ public class HttpResponse {
     private static final String SP = " ";
     private static final String CRLF = "\r\n";
     private static final String SPLITTER = ";";
+    public static final String EQUAL = "=";
     private String contentType = "Content-Type: ";
     private String charset = "charset=";
     private String contentLength = "Content-Length: ";
@@ -58,8 +59,8 @@ public class HttpResponse {
         return this;
     }
 
-    public HttpResponse setSetCookie(String setCookie) {
-        this.setCookie += setCookie + SPLITTER;
+    public HttpResponse setSetCookie(String key, String value) {
+        this.setCookie += key + EQUAL + value + SPLITTER;
         writeString(this.setCookie + CRLF);
         return this;
     }
