@@ -4,32 +4,53 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import org.slf4j.Logger;
-import utils.Parser;
 
-public class HttpRequest {
+public class HttpRequestBuilder {
 
     private static final String QUESTION_MARK = "\\?";
     private static final String QUERY_STRING_DELIM = "&";
     private static final String KEY_VALUE_DELIM = "=";
+    private static final String SPACE = " ";
+    private final String[] requestLines;
+    public HttpRequestBuilder(InputStream in) throws IOException {
+        this.requestLines = getRequestLine(in);
+    }
 
-    public static String getRequestTarget(InputStream in) throws IOException {
+    public String getHttpMethod() {
+        String httpMethod = this.requestLines[0];
 
-        String requestTarget = Parser.getRequestTarget(in);
+        return httpMethod;
+    }
+    public String getRequestTarget() {
+        String requestTarget = this.requestLines[1];
 
         return requestTarget;
     }
+    public String getHttpVersion() {
+        String httpVersion = this.requestLines[2];
 
-    public static String getPath(String requestTarget) throws IOException {
+        return httpVersion;
+    }
+    private String[] getRequestLine(InputStream in) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+
+        String startLine = br.readLine();
+
+        String[] requestLines = startLine.split(SPACE);
+        return requestLines;
+    }
+
+    public String getPath() {
+        String requestTarget = getRequestTarget();
         if(!requestTarget.contains(QUESTION_MARK)) return requestTarget;
         return requestTarget.substring(0,requestTarget.indexOf(QUESTION_MARK));
     }
 
-    public static Map<String, String> getQueryString(String requestTarget) {
+    public Map<String, String> getQueryString() {
+        String requestTarget =  getRequestTarget();
         HashMap<String, String> queryMap = new HashMap();
 
         //QUESTION_MARK 를 포함하고 있지 않으면 쿼리 스트링이 없으므로 빈 queryMap 리턴
