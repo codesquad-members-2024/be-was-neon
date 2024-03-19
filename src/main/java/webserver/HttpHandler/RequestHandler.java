@@ -106,15 +106,15 @@ public class RequestHandler {
         return new Response(startLine).header(responseHeader).body(responseBody);
     }
 
-    private String verifySession(Request request, String path){
+    private String verifySession(Request request, String path) {
         User user;
         try {
             user = SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]);
-        }catch (NullPointerException noCookieSid){
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException noCookieSid) {
             return path;
         }
 
-        if(path.equals("/") &&  user != null){
+        if (path.equals("/") && user != null) {
             path = path + "/main"; // 로그인 된 세션의 사용자가 /로 접속하면 main/ 으로 보냄
             log.info("welcome Logged-in user " + user.getName());
         }
