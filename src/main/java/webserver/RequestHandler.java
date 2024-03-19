@@ -34,7 +34,7 @@ public class RequestHandler implements Runnable {
             logger.debug("request line : {}", httpRequest.getStartLine());
 
             line = br.readLine();
-            while(!line.isEmpty()){ // 나머지 header 출력
+            while(!line.isEmpty()){ // 나머지 header 순회
                 httpRequest.storeHeadersData(line); // header 저장
                 logger.debug("request header : {}", line);
                 line = br.readLine();
@@ -70,11 +70,10 @@ public class RequestHandler implements Runnable {
 
             if(httpRequest.isPost() && httpRequest.isUserCreate()){
                 httpResponseHeader.response302("/index.html", contentType, fileContent.length); // 처음 페이지로 redirect
-                httpResponseBody.setBody(fileContent);
             }else{
                 httpResponseHeader.response200(contentType, fileContent.length);
-                httpResponseBody.setBody(fileContent);
             }
+            httpResponseBody.setBody(fileContent);
 
         }else{
             byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();

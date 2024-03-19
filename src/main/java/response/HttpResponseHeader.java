@@ -17,20 +17,20 @@ public class HttpResponseHeader {
         this.dos = dos;
     }
 
-    public void response200(String contentType, int contentLength){
+    public void response200(String contentType, int contentLength){ // statusCode 200에 맞는 ResponseHeader 작성
         setStartLine("200", "OK");
         setContentType(contentType);
         setContentLength(contentLength);
     }
 
-    public void response302(String location, String contentType, int contentLength){
+    public void response302(String location, String contentType, int contentLength){ // statusCode 302에 맞는 ResponseHeader 작성
         setStartLine("302", "FOUND");
         setLocation(location);
         setContentType(contentType);
         setContentLength(contentLength);
     }
 
-    public void response404(String contentType, int contentLength){
+    public void response404(String contentType, int contentLength){ // statusCode 404에 맞는 ResponseHeader 작성
         setStartLine("404", "Not Found");
         setContentType(contentType);
         setContentLength(contentLength);
