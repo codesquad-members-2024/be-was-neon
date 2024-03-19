@@ -13,14 +13,12 @@ public class HttpResponse {
     private static final String SP = " ";
     private static final String CRLF = "\r\n";
     private static final String SPLITTER = ";";
-    public static final String EQUAL = "=";
     private String contentType = "Content-Type: ";
     private String charset = "charset=";
     private String contentLength = "Content-Length: ";
     private String lastModified = "Last-Modified: ";
     private String setCookie = "Set-Cookie: ";
     private String location = "Location: ";
-    private String path = "Path= ";
     private final DataOutputStream dos;
 
     public HttpResponse(DataOutputStream dos) {
@@ -60,15 +58,9 @@ public class HttpResponse {
         return this;
     }
 
-    public HttpResponse setSetCookie(String key, String value) {
-        this.setCookie += key + EQUAL + value + SPLITTER;
+    public HttpResponse setSetCookie(String cookie) {
+        this.setCookie += cookie;
         writeString(this.setCookie + CRLF);
-        return this;
-    }
-
-    public HttpResponse setPath(String path) {
-        this.path += path;
-        writeString(this.path + CRLF);
         return this;
     }
 
