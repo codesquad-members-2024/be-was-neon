@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +33,7 @@ public enum HttpHeaderParser {
         while (headerMatcher.find()) {
             headers.put(headerMatcher.group(1), headerMatcher.group(2));
         }
-        return headers;
+        return Collections.unmodifiableMap(headers);
     }
 
     public static Map<String, String> parseParams(String header) {
@@ -42,6 +43,6 @@ public enum HttpHeaderParser {
         while (paramMatcher.find()) {
             paramMap.put(paramMatcher.group(1), paramMatcher.group(2)); // key = 인덱스 1, value = 인덱스 2
         }
-        return paramMap;
+        return Collections.unmodifiableMap(paramMap);
     }
 }
