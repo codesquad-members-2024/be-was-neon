@@ -1,9 +1,8 @@
-package webserver;
+package request;
 
 import db.Database;
 import model.User;
 import org.junit.jupiter.api.*;
-import request.HttpRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
