@@ -14,8 +14,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.http.HttpStatus;
-import webserver.requesthandler.url.UnauthenticatedURLs;
-import webserver.session.SessionManager;
+import webserver.requesthandler.authenticator.Authenticator;
+import webserver.requesthandler.authenticator.UnauthenticatedURLs;
+import webserver.requesthandler.session.SessionManager;
 
 class AuthenticatorTest {
     Authenticator authenticator;

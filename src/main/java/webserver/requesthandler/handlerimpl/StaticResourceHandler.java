@@ -6,7 +6,7 @@ import utils.FileManager;
 import webserver.http.ContentType;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
-import webserver.requesthandler.url.URLConst;
+import webserver.requesthandler.URLConst;
 
 public class StaticResourceHandler implements RequestHandler {
 

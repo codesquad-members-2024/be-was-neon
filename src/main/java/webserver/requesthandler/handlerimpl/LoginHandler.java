@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
-import webserver.requesthandler.url.URLConst;
-import webserver.session.SessionManager;
+import webserver.requesthandler.URLConst;
+import webserver.requesthandler.session.SessionManager;
 
 public class LoginHandler implements RequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(LoginHandler.class);

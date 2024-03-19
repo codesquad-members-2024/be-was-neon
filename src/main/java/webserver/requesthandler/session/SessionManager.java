@@ -1,4 +1,4 @@
-package webserver.session;
+package webserver.requesthandler.session;
 
 import java.net.HttpCookie;
 import java.util.Map;

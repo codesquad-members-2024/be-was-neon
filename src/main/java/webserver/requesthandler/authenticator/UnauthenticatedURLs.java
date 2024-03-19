@@ -1,10 +1,10 @@
-package webserver.requesthandler.url;
+package webserver.requesthandler.authenticator;
 
-import static webserver.requesthandler.url.URLConst.CSS_FILE_URL;
-import static webserver.requesthandler.url.URLConst.HOME_URL;
-import static webserver.requesthandler.url.URLConst.IMG_FILE_URL;
-import static webserver.requesthandler.url.URLConst.LOGIN_URL;
-import static webserver.requesthandler.url.URLConst.REGISTRATION_URL;
+import static webserver.requesthandler.URLConst.CSS_FILE_URL;
+import static webserver.requesthandler.URLConst.HOME_URL;
+import static webserver.requesthandler.URLConst.IMG_FILE_URL;
+import static webserver.requesthandler.URLConst.LOGIN_URL;
+import static webserver.requesthandler.URLConst.REGISTRATION_URL;
 
 import java.util.HashSet;
 import java.util.Set;

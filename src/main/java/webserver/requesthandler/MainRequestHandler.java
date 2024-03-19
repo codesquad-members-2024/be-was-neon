@@ -1,12 +1,12 @@
 package webserver.requesthandler;
 
-import static webserver.requesthandler.url.URLConst.ARTICLE_URL;
-import static webserver.requesthandler.url.URLConst.COMMENT_URL;
-import static webserver.requesthandler.url.URLConst.HOME_URL;
-import static webserver.requesthandler.url.URLConst.LOGIN_URL;
-import static webserver.requesthandler.url.URLConst.LOGOUT_URL;
-import static webserver.requesthandler.url.URLConst.REGISTRATION_URL;
-import static webserver.requesthandler.url.URLConst.USER_LIST_URL;
+import static webserver.requesthandler.URLConst.ARTICLE_URL;
+import static webserver.requesthandler.URLConst.COMMENT_URL;
+import static webserver.requesthandler.URLConst.HOME_URL;
+import static webserver.requesthandler.URLConst.LOGIN_URL;
+import static webserver.requesthandler.URLConst.LOGOUT_URL;
+import static webserver.requesthandler.URLConst.REGISTRATION_URL;
+import static webserver.requesthandler.URLConst.USER_LIST_URL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.authenticator.Authenticator;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
+import webserver.requesthandler.authenticator.Authenticator;
+import webserver.requesthandler.authenticator.UnauthenticatedURLs;
 import webserver.requesthandler.handlerimpl.ArticleHandler;
 import webserver.requesthandler.handlerimpl.CommentHandler;
 import webserver.requesthandler.handlerimpl.HomeHandler;
@@ -28,7 +29,6 @@ import webserver.requesthandler.handlerimpl.RegistrationHandler;
 import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.requesthandler.handlerimpl.StaticResourceHandler;
 import webserver.requesthandler.handlerimpl.UserListHandler;
-import webserver.requesthandler.url.UnauthenticatedURLs;
 
 public class MainRequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MainRequestHandler.class);

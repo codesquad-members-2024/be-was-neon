@@ -14,7 +14,7 @@ import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 import webserver.requesthandler.handlerimpl.HomeHandler;
 import webserver.requesthandler.handlerimpl.RequestHandler;
-import webserver.session.SessionManager;
+import webserver.requesthandler.session.SessionManager;
 
 class HomeHandlerTest {
     RequestHandler requestHandler;

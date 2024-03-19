@@ -1,11 +1,10 @@
-package webserver.authenticator;
+package webserver.requesthandler.authenticator;
 
 import java.io.IOException;
 import model.User;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
-import webserver.requesthandler.url.UnauthenticatedURLs;
-import webserver.session.SessionManager;
+import webserver.requesthandler.session.SessionManager;
 
 public class Authenticator {
     private final UnauthenticatedURLs unauthenticatedURLs; // 로그인이 필요 없는 경로 모음

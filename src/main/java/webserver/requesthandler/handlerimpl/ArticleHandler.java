@@ -3,7 +3,7 @@ package webserver.requesthandler.handlerimpl;
 import java.io.IOException;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
-import webserver.requesthandler.url.URLConst;
+import webserver.requesthandler.URLConst;
 
 public class ArticleHandler implements RequestHandler {
     @Override

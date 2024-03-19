@@ -1,4 +1,4 @@
-package webserver.requesthandler.url;
+package webserver.requesthandler;
 
 public interface URLConst {
     String HOME_URL = "/";
