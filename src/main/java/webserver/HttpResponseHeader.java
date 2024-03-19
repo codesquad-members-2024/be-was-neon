@@ -17,7 +17,26 @@ public class HttpResponseHeader {
         this.dos = dos;
     }
 
-    public void setStartLine(String statusCode, String statusMessage){
+    public void response200(String contentType, int contentLength){
+        setStartLine("200", "OK");
+        setContentType(contentType);
+        setContentLength(contentLength);
+    }
+
+    public void response302(String location, String contentType, int contentLength){
+        setStartLine("302", "FOUND");
+        setLocation(location);
+        setContentType(contentType);
+        setContentLength(contentLength);
+    }
+
+    public void response404(String contentType, int contentLength){
+        setStartLine("404", "Not Found");
+        setContentType(contentType);
+        setContentLength(contentLength);
+    }
+
+    private void setStartLine(String statusCode, String statusMessage){
         try {
             dos.writeBytes(VERSION + SPACE + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
         } catch (IOException e) {
@@ -25,7 +44,7 @@ public class HttpResponseHeader {
         }
     }
 
-    public void setLocation(String location) {
+    private void setLocation(String location) {
         try {
             dos.writeBytes("Location:" + SPACE + location + ESCAPE_SEQUENCE);
         } catch (IOException e) {
@@ -33,7 +52,7 @@ public class HttpResponseHeader {
         }
     }
 
-    public void setContentType(String contentType) {
+    private void setContentType(String contentType) {
         try {
             dos.writeBytes("Content-Type:" + SPACE + contentType + ESCAPE_SEQUENCE);
         } catch (IOException e) {
@@ -41,7 +60,7 @@ public class HttpResponseHeader {
         }
     }
 
-    public void setContentLength(int contentLength) {
+    private void setContentLength(int contentLength) {
         try {
             dos.writeBytes("Content-Length:" + SPACE + contentLength + ESCAPE_SEQUENCE);
             dos.writeBytes(ESCAPE_SEQUENCE);

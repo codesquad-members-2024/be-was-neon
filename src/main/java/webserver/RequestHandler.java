@@ -64,28 +64,19 @@ public class RequestHandler implements Runnable {
             fis.close();
 
             if(httpRequest.isPost() && httpRequest.isUserCreate()){
-                writeResponseHeader(httpResponseHeader, "302", "FOUND", "/index.html", contentType, fileContent.length);
+                httpResponseHeader.response302("/index.html", contentType, fileContent.length); // 처음 페이지로 redirect
                 httpResponseBody.setBody(fileContent);
             }else{
-                writeResponseHeader(httpResponseHeader, "200", "OK", null, contentType, fileContent.length);
+                httpResponseHeader.response200(contentType, fileContent.length);
                 httpResponseBody.setBody(fileContent);
             }
 
         }else{
             byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
-            writeResponseHeader(httpResponseHeader, "404", "Not Found", null, contentType, fileContent.length);
+            httpResponseHeader.response404(contentType, fileContent.length);
             httpResponseBody.setBody(fileContent);
         }
         dos.flush();
-    }
-
-    private void writeResponseHeader(HttpResponseHeader httpResponseHeader, String statusCode, String statusMessage, String location, String contentType, int contentLength){
-        httpResponseHeader.setStartLine(statusCode, statusMessage);
-        if(location != null){
-            httpResponseHeader.setLocation(location);
-        }
-        httpResponseHeader.setContentType(contentType);
-        httpResponseHeader.setContentLength(contentLength);
     }
 
 }
