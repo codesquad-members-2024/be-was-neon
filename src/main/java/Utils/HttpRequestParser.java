@@ -22,10 +22,6 @@ public class HttpRequestParser {
 
     public HttpRequestParser(String httpRequest) {
         this.headers = new HashMap<>();
-        parseRequest(httpRequest);
-    }
-
-    private void parseRequest(String httpRequest) {
         String[] requestParts = httpRequest.split("\r\n\r\n", 2);
         parseRequestLineAndHeaders(requestParts[0]);
         if (requestParts.length > 1) {
