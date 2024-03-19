@@ -2,6 +2,7 @@ package webserver;
 
 import Utils.FileUtils;
 import Utils.HttpRequestParser;
+import Utils.RouteManager;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 import java.util.Optional;
+
+import static Utils.RouteManager.makePath;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -70,7 +73,7 @@ public class RequestHandler implements Runnable {
     }
 
     private void handleFileRequest(HttpRequestParser httpRequestParser) throws IOException {
-        String path = httpRequestParser.makePath();
+        String path = makePath(httpRequestParser.extractPath());
         firstPath = path;
         byte[] body = readFileContent();
         DataOutputStream dos = new DataOutputStream(out);
@@ -86,7 +89,7 @@ public class RequestHandler implements Runnable {
 
     private void parseRequestPath() {
         HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
-        String path = httpRequestParser.makePath();
+        String path = RouteManager.makePath(httpRequestParser.extractPath());
 
         firstPath = path;
         logger.debug("Extracted path: {}", firstPath);

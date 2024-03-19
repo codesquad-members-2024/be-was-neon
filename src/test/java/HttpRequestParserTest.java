@@ -1,15 +1,17 @@
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import Utils.HttpRequestParser;
+import Utils.RouteManager;
 import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HttpRequestParserTest {
 
     private HttpRequestParser parser;
+    private RouteManager PathMaker;
 
     @BeforeEach
     void setUp() {
@@ -24,7 +26,7 @@ class HttpRequestParserTest {
     @Test
     void testMakePath() {
         String expectedPath = "src/main/resources/static/index.html";
-        assertThat(parser.makePath()).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
+        assertThat(PathMaker.makePath(expectedPath)).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
     }
 
     @Test
