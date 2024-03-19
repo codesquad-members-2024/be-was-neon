@@ -1,0 +1,60 @@
+package web;
+
+import static utils.ResourceHandler.*;
+
+import http.HttpMethod;
+import http.HttpRequest;
+import http.HttpResponse;
+import model.User;
+import login.LoginManager;
+import session.SessionManager;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MemberLogin extends HtmlProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(MemberLogin.class);
+    private static final String SESSION_NAME = "SID";
+    private final LoginManager loginManager = new LoginManager();
+    private final SessionManager sessionManager = new SessionManager();
+
+    @Override
+    public void process(HttpRequest request, HttpResponse response) {
+        if (request.getMethod().equals(HttpMethod.GET)) {
+            super.process(request, response);
+            return;
+        }
+
+        String id = request.getParameter("id");
+        String password = request.getParameter("password");
+
+        Optional<User> optionalUser = loginManager.login(id, password);
+
+        /* 로그인 실패: login-failed.html 리다이렉션 */
+        if (optionalUser.isEmpty()) {
+            logger.debug("[LOGIN] failed login. userId={}, password={}", id, password);
+            responseHeader302(response, getContentType(request), request.getRequestURI() + "/login-failed.html");
+            response.setMessageBody("login fail");
+            response.flush();
+            return;
+        }
+
+        /* 로그인 성공: /index.html 라다이렉션*/
+        User loginUser = optionalUser.get();
+
+        /* session 등록 */
+        String sessionId = sessionManager.createSession();
+        sessionManager.enroll(sessionId, loginUser);
+
+        logger.debug("[LOGIN] success login. userId={}, sessionId={}", loginUser.getUserId(), sessionId);
+
+        /* 응답 헤더 설정 */
+        responseHeader302(response, getContentType(request), "/index.html");
+        response.setSetCookie(SESSION_NAME + "=" + sessionId + "; " + "Path= /;");
+
+        /* 응답 메시지 설정("/index.html") */
+        responseMessage(response, read(RESOURCE_PATH + "/" + INDEX_HTML));
+
+        response.flush();
+    }
+}
