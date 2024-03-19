@@ -39,7 +39,9 @@ public class HttpRequestConverter {
             int contentLength = 0;
 
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                contentLength = calculateContentLength(line);
+                if (contentLength == 0) {
+                    contentLength = calculateContentLength(line);
+                }
                 requestHeader.append(decode(line)).append(NEWLINE);
             }
 
