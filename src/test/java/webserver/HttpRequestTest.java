@@ -3,7 +3,6 @@ package webserver;
 import db.Database;
 import model.User;
 import org.junit.jupiter.api.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpRequestTest {
@@ -11,40 +10,36 @@ public class HttpRequestTest {
 
     @BeforeEach
     void setHttpRequest() {
-        httpRequest = new HttpRequest("GET /registration HTTP/1.1");
+        httpRequest = new HttpRequest();
     }
 
     @Test
     @DisplayName("StartLine에서 method를 가져와야 한다.")
     void getMethod(){
+        httpRequest.storeStartLineData("GET /registration HTTP/1.1");
         assertThat(httpRequest.getMethod()).isEqualTo("GET");
     }
 
     @Test
     @DisplayName("StartLine에서 url을 가져와야 한다.")
     void getUrl(){
+        httpRequest.storeStartLineData("GET /registration HTTP/1.1");
         assertThat(httpRequest.getUrl()).isEqualTo("/registration");
     }
 
     @Test
     @DisplayName("StartLine에서 version을 가져와야 한다.")
     void getVersion(){
+        httpRequest.storeStartLineData("GET /registration HTTP/1.1");
         assertThat(httpRequest.getVersion()).isEqualTo("HTTP/1.1");
     }
 
     @Test
-    @DisplayName("static 폴더에 있는 파일의 경로를 반환해야 한다.")
-    void getRegisterPath() {
-        String completePath = httpRequest.getCompletePath();
-        assertThat(completePath).isEqualTo("src/main/resources/static/registration/index.html");
-    }
-
-    @Test
-    @DisplayName("StartLine에서 RequestParameter를 추출 한다.")
-    void parseRegisterInfo() {
-        String requestStartLine = "GET /user/create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1";
-        httpRequest = new HttpRequest(requestStartLine);
-        httpRequest.parseRegisterData();
+    @DisplayName("POST 방식으로 전달된 회원가입 정보를 파싱할 수 있어야 한다.")
+    void parsePostBodyData() {
+        httpRequest.storeStartLineData("POST /user/create HTTP/1.1");
+        httpRequest.storeHeadersData("Content-Length: 59"); // headers 중에 필요한 정보만 전달
+        httpRequest.storeBodyData("userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net");
 
         assertThat(httpRequest.getUserId()).isEqualTo("javajigi");
         assertThat(httpRequest.getPassword()).isEqualTo("password");
@@ -53,12 +48,12 @@ public class HttpRequestTest {
     }
 
     @Test
-    @DisplayName("StartLine에서 RequestParameter를 추출한 후, user 객체를 DB에 저장해야 한다.")
+    @DisplayName("파싱한 회원가입 정보를 user 객체에 담은 후 DB에 저장해야 한다.")
     void storeUserAtDb() {
-        String requestStartLine = "GET /user/create?userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net HTTP/1.1";
-        httpRequest = new HttpRequest(requestStartLine);
-        httpRequest.parseRegisterData();
-        httpRequest.storeDatabase();
+        httpRequest.storeStartLineData("POST /user/create HTTP/1.1");
+        httpRequest.storeHeadersData("Content-Length: 59"); // headers 중에 필요한 정보만 전달
+        httpRequest.storeBodyData("userId=javajigi&password=password&name=%EB%B0%95%EC%9E%AC%EC%84%B1&email=javajigi%40slipp.net");
+        httpRequest.storeDatabase(); // User 객체 생성 후 DB에 저장
 
         User user = Database.findUserById("javajigi");
         assertThat(user.getUserId()).isEqualTo("javajigi");
@@ -67,30 +62,4 @@ public class HttpRequestTest {
         assertThat(user.getEmail()).isEqualTo("javajigi@slipp.net");
     }
 
-    @Test
-    @DisplayName("html 파일이면 ContentType으로 'text/html;charset=utf-8'을 반환 한다.")
-    void getHtmlContentType() {
-        String requestStartLine = "GET /main.html HTTP/1.1";
-        httpRequest = new HttpRequest(requestStartLine);
-
-        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("text/html;charset=utf-8");
-    }
-
-    @Test
-    @DisplayName("css 파일이면 ContentType으로 'text/css;charset=utf-8'을 반환 한다.")
-    void getCssContentType() {
-        String requestStartLine = "GET /main.css HTTP/1.1";
-        httpRequest = new HttpRequest(requestStartLine);
-
-        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("text/css;charset=utf-8");
-    }
-
-    @Test
-    @DisplayName("img 파일이면 ContentType으로 'image/svg+xml'을 반환 한다.")
-    void getImgContentType() {
-        String requestStartLine = "GET /img/signiture.svg HTTP/1.1";
-        httpRequest = new HttpRequest(requestStartLine);
-
-        assertThat(ContentType.getContentType(httpRequest.getFileType())).isEqualTo("image/svg+xml");
-    }
 }

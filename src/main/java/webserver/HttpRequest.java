@@ -86,6 +86,20 @@ public class HttpRequest {
         return startLineData.get("version");
     }
 
+    public String getUserId(){
+        return bodyData.get("userId");
+    }
+
+    public String getPassword(){
+        return bodyData.get("password");
+    }
+    public String getName(){
+        return bodyData.get("name");
+    }
+    public String getEmail(){
+        return bodyData.get("email");
+    }
+
     public int getContentLength(){
         return Integer.parseInt(headersData.get("Content-Length"));
     }
