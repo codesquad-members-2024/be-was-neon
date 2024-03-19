@@ -74,7 +74,7 @@ public class RequestHandler implements Runnable {
         firstPath = path;
         byte[] body = readFileContent();
         DataOutputStream dos = new DataOutputStream(out);
-        response200Header(dos, body.length);
+        response200Header(dos, body.length, firstPath);
         responseBody(dos, body);
     }
 
@@ -109,15 +109,43 @@ public class RequestHandler implements Runnable {
         return data;
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) throws IOException {
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) throws IOException {
+        String extension = filePath.substring(filePath.lastIndexOf("."));
+        String contentType = determineContentType(extension);
+
         dos.writeBytes("HTTP/1.1 200 OK \r\n");
-        dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+        dos.writeBytes("Content-Type: " + contentType + "\r\n");
         dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
         dos.writeBytes("\r\n");
     }
+
 
     private void responseBody(DataOutputStream dos, byte[] body) throws IOException {
         dos.write(body, 0, body.length);
         dos.flush();
     }
+
+    private String determineContentType(String extension) {
+        switch (extension) {
+            case ".css":
+                return "text/css;charset=utf-8";
+            case ".js":
+                return "application/javascript;charset=utf-8";
+            case ".png":
+                return "image/png";
+            case ".jpg":
+            case ".jpeg":
+                return "image/jpeg";
+            case ".ico":
+                return "image/x-icon";
+            case ".svg":
+                return "image/svg+xml";
+            case ".html":
+            default:
+                return "text/html;charset=utf-8";
+                // 일단 html과 식별 되지 안는 확장자 파일 동시처리
+
+        }
+    }
+
 }
