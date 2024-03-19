@@ -15,16 +15,18 @@ public class Authenticator {
 
     public boolean isAuthenticated(HttpRequest request, HttpResponse response) throws IOException {
         String requestPath = request.getPath();
-
-        if (unauthenticatedURLs.isLoginCheckPath(requestPath)) { // 로그인이 필요한 경로인지 검사
-            boolean isLoggedIn = isLoggedIn(request);
-            if (!isLoggedIn) { // 로그인이 안되어 있으면 로그인 화면으로 리다이렉트
-                response.sendRedirect("/login?redirectURL=" + requestPath);
-                return false;
-            }
+        if (!unauthenticatedURLs.isLoginCheckPath(requestPath)) { // 로그인이 필요하지 않은 경로면 검사 X
+            return true;
         }
 
-        return true;
+        // 로그인이 필요할때 로직
+        boolean isLoggedIn = isLoggedIn(request);
+        if (isLoggedIn) { // 로그인이 되어 있으면 true 리턴
+            return true;
+        }
+
+        response.sendRedirect("/login?redirectURL=" + requestPath); // 로그인이 되어있지 않으면 리다이렉트 설정
+        return false;
     }
 
     private boolean isLoggedIn(HttpRequest request) {
