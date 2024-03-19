@@ -25,7 +25,7 @@ class DatabaseTest {
         Database.addUser(user);
 
         // then
-        assertThat(Database.findUserById("testId").getUserId()).isEqualTo("testId");
+        assertThat(Database.findUserById("testId").get().getUserId()).isEqualTo("testId");
     }
 
     @DisplayName("User의 id로 User르 찾을 수 있다")
@@ -39,8 +39,8 @@ class DatabaseTest {
         Database.addUser(userB);
 
         // when
-        User findUserA = Database.findUserById("userA");
-        User findUserB = Database.findUserById("userB");
+        User findUserA = Database.findUserById("userA").get();
+        User findUserB = Database.findUserById("userB").get();
 
         // then
         assertThat(findUserA).isEqualTo(userA);

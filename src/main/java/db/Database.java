@@ -1,5 +1,6 @@
 package db;
 
+import java.util.Optional;
 import model.User;
 
 import java.util.Collection;
@@ -17,8 +18,8 @@ public class Database {
         logger.debug("[Database] Success Add User !");
     }
 
-    public static User findUserById(String userId) {
-        return users.get(userId);
+    public static Optional<User> findUserById(String userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     public static Collection<User> findAll() {
