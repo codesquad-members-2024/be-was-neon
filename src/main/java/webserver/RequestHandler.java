@@ -58,7 +58,7 @@ public class RequestHandler implements Runnable {
         String contentType = ContentType.getContentType(FileInfo.getFileType(completePath));
 
         File file = new File(completePath);
-        if(checkValidFile(file)){ // 파일이 존재하는지 확인
+        if(FileInfo.checkValidFile(file)){ // 파일이 존재하는지 확인
             FileInputStream fis = new FileInputStream(file);
             byte[] fileContent = fis.readAllBytes();
             fis.close();
@@ -86,10 +86,6 @@ public class RequestHandler implements Runnable {
         }
         httpResponseHeader.setContentType(contentType);
         httpResponseHeader.setContentLength(contentLength);
-    }
-
-    private boolean checkValidFile(File file){
-        return (file.exists() && !file.isDirectory());
     }
 
 }

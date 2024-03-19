@@ -24,4 +24,8 @@ public class FileInfo {
         String[] splitPath = getCompletePath.split(DOT);
         return splitPath[1]; // .으로 split 했을 때 idx:1이 타입
     }
+
+    public static boolean checkValidFile(File file){
+        return (file.exists() && !file.isDirectory());
+    }
 }
