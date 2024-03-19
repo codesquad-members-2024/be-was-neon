@@ -1,9 +1,10 @@
 package utils;
 
+import static utils.Constant.BASE_PATH;
+import static utils.Constant.BASIC_PATH;
+import static utils.Constant.BASIC_ROUTE;
+
 public class DirectoryMatcher {
-    private static final String BASE_PATH = "src/main/resources/static";
-    private static final String BASIC_ROUTE = "/";
-    private static final String BASIC_PATH = "/index.html";
     private static final String ARTICLE_PATH = "/article";
     private static final String ARTICLE_HTML = "/article.html";
     private static final String COMMENT_PATH = "/comment";
