@@ -40,7 +40,7 @@ public class RequestHandler implements Runnable {
                 line = br.readLine();
             }
 
-            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // Post, /user/create 라면
+            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // 회원가입 정보가 POST, /user/create로 전달되었다면
                 char[] buffer = new char[httpRequest.getContentLength()];
                 br.read(buffer, 0, buffer.length); // context length 만큼 읽기
 
@@ -63,19 +63,19 @@ public class RequestHandler implements Runnable {
         String contentType = ContentType.getContentType(FileInfo.getFileType(completePath));
 
         File file = new File(completePath);
-        if(FileInfo.checkValidFile(file)){ // 파일이 존재하는지 확인
+        if(FileInfo.checkValidFile(file)){ // 파일이 존재한다면
             FileInputStream fis = new FileInputStream(file);
             byte[] fileContent = fis.readAllBytes();
             fis.close();
 
-            if(httpRequest.isPost() && httpRequest.isUserCreate()){
+            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // 회원가입 정보가 POST, /user/create로 전달되었다면
                 httpResponseHeader.response302("/index.html", contentType, fileContent.length); // 처음 페이지로 redirect
             }else{
                 httpResponseHeader.response200(contentType, fileContent.length);
             }
             httpResponseBody.setBody(fileContent);
 
-        }else{
+        }else{ // 파일이 존재하지 않는다면
             byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
             httpResponseHeader.response404(contentType, fileContent.length);
             httpResponseBody.setBody(fileContent);
