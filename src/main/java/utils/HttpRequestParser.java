@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum HttpHeaderParser {
+public enum HttpRequestParser {
     REQUEST_LINE(Pattern.compile("(^GET|^POST) (/.*) (HTTP/.{1,3})")),
     HEADERS(Pattern.compile("([^:\\s]+):\\s?(.+)\\s")),
     QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&\\s]+)")),
@@ -14,7 +14,7 @@ public enum HttpHeaderParser {
 
     private final Pattern compiledPattern;
 
-    HttpHeaderParser(Pattern compiledPattern) {
+    HttpRequestParser(Pattern compiledPattern) {
         this.compiledPattern = compiledPattern;
     }
 

@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.HttpHeaderParser.*;
+import static utils.HttpRequestParser.*;
 
 import http.HttpMethod;
 import http.HttpRequest;

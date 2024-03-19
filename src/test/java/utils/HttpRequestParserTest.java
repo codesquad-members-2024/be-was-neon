@@ -1,13 +1,13 @@
 package utils;
 
 import static org.assertj.core.api.Assertions.*;
-import static utils.HttpHeaderParser.*;
+import static utils.HttpRequestParser.*;
 
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class HttpHeaderParserTest {
+class HttpRequestParserTest {
 
     @DisplayName("\"GET /home.html HTTP/1.1\nHost: developer.mozilla.org\"를 파싱하면 request line을 추출할 수 있다.")
     @Test
