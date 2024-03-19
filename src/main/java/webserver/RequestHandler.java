@@ -62,7 +62,7 @@ public class RequestHandler implements Runnable {
     }
 
     private void setRequestFirstLine(BufferedReader br) throws IOException {
-        String request = br.readLine();
+        String request = getFirstLine(br);
         try {
             httpRequest.setFirstLine(request);
         } catch (FileNotFoundException e) {
@@ -70,6 +70,14 @@ public class RequestHandler implements Runnable {
             sendResponse();
             throw new FileNotFoundException();
         }
+    }
+
+    private String getFirstLine(BufferedReader br) throws IOException {
+        String request = br.readLine();
+        if (request == null) {
+            throw new IOException();
+        }
+        return request;
     }
 
     private void setRequestHeaders(BufferedReader br) throws IOException {
