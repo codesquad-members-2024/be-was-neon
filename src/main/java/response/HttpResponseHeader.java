@@ -1,4 +1,4 @@
-package webserver;
+package response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ public class HttpResponseHeader {
     private static final String SPACE = " ";
     private DataOutputStream dos;
 
-    HttpResponseHeader(DataOutputStream dos){
+    public HttpResponseHeader(DataOutputStream dos){
         this.dos = dos;
     }
 

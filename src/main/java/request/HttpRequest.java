@@ -1,4 +1,4 @@
-package webserver;
+package request;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -21,7 +21,7 @@ public class HttpRequest {
     private HashMap<String, String> headersData;
     private HashMap<String, String> bodyData;
 
-    HttpRequest() {
+    public HttpRequest() {
         this.startLineData = new HashMap<String, String>();
         this.headersData = new HashMap<String, String>();
         this.bodyData = new HashMap<String, String>();
