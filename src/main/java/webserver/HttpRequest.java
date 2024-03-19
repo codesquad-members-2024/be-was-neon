@@ -10,46 +10,63 @@ import java.util.Map;
 public class HttpRequest {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
     private String requestMethod;
-    private String requestType;
+    private String requestPath;
     private Map<String, String> requestHeader;
+    private String requestBody;
 
     public void parseRequestLines(InputStream in){
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String requestLine = br.readLine();
-            requestMethod = getRequestMethod(requestLine);
-            requestType = getURL(requestLine);
-            getRequestHeader(br);
+            requestMethod = extractRequestMethod(requestLine);
+            requestPath = extractRequestPath(requestLine);
+            parseRequestHeader(br);
+            if ("POST".equals(requestMethod)){
+                parseRequestBody(br);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Error parsing request lines : {}", e.getMessage());
         }
     }
-    public String getURL(String requestLine){
-        // /index.html HTTP/1.1 string 형태로 받아와서 파일 이름을 사용할수있게 split 을 이용하여 index.html 형태로 파싱해줍니다.
+    public String extractRequestMethod (String requestLine){
+        String[] getFile = requestLine.split(" ");
+        return getFile[0];
+    }
+    public String extractRequestPath(String requestLine){
         String[] getFile = requestLine.split(" ");
         logger.debug("Request : {}", requestLine);
         return getFile[1];
     }
-    public String getRequestMethod (String requestLine){
-        String[] getFile = requestLine.split(" ");
-        return getFile[0];
-    }
-    public void getRequestHeader(BufferedReader in) {
+    public void parseRequestHeader(BufferedReader br) {
         try {
             // StringBuilder 를 통해 모든 request header 를 합치고 parseHeaders 로 전달해줍니다.
             StringBuilder request = new StringBuilder();
             String line;
-            while ((line = in.readLine()) != null && !line.isEmpty()) {
+            while ((line = br.readLine()) != null && !line.isEmpty()) {
                 request.append(line).append("\r\n");
             }
             requestHeader = parseHeader(request.toString());
             // 모든 map 에 들어있는 헤더를 logger 를 이용하여 출력해줍니다.
-            for (Map.Entry<String, String> entry : requestHeader.entrySet()) {
-                logger.debug("Header: {}: {}", entry.getKey(), entry.getValue());
-            }
-
+            logRequestHeaders();
         } catch (IOException e) {
-            logger.error("Error handling request: {}", e.getMessage());
+            logger.error("Error handling request : {}", e.getMessage());
+        }
+    }
+    private void logRequestHeaders() {
+        for (Map.Entry<String, String> entry : requestHeader.entrySet()) {
+            logger.debug("Header: {}: {}", entry.getKey(), entry.getValue());
+        }
+    }
+    public void parseRequestBody(BufferedReader br) {
+        try {
+            StringBuilder requestBodySB = new StringBuilder();
+            while (br.ready()) {
+                requestBodySB.append((char) br.read());
+            }
+            requestBody = requestBodySB.toString();
+            logger.info("Request Body : {}",requestBody);
+        } catch (IOException e) {
+            logger.error("Error parsing request body : {}", e.getMessage());
         }
     }
     public Map<String, String> parseHeader(String request) {
@@ -64,15 +81,27 @@ public class HttpRequest {
         }
         return headers;
     }
+    public String getContentType() {
+        for (RequestType requestType : RequestType.values()) {
+            if (requestPath.contains(requestType.getContentType())) {
+                return requestType.getMIMEType();
+            }
+        }
+        return "";
+    }
 
     public String getRequestMethod() {
         return requestMethod;
     }
 
-    public String getRequestType() {
-        return requestType;
+    public String getRequestPath() {
+        return requestPath;
     }
     public Map<String,String> getRequestHeader() {
         return requestHeader;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
     }
 }

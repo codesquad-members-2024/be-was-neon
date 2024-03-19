@@ -4,39 +4,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Objects;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    private static final String MAIN_PAGE_URL = "/index.html";
 
-    public static void respondHtmlFile (DataOutputStream dos, String fileName, String fileType){
+    public void respondHtmlFile (DataOutputStream dos, String fileName, String fileType){
         try{
-            //LoggerDataOutputStream loggerDataOutputStream = new LoggerDataOutputStream(dos, logger);
-
-            response200Header(dos, Objects.requireNonNull(htmlToByte(fileName)).length, fileType);
-            responseBody(dos, htmlToByte(fileName));
+            response200Header(dos, Objects.requireNonNull(HttpFileHandler.htmlToByte(fileName)).length, fileType);
+            responseBody(dos, HttpFileHandler.htmlToByte(fileName));
 
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }
-    private static byte[] htmlToByte(String fileName) throws IOException {
-        // 파일에서 바이트 단위로 읽기 위한 스트림을 제공합니다.
-        FileInputStream fis = new FileInputStream(new File(fileName));
-        //FileInputStream 의 성능을 개선하기 위한 보조 스트림으로, 버퍼링된 입력 스트림입니다.
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        //바이트 배열에 데이터를 쓰기 위한 스트림입니다.
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        //read()는 파일의 끝에 도달하면 -1을 반환합니다.
-        while ((bytesRead = bis.read(buffer)) != -1) {
-            baos.write(buffer, 0, bytesRead);
+    public void handleRegistrationRequest(DataOutputStream dos, String postBody){
+        try{
+            Map<String, String> paramMap = RegistrationHandler.extractUserData(postBody);
+            UserHandler.createUserFromData(paramMap);
+            response302Redirect(dos, MAIN_PAGE_URL);
+        } catch (Exception e) {
+            logger.error("Error handling registration request: {}", e.getMessage());
         }
-        // 파일 데이터를 fileBytes 배열로 읽어옵니다.
-        return baos.toByteArray();
     }
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent, String fileType) {
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String fileType) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: " + fileType + ";charset=utf-8\r\n");
@@ -46,12 +40,23 @@ public class HttpResponse {
             logger.error(e.getMessage());
         }
     }
-    private static void responseBody(DataOutputStream dos, byte[] body) {
+    private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
+        }
+    }
+    private void response302Redirect(DataOutputStream dos, String location){
+        // 302 response 는 get 으로 유저 데이터를 받아온후에 redirect 하여 클라이언트를 로그인 페이지로 연결시켜줍니다.
+        try{
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + location);
+            dos.writeBytes("\r\n");
+            dos.flush();
+        }catch (IOException e) {
+            logger.error("Error sending 302 redirect response: {}", e.getMessage());
         }
     }
 }

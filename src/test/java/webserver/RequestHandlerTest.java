@@ -20,14 +20,14 @@ class RequestHandlerTest {
     void getFileNameTest() throws IOException {
         String requestLine = "GET /index.html HTTP/1.1\nHost: localhost:8080\n";
         String expectedPath = "/index.html";
-        assertThat(httpRequest.getURL(requestLine)).isEqualTo(expectedPath);
+        assertThat(httpRequest.extractRequestPath(requestLine)).isEqualTo(expectedPath);
     }
     @ParameterizedTest
     @CsvSource({"username, MirID", "nickname, 미르", "password, password"})
     @DisplayName("회원가입 요청에서 원하는 유저 데이터를 추출하였습니다.")
     void getUserDataTest(String key, String value) throws IOException {
-        String registrationRequest = "/create?username=MirID&nickname=%EB%AF%B8%EB%A5%B4&password=password";
-        Map<String, String> userData = RegistrationResponse.getUserData(registrationRequest);
+        String registrationRequest = "username=MirID&nickname=%EB%AF%B8%EB%A5%B4&password=password";
+        Map<String, String> userData = RegistrationHandler.extractUserData(registrationRequest);
         assertThat(userData.get(key)).isEqualTo(value);
     }
     @ParameterizedTest
