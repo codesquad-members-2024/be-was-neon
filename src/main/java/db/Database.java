@@ -9,6 +9,10 @@ import model.User;
 public class Database {
     private static final Map<String, User> users = new ConcurrentHashMap<>();
 
+    static {
+        users.put("sangchu", new User("sangchu", "123", "상추", "sangchu@gmail.com"));
+    } // 테스트를 위한 추가
+
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
     }
