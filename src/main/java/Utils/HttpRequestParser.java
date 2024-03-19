@@ -1,12 +1,12 @@
 package Utils;
 
+import model.User;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import model.User;
 
 /**
  * HTTP 요청을 파싱하여 다양한 정보를 추출하고, 요청된 URL의 경로에 따른 파일 경로를 생성하는 클래스
@@ -67,11 +67,9 @@ public class HttpRequestParser {
                     completePath.append(INDEX_FILE_NAME);
                 } else {
                     completePath.append(requestURL);
-                    // 파일 확장자에 따라 적절한 처리를 추가
                     if (!requestURL.contains(".")) {
                         completePath.append(".html"); // 기본적으로 .html 추가
                     } else {
-                        // 확장자에 따른 처리 로직 추가
                         String extension = requestURL.substring(requestURL.lastIndexOf("."));
                         switch (extension) {
                             case ".css":
@@ -82,8 +80,7 @@ public class HttpRequestParser {
                             case ".svg":
                                 break;
                             default:
-                                // 지원하지 않는 확장자인 경우, 처리 로직을 추가할 수 있음
-                                // 예: 에러 페이지로 리다이렉트 혹은 로그 남기기 등
+                                // 지원하지 않는 확장자 로직
                                 break;
                         }
                     }
@@ -132,7 +129,4 @@ public class HttpRequestParser {
             return Optional.empty();
         }
     }
-
-    // 필요에 따라 추가적인 메소드 구현 가능
-    // 예: getHeaders(), getBody(), getRequestMethod() 등
 }
