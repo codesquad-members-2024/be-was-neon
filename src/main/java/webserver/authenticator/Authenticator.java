@@ -1,4 +1,4 @@
-package webserver.authenication;
+package webserver.authenticator;
 
 import static webserver.requesthandler.URLConst.CSS_FILE_URL;
 import static webserver.requesthandler.URLConst.HOME_URL;

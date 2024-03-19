@@ -6,6 +6,7 @@ import static webserver.requesthandler.URLConst.HOME_URL;
 import static webserver.requesthandler.URLConst.LOGIN_URL;
 import static webserver.requesthandler.URLConst.LOGOUT_URL;
 import static webserver.requesthandler.URLConst.REGISTRATION_URL;
+import static webserver.requesthandler.URLConst.USER_LIST_URL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.authenication.Authenticator;
+import webserver.authenticator.Authenticator;
 import webserver.http.HttpRequest;
 import webserver.http.HttpResponse;
 
@@ -61,6 +62,7 @@ public class MainRequestHandler implements Runnable {
         requestHandlers.put(LOGOUT_URL, new LogoutHandler());
         requestHandlers.put(ARTICLE_URL, new ArticleHandler());
         requestHandlers.put(COMMENT_URL, new CommentHandler());
+        requestHandlers.put(USER_LIST_URL, new UserListHandler());
         return requestHandlers;
     }
 

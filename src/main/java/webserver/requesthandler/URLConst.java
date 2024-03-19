@@ -8,6 +8,7 @@ public interface URLConst {
     String LOGOUT_URL = "/logout";
     String ARTICLE_URL = "/article";
     String COMMENT_URL = "/comment";
+    String USER_LIST_URL = "/user/list";
     String STATIC_DIRECTORY = "/static";
     String INDEX_HTML_FILE = "/index.html";
     String IMG_FILE_URL = "/img/.*";

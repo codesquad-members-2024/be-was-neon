@@ -1,4 +1,4 @@
-package webserver.authenication;
+package webserver.authenticator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
