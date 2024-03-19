@@ -1,6 +1,7 @@
 package utils;
 
 import static http.HttpRequest.*;
+import static utils.HttpConstant.*;
 import static utils.HttpRequestParser.*;
 
 import http.HttpRequest;
@@ -17,9 +18,6 @@ import org.slf4j.LoggerFactory;
 
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
-    private static final String NEWLINE = System.lineSeparator();
-    private static final String BLANK = " ";
-    private static final String QUERY_PARAM_SYMBOL = "\\?";
     private static final int METHOD_INDEX = 0;
     private static final int URL_INDEX = 1;
     private static final int HTTP_VERSION_INDEX = 2;
@@ -42,7 +40,7 @@ public class HttpRequestConverter {
                 if (contentLength == 0) {
                     contentLength = calculateContentLength(line);
                 }
-                requestHeader.append(decode(line)).append(NEWLINE);
+                requestHeader.append(decode(line)).append(CRLF);
             }
 
             if (contentLength > 0) {
@@ -103,7 +101,7 @@ public class HttpRequestConverter {
     }
 
     private static String[] splitRequestLine(String header) {
-        return parseRequestLine(header).split(BLANK); // 'GET /registration?id=test&password=1234 HTTP/1.1'
+        return parseRequestLine(header).split(SP); // 'GET /registration?id=test&password=1234 HTTP/1.1'
     }
 
     private static HttpMethod getMethod(String[] requestLine) {
@@ -119,10 +117,10 @@ public class HttpRequestConverter {
     }
 
     private static String getHttpBody(String header) {
-        return header.substring(header.lastIndexOf(NEWLINE));
+        return header.substring(header.lastIndexOf(CRLF));
     }
 
     private static String getFullUri(String[] requestLine) {
-        return String.join(BLANK, requestLine);
+        return String.join(SP, requestLine);
     }
 }
