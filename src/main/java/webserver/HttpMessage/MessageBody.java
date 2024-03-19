@@ -52,7 +52,10 @@ public class MessageBody {
         return contentType;
     }
 
-    public String getContentByKey(String key){
+    public String getContentByKey(String key) throws IllegalArgumentException{
+        String value = content.get(key);
+
+        if(value == null) throw new IllegalArgumentException("not exists key :" + key);
         return content.get(key);
     }
 

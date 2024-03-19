@@ -28,18 +28,19 @@ public class RequestHandler {
     @PostMapping(path = "/create")
     public Response createUser(Request request) {
         MessageBody reqBody = request.getBody();
-        User user = new User(
-                reqBody.getContentByKey("userId"),
-                reqBody.getContentByKey("password"),
-                reqBody.getContentByKey("name"),
-                reqBody.getContentByKey("email")
-        );
 
         try {
+            User user = new User(
+                    reqBody.getContentByKey("userId"),
+                    reqBody.getContentByKey("password"),
+                    reqBody.getContentByKey("name"),
+                    reqBody.getContentByKey("email")
+            );
+
             Database.addUser(user);
             log.info("User Created : " + user.getUserId());
-        } catch (IllegalArgumentException alreadyExists) {
-            log.info("Fail to create new user : " + alreadyExists.getMessage());
+        } catch (IllegalArgumentException fail) {
+            log.info("Fail to create new user : " + fail.getMessage());
         }
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
