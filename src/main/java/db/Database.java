@@ -10,7 +10,7 @@ public class Database {
     private static Map<String, User> users = new HashMap<>();
 
     public static void addUser(User user) {
-        if(users.containsKey(user.getUserId())) throw new IllegalArgumentException("이미 존재하는 회원 id");
+        if(contains(user)) throw new IllegalArgumentException("이미 존재하는 회원 id");
         users.put(user.getUserId(), user);
     }
 
@@ -20,5 +20,9 @@ public class Database {
 
     public static Collection<User> findAll() {
         return users.values();
+    }
+
+    private static boolean contains(User user){
+        return users.containsKey(user.getUserId());
     }
 }
