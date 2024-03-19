@@ -1,4 +1,4 @@
-package webserver;
+package response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,7 @@ public class HttpResponseBody {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseBody.class);
     private DataOutputStream dos;
 
-    HttpResponseBody(DataOutputStream dos){
+    public HttpResponseBody(DataOutputStream dos){
         this.dos = dos;
     }
 

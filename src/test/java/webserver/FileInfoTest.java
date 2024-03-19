@@ -1,6 +1,8 @@
 package webserver;
 
 import org.junit.jupiter.api.*;
+import request.FileInfo;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileInfoTest {

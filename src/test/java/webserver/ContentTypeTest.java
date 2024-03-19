@@ -1,6 +1,9 @@
 package webserver;
 
 import org.junit.jupiter.api.*;
+import request.FileInfo;
+import response.ContentType;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ContentTypeTest {
