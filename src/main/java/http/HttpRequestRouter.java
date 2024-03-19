@@ -42,7 +42,11 @@ public class HttpRequestRouter {
     }
 
     public void processPOSTMethod() {
-        // TODO: POST 기능 구현 (user create)
+        FilePath filePath = httpRequest.getFilePath();
+        if (filePath.isCreateCommand()) {
+            httpRequest.createUser();
+            httpResponse.setRedirectResponse();
+        }
     }
 
     public void processPUTMethod() {

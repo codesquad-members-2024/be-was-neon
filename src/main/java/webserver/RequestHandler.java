@@ -16,11 +16,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final String NEW_CLIENT_CONNECT_MESSAGE = "New Client Connect! Connected IP : {}, Port : {}";
 
     private Socket connection;
@@ -46,71 +47,74 @@ public class RequestHandler implements Runnable {
             initializeHttpRequest(br);
             HttpRequestRouter httpRequestRouter = new HttpRequestRouter(httpRequest, httpResponse);
             httpRequestRouter.processRequest();
-            sendResponse(httpResponse);
+            sendResponse();
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage());
         }
     }
 
     private void initializeHttpRequest(BufferedReader br) throws IOException {
-        String request = br.readLine();
-
-        setRequestFirstLine(request);
-        setRequestHeadersAndBody(br, request);
+        setRequestFirstLine(br);
+        setRequestHeaders(br);
+        setRequestBody(br);
 
         logger.info(httpRequest.getFormattedRequest());
     }
 
-    private void setRequestFirstLine(String request) throws IOException {
+    private void setRequestFirstLine(BufferedReader br) throws IOException {
+        String request = br.readLine();
         try {
             httpRequest.setFirstLine(request);
         } catch (FileNotFoundException e) {
             httpResponse.setErrorResponse(Status.NOT_FOUND);
-            sendResponse(httpResponse);
+            sendResponse();
             throw new FileNotFoundException();
         }
     }
 
-    private void setRequestHeadersAndBody(BufferedReader br, String request) throws IOException {
+    private void setRequestHeaders(BufferedReader br) throws IOException {
         StringBuilder headers = new StringBuilder();
-        StringBuilder body = new StringBuilder();
+        String request;
         while (!(request = br.readLine()).equals("")) {
-            if (request.equals(" ")) { // requestBody가 있는 경우
-                while (!(request = br.readLine()).equals("")) {
-                    body.append(request).append(LINE_FEED);
-                }
-                break;
-            }
             headers.append(request).append(LINE_FEED);
         }
         httpRequest.setRequestHeaders(headers.toString());
-        httpRequest.setBody(body.toString());
     }
 
-    private void writeHeader(HttpResponse httpResponse) {
-        try {
-            dos.writeBytes(httpResponse.getFormattedFirstLine());
-            dos.writeBytes(CRLF);
-            dos.writeBytes(httpResponse.getFormattedContentType() + CRLF);
-            dos.writeBytes(httpResponse.getFormattedContentLength() + CRLF);
-            dos.writeBytes(CRLF);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+    private void setRequestBody(BufferedReader br) throws IOException {
+        int contentLength;
+        Optional<String> contentLengthHeader = httpRequest.getContentLength();
+        if (contentLengthHeader.isEmpty()) {
+            return;
         }
+        contentLength = Integer.parseInt(contentLengthHeader.get().trim());
+        String body = generateRequestBody(br, contentLength);
+        httpRequest.setBody(body);
     }
 
-    private void writeBody(HttpResponse httpResponse) {
+    private String generateRequestBody(BufferedReader br, int contentLength) throws IOException {
+        StringBuilder body = new StringBuilder();
+        char[] buffer = new char[1024];
+        int bytesRead;
+        int totalBytesRead = 0;
+        while (totalBytesRead < contentLength
+                && (bytesRead = br.read(buffer, 0, Math.min(buffer.length, contentLength - totalBytesRead))) != -1) {
+            body.append(buffer, 0, bytesRead);
+            totalBytesRead += bytesRead;
+        }
+        return body.toString();
+    }
+
+    private void sendResponse() throws IOException {
         try {
             byte[] body = httpResponse.getHttpRequestBody();
+            dos.writeBytes(httpResponse.getFormattedResponse());
+            dos.writeBytes(CRLF);
             dos.write(body, 0, body.length);
+            logger.info(httpResponse.getFormattedResponse());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private void sendResponse(HttpResponse httpResponse) throws IOException {
-        writeHeader(httpResponse);
-        writeBody(httpResponse);
         dos.flush();
     }
 }
