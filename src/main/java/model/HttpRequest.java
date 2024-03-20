@@ -9,12 +9,13 @@ public class HttpRequest {
     private String path;
     private Map<String, String> queryString;
     private String httpVersion;
-
+    private HttpBody httpBody;
     public HttpRequest(HttpRequestBuilder httpRequestBuilder) throws IOException {
         this.httpMethod = httpRequestBuilder.getHttpMethod();
         this.path = httpRequestBuilder.getPath();
         this.queryString = httpRequestBuilder.getQueryString();
         this.httpVersion = httpRequestBuilder.getHttpVersion();
+        this.httpBody = httpRequestBuilder.getHttpBody();
     }
     public String getHttpMethod() {
         return httpMethod;
@@ -30,6 +31,10 @@ public class HttpRequest {
 
     public String getHttpVersion() {
         return httpVersion;
+    }
+
+    public HttpBody getHttpBody() {
+        return httpBody;
     }
 
 }

@@ -10,32 +10,39 @@ public class ResponseHandler {
     private static final String INDEX_HTML = "/index.html";
     private static final String REGISTRATION = "/registration";
     private static final String CREATE = "/create";
-    public void select(HttpRequest httpRequest, OutputStream out)
+    private static final String GET = "GET";
+    private static final String POST = "POST";
+    private static final String DOT = ".";
+    public String select(HttpRequest httpRequest, OutputStream out)
         throws UnsupportedEncodingException {
 
-        String filePath = DEFAULT_PATH + httpRequest.getPath();
+        String requestPath = httpRequest.getPath();
+        String httpMethod = httpRequest.getHttpMethod();
 
         //controller 역할
-        if (httpRequest.getPath().equals(INDEX_HTML)) {
-            filePath = DEFAULT_PATH + INDEX_HTML;
-
-            HttpResponse.sendHttpResponse(out, filePath);
+        if(httpMethod.equals(GET) && requestPath.contains(INDEX_HTML)){
+            return DEFAULT_PATH + requestPath;
         }
-        if (httpRequest.getPath().equals(REGISTRATION)) {
-            filePath = DEFAULT_PATH + REGISTRATION + INDEX_HTML;
 
-            HttpResponse.sendHttpResponse(out, filePath);
+        if (httpMethod.equals(GET) && requestPath.contains(REGISTRATION)) {
+            // src/main/resources/static + /registration/index.html
+            return DEFAULT_PATH + requestPath + INDEX_HTML;
         }
-        if (httpRequest.getPath().equals(CREATE)) {
-            boolean isSuccess = UserRegistration.register(httpRequest.getQueryString());
-            //redirect구현
-            if (isSuccess) {
-                HttpResponse.redirectHttpResponse(out, INDEX_HTML);
-            }
-            if (!isSuccess) { // 가입 실패하면 그 페이지 그대로
-                HttpResponse.redirectHttpResponse(out, REGISTRATION);
+
+        if (httpMethod.equals(GET)) {
+            if(!requestPath.contains(DOT)){
+                return DEFAULT_PATH + INDEX_HTML;
             }
         }
-        HttpResponse.sendHttpResponse(out, filePath);
+
+        if(httpMethod.equals(POST) && requestPath.contains(CREATE)){
+            //POST 메소드로 변경하면서 에러 발생
+            //UserRegistration.register(httpRequest.getQueryString());
+            //redirect로 보내야 한단 말이지
+            UserRegistration.register(httpRequest.getHttpBody().getKeyValue());
+            return DEFAULT_PATH + INDEX_HTML;
+        }
+
+        return DEFAULT_PATH + requestPath;
     }
 }
