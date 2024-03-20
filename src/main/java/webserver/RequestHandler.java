@@ -26,13 +26,16 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            //http 정보 설정
+            //http Request 정보 설정
             HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder(in);
             HttpRequest httpRequest = new HttpRequest(httpRequestBuilder);
-            //HTTP Response를 생성하는 responseHandler 생성
+            //HTTP Response 정보 설정
             ResponseHandler responseHandler = new ResponseHandler();
-            //requestUri 를 통해서 해당하는 동작 실행
-            responseHandler.select(httpRequest, out);
+            //requestUri 를 통해서 해당하는 동작 실행 + HttpMethod 를 통해 실행할 동작을 찾는다.
+            String filePath = responseHandler.select(httpRequest, out);
+            //response를 보낸다
+            //여기서 보내는 방법을 결정해야하는데
+            HttpResponse.sendHttpResponse(out,filePath);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
