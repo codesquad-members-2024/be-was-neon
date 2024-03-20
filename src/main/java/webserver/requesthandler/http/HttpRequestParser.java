@@ -17,30 +17,36 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import webserver.requesthandler.http.message.Body;
+import webserver.requesthandler.http.message.Headers;
+import webserver.requesthandler.http.message.Parameters;
+import webserver.requesthandler.http.message.RequestLine;
 
 public class HttpRequestParser {
     public static HttpRequest parse(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-        HttpRequest request = new HttpRequest();
 
-        // 요청 라인 파싱
+        // 리퀘스트 라인 파싱
         String[] requestLineParts = extractRequestLineParts(br);
-        request.setMethod(requestLineParts[0]);
-        String url = URLDecoder.decode(requestLineParts[1], StandardCharsets.UTF_8);
-        request.setPath(extractPath(url));
+        String queryString = URLDecoder.decode(requestLineParts[1], StandardCharsets.UTF_8);
+        RequestLine requestLine = getRequestLine(requestLineParts, queryString);
 
         // 헤더 파싱
-        Map<String, String> headers = extractHeaders(br);
-        request.setHeaders(headers);
+        Headers headers = new Headers(extractHeaders(br));
 
         // 본문 파싱
-        String body = extractBody(br, headers);
-        request.setBody(body);
+        Body body = new Body(extractBody(br, headers).getBytes());
 
         // 파람 파싱
-        request.setParams(extractParams(url, headers, body));
+        Parameters parameters = new Parameters(extractParams(queryString, headers, body));
 
-        return request;
+        return new HttpRequest(requestLine, headers, body, parameters);
+    }
+
+    private static RequestLine getRequestLine(String[] requestLineParts, String queryString) {
+        String method = requestLineParts[0];
+        String URL = extractURL(queryString);
+        return new RequestLine(method, URL);
     }
 
     private static String[] extractRequestLineParts(BufferedReader br) throws IOException {
@@ -48,11 +54,11 @@ public class HttpRequestParser {
         return requestLine.split(START_LINE_DELIMITER);
     }
 
-    private static String extractPath(String url) {
-        if (url.contains(QUERY_COMMAND_START)) {
-            return url.substring(0, url.indexOf(QUERY_COMMAND_START));
+    private static String extractURL(String queryString) {
+        if (queryString.contains(QUERY_COMMAND_START)) {
+            return queryString.substring(0, queryString.indexOf(QUERY_COMMAND_START));
         }
-        return url;
+        return queryString;
     }
 
 
@@ -66,7 +72,7 @@ public class HttpRequestParser {
         return headers;
     }
 
-    private static String extractBody(BufferedReader br, Map<String, String> headers) throws IOException {
+    private static String extractBody(BufferedReader br, Headers headers) throws IOException {
         if (headers.containsKey(HttpConst.HEADER_CONTENT_LENGTH)) {
             int contentLength = Integer.parseInt(headers.get(HttpConst.HEADER_CONTENT_LENGTH));
             char[] body = new char[contentLength];
@@ -76,7 +82,7 @@ public class HttpRequestParser {
         return HttpConst.EMPTY_STRING;
     }
 
-    private static Map<String, String> extractParams(String url, Map<String, String> headers, String body) {
+    private static Map<String, String> extractParams(String url, Headers headers, Body body) {
         Map<String, String> params = extractQueryParams(url);
         params.putAll(extractBodyParams(headers, body));
         return params;
@@ -91,11 +97,11 @@ public class HttpRequestParser {
         return params;
     }
 
-    private static Map<String, String> extractBodyParams(Map<String, String> headers, String body) {
+    private static Map<String, String> extractBodyParams(Headers headers, Body body) {
         Map<String, String> params = new HashMap<>();
         String contentType = headers.get(HttpConst.HEADER_CONTENT_TYPE);
         if (contentType != null && contentType.equals(HTML_FORM_CONTENT_TYPE)) {
-            String decodedBody = URLDecoder.decode(body, StandardCharsets.UTF_8);
+            String decodedBody = URLDecoder.decode(body.getStringContent(), StandardCharsets.UTF_8);
             parseParams(decodedBody, params);
         }
         return params;

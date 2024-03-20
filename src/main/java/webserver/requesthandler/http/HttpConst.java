@@ -6,6 +6,7 @@ public interface HttpConst {
     String PARAM_DELIMITER = "=";
     String HEADER_COOKIE = "Cookie";
     String HEADER_SET_COOKIE = "Set-Cookie";
+    String SET_COOKIE_DELIMITER = "&";
     String HEADER_CONTENT_LENGTH = "Content-Length";
     String HEADER_CONTENT_TYPE = "Content-Type";
     String HEADER_LOCATION = "Location";

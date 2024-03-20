@@ -14,7 +14,7 @@ public class Authenticator {
     }
 
     public boolean isAuthenticated(HttpRequest request, HttpResponse response) throws IOException {
-        String requestPath = request.getPath();
+        String requestPath = request.getURL();
         if (!unauthenticatedURLs.isLoginCheckPath(requestPath)) { // 로그인이 필요하지 않은 경로면 검사 X
             return true;
         }

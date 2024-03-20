@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,29 +49,22 @@ class HttpRequestParserTest {
     @Test
     @DisplayName("Request Line 정보를 추출할 수 있다.")
     void getLine() {
-        Map<String, String> params = Map.of("userId", "sangchu", "password", "123123", "name", "상추",
-                "email",
-                "sangchu@gmail.com");
         assertThat(httpRequest.getMethod()).isEqualTo("GET");
-        assertThat(httpRequest.getPath()).isEqualTo("/create");
-        assertThat(httpRequest.getParams()).isEqualTo(params);
+        assertThat(httpRequest.getURL()).isEqualTo("/create");
     }
 
     @Test
     @DisplayName("헤더 정보를 추출할 수 있다.")
     void getHeaders() {
-        Map<String, String> headers = httpRequest.getHeaders();
-        String contentType = headers.get("Content-Type");
-        assertThat(contentType).isEqualTo("text/html");
 
-        String contentType2 = httpRequest.getHeader("Content-Type");
-        assertThat(contentType2).isEqualTo(contentType);
+        String contentType = httpRequest.getHeader("Content-Type");
+        assertThat(contentType).isEqualTo("text/html");
     }
 
     @Test
     @DisplayName("Request Body 정보를 추출할 수 있다.")
     void getBody() {
-        String body = httpRequest.getBody();
+        String body = httpRequest.getStringBody();
         assertThat(body).isEqualTo("source=a2&target=a4");
     }
 }

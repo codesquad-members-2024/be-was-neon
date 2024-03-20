@@ -19,7 +19,7 @@ class RegistrationTest {
         Map<String, String> params = Map.of("userId", "sangchu", "password", "password", "name", "상추", "email",
                 "sangchu@gmail.com");
         HttpRequest request = new HttpRequest();
-        request.setParams(params);
+        request.setParameters(params);
 
         RegistrationHandler registrationHandler = new RegistrationHandler();
         registrationHandler.handlePost(request, new HttpResponse());

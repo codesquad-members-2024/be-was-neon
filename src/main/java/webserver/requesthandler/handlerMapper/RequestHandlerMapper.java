@@ -35,6 +35,6 @@ public class RequestHandlerMapper {
     }
 
     public RequestHandler findRequestHandler(HttpRequest request) {
-        return store.getOrDefault(request.getPath(), new StaticResourceHandler());
+        return store.getOrDefault(request.getURL(), new StaticResourceHandler());
     }
 }

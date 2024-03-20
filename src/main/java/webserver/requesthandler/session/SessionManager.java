@@ -18,14 +18,14 @@ public class SessionManager {
 
         HttpCookie cookie = new HttpCookie(SESSION_COOKIE_NAME, sessionId);
         cookie.setMaxAge(EXPIRATION_PERIOD); // 만료 시간 30분
-        response.setCookie(cookie);
+        response.addCookie(cookie);
     }
 
     public static void createSessionBySID(Object object, HttpResponse response, String sid) {
         sessions.put(sid, object);
 
         HttpCookie cookie = new HttpCookie(SESSION_COOKIE_NAME, sid);
-        response.setCookie(cookie);
+        response.addCookie(cookie);
     }
 
     public static Object findSession(HttpRequest request) {

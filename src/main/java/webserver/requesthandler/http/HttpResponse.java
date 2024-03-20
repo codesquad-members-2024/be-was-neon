@@ -1,19 +1,20 @@
 package webserver.requesthandler.http;
 
 import java.net.HttpCookie;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
+import webserver.requesthandler.http.message.Body;
+import webserver.requesthandler.http.message.Headers;
 
 public class HttpResponse {
     private HttpStatus status;
-    private final Map<String, String> headers;
-    private byte[] body;
+    private Headers headers;
+    private Body body;
 
     public HttpResponse() {
-        this.headers = new HashMap<>();
         this.status = HttpStatus.OK;
-        this.body = new byte[0];
+        this.headers = new Headers();
+        this.body = new Body();
     }
 
     public HttpStatus getStatus() {
@@ -25,11 +26,15 @@ public class HttpResponse {
     }
 
     public byte[] getBody() {
-        return body;
+        return body.getContent();
     }
 
     public Map<String, String> getHeaders() {
-        return headers;
+        return headers.getStore();
+    }
+
+    public String getCookieValues() {
+        return getHeader(HttpConst.HEADER_SET_COOKIE);
     }
 
     public void setRedirect(String url) {
@@ -50,19 +55,28 @@ public class HttpResponse {
     }
 
     public void setBody(byte[] body, ContentType contentType) {
-        this.body = body;
+        this.body.setContent(body);
         setContentType(contentType);
         setContentLength(body.length);
     }
 
-    public void setCookie(HttpCookie cookie) {
+    public void addCookie(HttpCookie cookie) {
         StringJoiner sj = new StringJoiner(HttpConst.COOKIE_VALUE_DELIMITER);
         sj.add(cookie.getName() + HttpConst.PARAM_DELIMITER + cookie.getValue());
         if (cookie.getMaxAge() != -1) {
-            sj.add("Max-Age=" + cookie.getMaxAge());
+            sj.add("Max-Age=" + cookie.getMaxAge()); // 만료 기한 존재시 설정
         }
 
-        headers.put(HttpConst.HEADER_SET_COOKIE, sj.toString());
+        String original = headers.get(HttpConst.HEADER_SET_COOKIE);
+
+        String modified;
+        if (original != null) {
+            modified = original + HttpConst.SET_COOKIE_DELIMITER + sj;
+        } else {
+            modified = sj.toString();
+        }
+
+        headers.put(HttpConst.HEADER_SET_COOKIE, modified);
     }
 
     private void setContentType(ContentType contentType) {

@@ -2,6 +2,7 @@ package webserver.requesthandler.http;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.net.HttpCookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,5 +38,19 @@ class HttpResponseTest {
 
         assertThat(contentType).isEqualTo(ContentType.PNG.getMimeType());
         assertThat(contentLength).isEqualTo(String.valueOf(fileLength));
+    }
+
+    @Test
+    @DisplayName("Set-Cookie의 값을 여러개 설정할 수 있다.")
+    void addCookie() {
+        HttpCookie httpCookie1 = new HttpCookie("SID", "123456");
+        response.addCookie(httpCookie1);
+
+        assertThat(response.getCookieValues()).isEqualTo("SID=123456");
+
+        HttpCookie httpCookie2 = new HttpCookie("SID2", "abc");
+        response.addCookie(httpCookie2);
+
+        assertThat(response.getCookieValues()).isEqualTo("SID=123456&SID2=abc");
     }
 }

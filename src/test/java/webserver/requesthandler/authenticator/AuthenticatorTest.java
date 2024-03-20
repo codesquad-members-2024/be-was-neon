@@ -31,7 +31,7 @@ class AuthenticatorTest {
     @DisplayName("인증이 필요한 경로에 미로그인 상태로 접근하면 로그인 화면으로 리다이렉트 되며 원래 접근하려고 했던 경로를 쿼리 파람으로 전달한다.")
     @ValueSource(strings = {"/article", "/comment"})
     void isUnAuthenticated(String path) throws IOException {
-        request.setPath(path);
+        request.setURL(path);
         request.setHeaders(new HashMap<>());
         boolean isAuthenticated = authenticator.isAuthenticated(request, response);
         String redirectURL = response.getHeader("Location");
@@ -47,7 +47,7 @@ class AuthenticatorTest {
     void isAuthenticated(String path) throws IOException {
         Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "SID=123456");
-        request.setPath(path);
+        request.setURL(path);
         request.setHeaders(headers);
 
         SessionManager.createSessionBySID(new User("sangchu", "123", "상추", "didi1484@gmail.com"), response, "123456");
@@ -65,7 +65,7 @@ class AuthenticatorTest {
     @ValueSource(strings = {"/", "/css/abc.css", "/img/img.png", "/login", "/registration"})
     void isAccessible(String path) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        request.setPath(path);
+        request.setURL(path);
         request.setHeaders(headers);
 
         boolean isAuthenticated = authenticator.isAuthenticated(request, response);

@@ -13,15 +13,14 @@ public interface RequestHandler {
     default void handle(HttpRequest request, HttpResponse response) throws IOException {
         if (request.isGET()) {
             handleGet(request, response);
+            return;
         }
         if (request.isPOST()) {
             handlePost(request, response);
+            return;
         }
+        response.setNotFound();
     }
-
-    void handleGet(HttpRequest request, HttpResponse response) throws IOException;
-
-    void handlePost(HttpRequest request, HttpResponse response) throws IOException;
 
     default void setHTMLToBody(HttpResponse response, String resourcePath) throws IOException {
         byte[] body = Objects.requireNonNull(
@@ -30,4 +29,8 @@ public interface RequestHandler {
                         .readAllBytes());
         response.setBody(body, ContentType.HTML);
     }
+
+    void handleGet(HttpRequest request, HttpResponse response) throws IOException;
+
+    void handlePost(HttpRequest request, HttpResponse response) throws IOException;
 }

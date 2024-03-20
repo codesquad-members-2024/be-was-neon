@@ -35,7 +35,7 @@ class LoginHandlerTest {
         Map<String, String> params = new HashMap<>();
         params.put("userId", "sangchu");
         params.put("password", "123");
-        request.setParams(params);
+        request.setParameters(params);
 
         requestHandler.handlePost(request, response);
         String cookieValue = response.getHeader("Set-Cookie");
@@ -48,7 +48,7 @@ class LoginHandlerTest {
         Map<String, String> params = new HashMap<>();
         params.put("userId", "sangchu");
         params.put("password", "125"); // 비밀번호 불일치
-        request.setParams(params);
+        request.setParameters(params);
 
         requestHandler.handlePost(request, response);
         String cookieValue = response.getHeader("Set-Cookie");

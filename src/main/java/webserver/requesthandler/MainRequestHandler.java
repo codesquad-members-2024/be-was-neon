@@ -43,7 +43,8 @@ public class MainRequestHandler implements Runnable {
                 httpResponseWriter.send(response);
                 return;
             }
-            RequestHandler requestHandler = requestHandlerMapper.findRequestHandler(request);
+
+            RequestHandler requestHandler = requestHandlerMapper.findRequestHandler(request); // 매핑정보와 일치하는 서브핸들러 찾기
             requestHandler.handle(request, response);
 
             httpResponseWriter.send(response);
@@ -51,14 +52,4 @@ public class MainRequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
-//
-//    private void handleMethod(HttpRequest request, HttpResponse response, RequestHandler requestHandler)
-//            throws IOException {
-//        if (request.isGET()) {
-//            requestHandler.handleGet(request, response);
-//        }
-//        if (request.isPOST()) {
-//            requestHandler.handlePost(request, response);
-//        }
-//    }
 }

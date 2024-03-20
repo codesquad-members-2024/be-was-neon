@@ -27,7 +27,7 @@ class StaticResourceHandlerTest {
     @DisplayName("요청된 경로와 일치하는 정적 리소스가 있으면 해당 리소스를 읽고 저장한다.")
     void findStaticResource() throws IOException {
         String requestPath = "/img/like.svg";
-        request.setPath(requestPath);
+        request.setURL(requestPath);
         staticResourceHandler.handleGet(request, response);
         HttpStatus status = response.getStatus();
         byte[] body = response.getBody();
@@ -40,7 +40,7 @@ class StaticResourceHandlerTest {
     @Test
     @DisplayName("요청된 경로와 일치하는 정적 리소스가 없으면 404 응답을 반환한다.")
     void findStaticInvalidResource() throws IOException {
-        request.setPath("/abc");
+        request.setURL("/abc");
         staticResourceHandler.handleGet(request, response);
         HttpStatus status = response.getStatus();
         assertThat(status).isEqualTo(HttpStatus.NOT_FOUND);

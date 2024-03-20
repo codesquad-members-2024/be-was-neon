@@ -12,7 +12,7 @@ public class StaticResourceHandler implements RequestHandler {
 
     @Override
     public void handleGet(HttpRequest request, HttpResponse response) throws IOException {
-        String requestPath = request.getPath();
+        String requestPath = request.getURL();
 
         InputStream resourceStream = getStaticResourceStream(requestPath);
 

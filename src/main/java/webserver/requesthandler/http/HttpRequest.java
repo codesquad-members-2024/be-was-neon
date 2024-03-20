@@ -1,46 +1,43 @@
 package webserver.requesthandler.http;
 
 import java.net.HttpCookie;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import webserver.requesthandler.http.message.Body;
+import webserver.requesthandler.http.message.Headers;
+import webserver.requesthandler.http.message.Parameters;
+import webserver.requesthandler.http.message.RequestLine;
 
 public class HttpRequest {
-    private String method;
-    private String path;
-    private Map<String, String> headers;
-    private String body;
-    private Map<String, String> params;
+    private RequestLine requestLine;
+    private Headers headers;
+    private Body body;
+    private Parameters parameters;
+
+    public HttpRequest(RequestLine requestLine, Headers headers, Body body, Parameters parameters) {
+        this.requestLine = requestLine;
+        this.headers = headers;
+        this.body = body;
+        this.parameters = parameters;
+    }
 
     public HttpRequest() {
-        headers = new HashMap<>();
-        params = new HashMap<>();
+        requestLine = new RequestLine();
+        headers = new Headers();
+        body = new Body();
+        parameters = new Parameters();
     }
 
 
     public boolean isGET() {
-        return this.method.equals(HttpConst.METHOD_GET);
+        return requestLine.isGET();
     }
 
     public boolean isPOST() {
-        return this.method.equals(HttpConst.METHOD_POST);
+        return requestLine.isPOST();
     }
 
     public HttpCookie getCookie(String cookieName) {
-        String cookieValues = headers.get(HttpConst.HEADER_COOKIE);
-        if (cookieValues == null) {
-            return null;
-        }
-        String[] cookieParts = cookieValues.split(HttpConst.COOKIE_VALUE_DELIMITER + HttpConst.SPACE_REGEX);
-        return Arrays.stream(cookieParts)
-                .map(cookiePart -> HttpCookie.parse(cookiePart).get(0))
-                .filter(cookie -> cookie.getName().equals(cookieName))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public void setHeader(String key, String value) {
-        headers.put(key, value);
+        return headers.getCookie(cookieName);
     }
 
     public String getHeader(String headerKey) {
@@ -48,46 +45,42 @@ public class HttpRequest {
     }
 
     public String getParameter(String paramKey) {
-        return params.get(paramKey);
+        return parameters.get(paramKey);
     }
 
     public String getMethod() {
-        return method;
+        return requestLine.getMethod();
     }
 
-    public String getPath() {
-        return path;
+    public String getURL() {
+        return requestLine.getURL();
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public byte[] getBody() {
+        return body.getContent();
     }
 
-    public Map<String, String> getParams() {
-        return params;
+    public String getStringBody() {
+        return body.getStringContent();
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public void setParams(Map<String, String> params) {
-        this.params = params;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public void setURL(String URL) {
+        requestLine.setURL(URL);
     }
 
     public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+        this.headers = new Headers(headers);
+    }
+
+    public void setHeader(String key, String value) {
+        headers.put(key, value);
     }
 
     public void setBody(String body) {
-        this.body = body;
+        this.body.setContent(body.getBytes());
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = new Parameters(parameters);
     }
 }
