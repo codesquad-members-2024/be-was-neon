@@ -1,14 +1,12 @@
 package web;
 
-import static utils.HttpConstant.SPLITTER;
-
+import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import model.User;
 import session.SessionManager;
-import utils.HttpRequestParser;
 
 public class DynamicHtmlProcessor extends StaticHtmlProcessor {
 
@@ -17,8 +15,12 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
-        Map<String, String> cookieMap = getCookieMap(request);
-        String sessionId = getSessionId(cookieMap);
+        List<Cookie> cookies = request.getCookie();
+
+        /* 쿠키로부터 세션 아이디 가져오기 */
+        String sessionId = sessionManager.findSessionId(cookies, "SID");
+
+        /* 세션 아이디로부터 세션 유저(Optional) 가져오기 */
         Optional<Object> optionalSession = sessionManager.getSession(sessionId);
 
         if (optionalSession.isEmpty()) {
@@ -33,8 +35,6 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
             response.setContentLength(htmlBuilder.length());
             response.setMessageBody(htmlBuilder.toString());
             response.flush();
-
-            htmlBuilder.setLength(0); // StringBuilder 초기화
             return;
         }
 
@@ -51,22 +51,8 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         responseHeader200(response, getContentType(request));
         response.setContentLength(htmlBuilder.length());
         response.setMessageBody(htmlBuilder.toString());
-        response.flush();
 
         htmlBuilder.setLength(0); // StringBuilder 초기화
-    }
-
-    public String getSessionId(Map<String, String> cookieMap) {
-        String sessionId = cookieMap.get("SID");
-        if (sessionId == null) {
-            return "";
-        }
-        return sessionId.split(SPLITTER)[0];
-    }
-
-    public Map<String, String> getCookieMap(HttpRequest request) {
-        String cookie = request.getHeader("Cookie");
-        return HttpRequestParser.parseParams(cookie);
     }
 
     private void createHtmlHeader() {

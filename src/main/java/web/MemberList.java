@@ -3,10 +3,11 @@ package web;
 import static utils.HttpConstant.CRLF;
 
 import db.Database;
+import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import model.User;
 import session.SessionManager;
@@ -17,8 +18,8 @@ public class MemberList extends DynamicHtmlProcessor {
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
-        Map<String, String> cookieMap = getCookieMap(request);
-        String sessionId = getSessionId(cookieMap);
+        List<Cookie> cookies = request.getCookie();
+        String sessionId = sessionManager.findSessionId(cookies, "SID");
         Optional<Object> optionalSession = sessionManager.getSession(sessionId);
 
         if (optionalSession.isEmpty()) {
@@ -45,8 +46,6 @@ public class MemberList extends DynamicHtmlProcessor {
         response.setContentLength(htmlBuilder.length());
         response.setMessageBody(htmlBuilder.toString());
         response.flush();
-
-        htmlBuilder.setLength(0); // StringBuilder 초기화
     }
 
     private void createHtmlHeader() {
