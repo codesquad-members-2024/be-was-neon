@@ -31,7 +31,8 @@ public class HttpResponse {
     public void send() throws IOException {
         DataOutputStream dos = new DataOutputStream(out);
         dos.writeBytes(
-                HttpConst.HTTP_VERSION + status.getValue() + HttpConst.START_LINE_DELIMITER + status.getReasonPhrase() + HttpConst.CRLF);
+                HttpConst.HTTP_VERSION + status.getValue() + HttpConst.START_LINE_DELIMITER + status.getReasonPhrase()
+                        + HttpConst.CRLF);
         for (String name : headers.keySet()) {
             dos.writeBytes(name + HttpConst.HEADER_DELIMITER + headers.get(name) + HttpConst.CRLF);
         }

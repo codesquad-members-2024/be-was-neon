@@ -1,9 +1,9 @@
 package webserver.requesthandler.handlerimpl;
 
 import java.io.IOException;
+import webserver.requesthandler.URLConst;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
-import webserver.requesthandler.URLConst;
 
 public class ArticleHandler implements RequestHandler {
     @Override

@@ -8,9 +8,9 @@ import model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import webserver.requesthandler.handlerimpl.RegistrationHandler;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
-import webserver.requesthandler.handlerimpl.RegistrationHandler;
 
 class RegistrationTest {
 

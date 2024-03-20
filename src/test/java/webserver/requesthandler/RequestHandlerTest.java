@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.handlerimpl.ArticleHandler;
 import webserver.requesthandler.handlerimpl.RequestHandler;
+import webserver.requesthandler.http.HttpResponse;
 
 class RequestHandlerTest {
 

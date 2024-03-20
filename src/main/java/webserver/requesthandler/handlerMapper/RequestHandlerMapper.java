@@ -10,7 +10,6 @@ import static webserver.requesthandler.URLConst.USER_LIST_URL;
 
 import java.util.HashMap;
 import java.util.Map;
-import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.handlerimpl.ArticleHandler;
 import webserver.requesthandler.handlerimpl.CommentHandler;
 import webserver.requesthandler.handlerimpl.HomeHandler;
@@ -20,6 +19,7 @@ import webserver.requesthandler.handlerimpl.RegistrationHandler;
 import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.requesthandler.handlerimpl.StaticResourceHandler;
 import webserver.requesthandler.handlerimpl.UserListHandler;
+import webserver.requesthandler.http.HttpRequest;
 
 public class RequestHandlerMapper {
     private static final Map<String, RequestHandler> store = new HashMap<>();

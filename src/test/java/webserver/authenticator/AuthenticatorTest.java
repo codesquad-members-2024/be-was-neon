@@ -11,11 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import webserver.requesthandler.authenticator.Authenticator;
+import webserver.requesthandler.authenticator.UnauthenticatedURLs;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.http.HttpStatus;
-import webserver.requesthandler.authenticator.Authenticator;
-import webserver.requesthandler.authenticator.UnauthenticatedURLs;
 import webserver.requesthandler.session.SessionManager;
 
 class AuthenticatorTest {

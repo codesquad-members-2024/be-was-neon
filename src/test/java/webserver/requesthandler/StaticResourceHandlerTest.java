@@ -7,10 +7,10 @@ import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import webserver.requesthandler.handlerimpl.StaticResourceHandler;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.http.HttpStatus;
-import webserver.requesthandler.handlerimpl.StaticResourceHandler;
 
 class StaticResourceHandlerTest {
     StaticResourceHandler staticResourceHandler;

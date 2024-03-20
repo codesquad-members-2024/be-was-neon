@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import model.User;
+import webserver.requesthandler.URLConst;
 import webserver.requesthandler.http.ContentType;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
-import webserver.requesthandler.URLConst;
 
 public class UserListHandler implements RequestHandler {
 
