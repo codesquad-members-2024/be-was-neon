@@ -8,7 +8,7 @@ public class HttpRequestParser {
 
     public static final String QUERY_DELIMITER = "&";
     public static final String KEY_VALUE_DELIMITER = "=";
-    public static final String HEADER_DELIMITER = ":?\\s";
+    public static final String HEADER_DELIMITER = ":\\s?";
 
     public static Map<String, String> parseKeyValuePairs(String query) {
         Map<String, String> queryPairs = new HashMap<>();
