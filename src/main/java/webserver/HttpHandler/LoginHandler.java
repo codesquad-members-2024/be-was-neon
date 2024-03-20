@@ -23,18 +23,18 @@ public class LoginHandler implements Handler{
         MessageBody requestBody = request.getBody();
         User user = Database.findUserById(requestBody.getContentByKey("userId"));
 
+        responseHeader = MessageHeader.builder().field("Location" , "/").build();
+
         try {
             if (user.getPassword().equals(requestBody.getContentByKey("password"))) {
                 String cookie = responseHeader.addCookie(10);
-                SessionStore.addSession(cookie, user, 60000);
+                SessionStore.addSession(cookie, user);
                 log.info("login : " + user.getName());
             } else {
                 log.info("login failed : password mismatch");
             }
         } catch (NullPointerException notExistUser) {
             log.info("login failed : notExistUser");
-        } finally {
-            responseHeader = MessageHeader.builder().field("Location" , "/").build();
         }
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);

@@ -17,24 +17,15 @@ class SessionStoreTest {
     @Test
     @DisplayName("쿠키와 유저 정보로 새 세션을 만들고 , 쿠키 정보로 로그인한 유저를 조회할 수 있다")
     void addSession() {
-        SessionStore.addSession("1234", user , 10000);
+        SessionStore.addSession("1234", user);
 
         assertThat(SessionStore.getSession("1234")).isEqualTo(user);
     }
 
     @Test
-    @DisplayName("세션은 지정한 시간 뒤에 만료되어 삭제된다")
-    void expireSession() throws InterruptedException {
-        SessionStore.addSession("1234", user , 1000);
-        Thread.sleep(1100);
-
-        assertThat(SessionStore.getSession("1234")).isEqualTo(null);
-    }
-
-    @Test
-    @DisplayName("쿠키 정보로 세션을 즉시 삭제할 수 있다")
+    @DisplayName("쿠키 정보로 세션을 삭제할 수 있다")
     void removeSession(){
-        SessionStore.addSession("12345" , user , 10000);
+        SessionStore.addSession("12345" , user);
         SessionStore.removeSession("12345");
 
         assertThat(SessionStore.getSession("12345")).isEqualTo(null);
