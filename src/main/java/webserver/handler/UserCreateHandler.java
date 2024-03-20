@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
+import webserver.httpMessage.HttpStatus;
 import webserver.utils.HttpRequestParser;
 
 import java.util.Map;
@@ -24,6 +25,11 @@ public class UserCreateHandler implements Handler {
         User user = User.from(userForm);
         Database.addUser(user);
         logger.debug("User created : {}", Database.findUserById(user.getUserId()));
-        return HttpResponse.redirect(HOME_PAGE.getPath());
+
+        HttpResponse response = new HttpResponse();
+        response.setStatus(HttpStatus.SEE_OTHER);
+        response.setLocation(HOME_PAGE.getPath());
+
+        return response;
     }
 }

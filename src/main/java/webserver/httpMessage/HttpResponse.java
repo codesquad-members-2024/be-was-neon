@@ -5,34 +5,40 @@ import org.slf4j.LoggerFactory;
 import webserver.utils.TypeMapper;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
 public class HttpResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    private static final String BLANK_HEADER = "";
 
-    private final List<String> header;
-    private final byte[] body;
+    private String header;
+    private byte[] body;
 
-    public HttpResponse(List<String> header) {
-        this.header = header;
-        this.body = new byte[]{};
+    public HttpResponse() {
+        header = BLANK_HEADER;
+        body = new byte[0];
     }
 
-    public HttpResponse(List<String> header, byte[] body) {
+    public HttpResponse(String header) {
+        this.header = header;
+        this.body = new byte[0];
+    }
+
+    public HttpResponse(String header, byte[] body) {
         this.header = header;
         this.body = body;
     }
 
-    public static HttpResponse from(File file) {
-        List<String> header = getOkHeader(TypeMapper.getContentType(file), (int) file.length());
-        byte[] body = readFile(file);
-        return new HttpResponse(header, body);
+    public void redirect(String path) {
+        setStatus(HttpStatus.SEE_OTHER);
+        setLocation(path);
     }
 
-    public static HttpResponse redirect(String location) {
-        return new HttpResponse(getRedirectHeader(location));
+    public void setBody(File file) {
+        body = readFile(file);
+        setContentType(TypeMapper.getContentType(file));
+        setContentLength(body.length);
     }
 
     private static byte[] readFile(File file) {
@@ -45,39 +51,31 @@ public class HttpResponse {
         return body;
     }
 
-    public List<String> getOkHeader() {
-        return header;
-    }
-
     public byte[] getBody() {
         return body;
     }
 
-    private static List<String> getOkHeader(String contentType, int bodyLength) {
-        List<String> header = new ArrayList<>();
-
-        header.add(HttpStatus.OK.getStatusMessage());
-        header.add("Content-Type: " + contentType + ";charset=utf-8 \r\n");
-        header.add("Content-Length: " + bodyLength + " \r\n");
-        header.add("\r\n");
-
-        return header;
+    public void setContentType(String contentType) {
+        header += "Content-Type: " + contentType + ";charset=utf-8 \r\n";
     }
 
-    private static List<String> getRedirectHeader(String location) {
-        List<String> header = new ArrayList<>();
+    public void setContentLength(int bodyLength) {
+        header += "Content-Length: " + bodyLength + " \r\n";
+    }
 
-        header.add(HttpStatus.SEE_OTHER.getStatusMessage());
-        header.add("Location: " + location + " \r\n");
-        header.add("\r\n");
+    public void setLocation(String location) {
+        header += "Location: " + location + " \r\n";
+    }
 
-        return header;
+    public void setStatus(HttpStatus status) {
+        header += status.getStatusMessage();
     }
 
     public void send(OutputStream out) {
         DataOutputStream dos = new DataOutputStream(out);
         try {
-            writeHeader(getOkHeader(), dos);
+            writeHeader(getHeader(), dos);
+            writeBlankLine(dos);
             writeBody(getBody(), dos);
             dos.flush();
         } catch (IOException e) {
@@ -85,13 +83,27 @@ public class HttpResponse {
         }
     }
 
+    public String getHeader() {
+        return header;
+    }
+
+    private static void writeBlankLine(DataOutputStream dos) throws IOException {
+        dos.writeBytes("\r\n");
+    }
+
     private void writeBody(byte[] body, DataOutputStream dos) throws IOException {
         dos.write(body, 0, body.length);
     }
 
-    private void writeHeader(List<String> httpResponse, DataOutputStream dos) throws IOException {
-        for (String line : httpResponse) {
-            dos.writeBytes(line);
-        }
+    private void writeHeader(String header, DataOutputStream dos) throws IOException {
+        dos.writeBytes(header);
+    }
+
+    public void setCookie(UUID uuid) {
+        header += "Cookie: sid=" + uuid + "; Path=/ \r\n";
+    }
+
+    public void remainCookie(String cookie) {
+        header += "Cookie: " + cookie;
     }
 }
