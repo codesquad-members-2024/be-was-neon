@@ -13,26 +13,26 @@ public class SessionStore {
     private static final Logger log = LoggerFactory.getLogger(SessionStore.class);
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
 
-    public static User getSession(String cookie){
-        return sessions.get(cookie);
+    public static User getSession(String sessionId){
+        return sessions.get(sessionId);
     }
 
     public static int getSize(){
         return sessions.size();
     }
 
-    public static void addSession(String cookie, User user , long expirationTimeMills) {
-        sessions.put(cookie, user);
-        setExpiration(cookie, expirationTimeMills);
+    public static void addSession(String sessionId, User user , long expirationTimeMills) {
+        sessions.put(sessionId, user);
+        setExpiration(sessionId, expirationTimeMills);
     }
 
-    public static void removeSession(String cookie){
-        if(sessions.remove(cookie )!= null) log.info("Removing log-out Cookie : " + cookie);
+    public static void removeSession(String sessionId){
+        if(sessions.remove(sessionId )!= null) log.info("Removing log-out Session : " + sessionId);
     }
 
-    private static void setExpiration(String cookie, long expirationTimeMillis) {
+    private static void setExpiration(String sessionId, long expirationTimeMillis) {
         Runnable removeTask = () -> {
-            if(sessions.remove(cookie) !=null) log.info("Removing expired session: " + cookie);
+            if(sessions.remove(sessionId) !=null) log.info("Removing expired session: " + sessionId);
         };
 
         executorService.schedule(removeTask, expirationTimeMillis, TimeUnit.MILLISECONDS);
