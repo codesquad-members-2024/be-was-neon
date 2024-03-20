@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ class HttpResponseTest {
     void createHttpResponse() {
         // given
         HttpResponse response = new HttpResponse(new DataOutputStream(byteArrayOutputStream));
+        Cookie cookie = new Cookie("myCookie", "myValue");
+        cookie.setPath("/index.html");
 
         // when
         response.setHttpVersion("HTTP/1.1")
@@ -32,7 +35,7 @@ class HttpResponseTest {
                 .setCharset("utf-8")
                 .setContentLength(100)
                 .setLocation("/myLocation.html")
-                .setSetCookie("myCookie=myValue; Path=/index.html;")
+                .addCookie(cookie)
                 .setLastModified(
                         LocalDateTime.parse(
                                 "2024-03-13 13:00:12",
@@ -42,15 +45,33 @@ class HttpResponseTest {
         // then
         assertThat(byteArrayOutputStream.toString()).isEqualTo(
                 """
-                        HTTP/1.1 200 OK\r
-                        Content-Type: text/html; charset=utf-8\r
-                        Content-Length: 100\r
-                        Location: /myLocation.html\r
-                        Set-Cookie: myCookie=myValue; Path=/index.html;\r
-                        Last-Modified: 2024-03-13T13:00:12\r
-                        \r
-                        Hi\r
+                        HTTP/1.1 200 OK
+                        Content-Type: text/html; charset=utf-8
+                        Content-Length: 100
+                        Location: /myLocation.html
+                        Set-Cookie: myCookie=myValue; Path=/index.html;\s
+                        Last-Modified: 2024-03-13T13:00:12
+                        
+                        Hi
                         """
         );
+    }
+
+    @DisplayName("myCookie=myValue1; myCookie=myValue2; Path=/; 에 해당하는 쿠키 2개를 응답 헤더에 설정할 수 있다")
+    @Test
+    void addCookies() {
+        // given
+        HttpResponse response = new HttpResponse(new DataOutputStream(byteArrayOutputStream));
+
+        Cookie cookie1 = new Cookie("myCookie", "myValue1");
+        Cookie cookie2 = new Cookie("myCookie", "myValue2");
+        cookie2.setPath("/");
+
+        // when
+        response.addCookies(List.of(cookie1, cookie2));
+
+        // then
+        assertThat(byteArrayOutputStream.toString())
+                .isEqualTo("Set-Cookie: myCookie=myValue1; myCookie=myValue2; Path=/; \n");
     }
 }
