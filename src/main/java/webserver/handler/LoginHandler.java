@@ -34,7 +34,7 @@ public class LoginHandler implements Handler{
             response.redirect(LOGIN_FAILED_PAGE.getPath());
             return response;
         }
-        if (!user.getPassword().equals(password)) {
+        if (!user.verifyPassword(password)) {
             logger.info("비밀번호 불일치 {}, {}", user.getPassword(), password);
             response.redirect(LOGIN_FAILED_PAGE.getPath());
             return response;
