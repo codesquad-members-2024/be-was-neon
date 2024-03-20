@@ -9,7 +9,6 @@ import webserver.HttpMessage.*;
 import webserver.Mapping.GetMapping;
 import webserver.Mapping.PostMapping;
 import webserver.eums.FileType;
-import webserver.eums.ResponseStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class RequestHandler {
         }
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        writeResponseHeader(FOUND, FileType.NONE, 0);
+        responseHeader.addHeaderField("Location", "/");
 
         return new Response(startLine).header(responseHeader);
     }
@@ -76,7 +75,8 @@ public class RequestHandler {
 
     @PostMapping(path = "/logout")
     public Response logout(Request request) {
-        SessionStore.removeSession(request.getHeaderValue("Cookie").split("sid=")[1]);
+        String cookie = request.getHeaderValue("Cookie").split("sid=")[1];
+        SessionStore.removeSession(cookie);
         log.info("logout");
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
@@ -84,41 +84,58 @@ public class RequestHandler {
         return new Response(startLine).header(responseHeader);
     }
 
+    @GetMapping(path = "/user/list")
+    public Response userList(Request request) {
+        if (!verifySession(request)) {
+            startLine = new ResponseStartLine("HTTP/1.1", FOUND);
+            responseHeader.addHeaderField("Location", "/");
+
+            return new Response(startLine).header(responseHeader);
+        }
+
+        startLine = new ResponseStartLine("HTTP/1.1", OK);
+        responseBody = new MessageBody(HtmlMaker.getListHtml(), FileType.HTML);
+        writeContentResponseHeader();
+
+        return new Response(startLine).header(responseHeader).body(responseBody);
+    }
+
     @GetMapping(path = "/")
     public Response responseGet(Request request) {
         String path = request.getStartLine().getUri();
-        path = verifySession(request, path);
-        log.debug("path : " + path);
 
+        if (verifySession(request) && path.equals("/")) {
+            path = path + "/main"; // 로그인 된 세션의 사용자가 /로 접속하면 main/ 으로 보냄
+            log.info("welcome Logged-in user ");
+        }
+
+        log.debug("path : " + path);
         File file = new File(getFilePath(path));
         log.debug("filepath : " + getFilePath(path));
         try {
             responseBody = new MessageBody(file);
             startLine = new ResponseStartLine("HTTP/1.1", OK);
-            writeResponseHeader(OK, responseBody.getContentType(), responseBody.getContentLength());
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
             responseBody = new MessageBody(NotFound.getMessage(), FileType.TXT);
             startLine = new ResponseStartLine("HTTP/1.1", NotFound);
-            writeResponseHeader(NotFound, responseBody.getContentType(), responseBody.getContentLength());
         }
 
-        return new Response(startLine).header(responseHeader).body(responseBody);
+        writeContentResponseHeader();
+        return new Response(startLine)
+                .header(responseHeader)
+                .body(responseBody);
     }
 
-    private String verifySession(Request request, String path) {
-        User user;
+    private boolean verifySession(Request request) {
         try {
-            user = SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]);
+            if(SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]) != null){
+                return true;
+            }
         } catch (NullPointerException | ArrayIndexOutOfBoundsException noCookieSid) {
-            return path;
+            return false;
         }
-
-        if (path.equals("/") && user != null) {
-            path = path + "/main"; // 로그인 된 세션의 사용자가 /로 접속하면 main/ 으로 보냄
-            log.info("welcome Logged-in user " + user.getName());
-        }
-        return path;
+        return false;
     }
 
     private String getFilePath(String path) {
@@ -130,12 +147,8 @@ public class RequestHandler {
         return staticSourcePath + path;
     }
 
-    private void writeResponseHeader(ResponseStatus status, FileType contentType, long contentLength) {
-        if (status == FOUND) responseHeader.addHeaderField("Location", "/index.html");
-
-        else {
-            responseHeader.addHeaderField("Content-Type", contentType.getMimeType());
-            responseHeader.addHeaderField("Content-Length", contentLength + "");
-        }
+    private void writeContentResponseHeader() {
+        responseHeader.addHeaderField("Content-Type", responseBody.getContentType().getMimeType());
+        responseHeader.addHeaderField("Content-Length", responseBody.getContentLength() + "");
     }
 }
