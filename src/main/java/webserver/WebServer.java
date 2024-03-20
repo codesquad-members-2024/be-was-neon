@@ -31,7 +31,7 @@ public class WebServer {
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
                 // 클라이언트 연결이 수락되면 스레드 풀에서 작업을 실행한다.
-                executor.execute(new RequestHandler(connection));
+                executor.execute(new MainHandler(connection));
             }
 
             // 작업이 완료된 후 스레드 풀 종료
