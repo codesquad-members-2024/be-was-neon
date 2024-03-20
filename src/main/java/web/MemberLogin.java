@@ -49,7 +49,7 @@ public class MemberLogin extends HtmlProcessor {
         logger.debug("[LOGIN] success login. userId={}, sessionId={}", loginUser.getUserId(), sessionId);
 
         /* 응답 헤더 설정 */
-        responseHeader302(response, getContentType(request), "/index.html");
+        responseHeader302(response, getContentType(request), "/");
         response.setSetCookie(SESSION_NAME + "=" + sessionId + "; " + "Path= /;");
 
         /* 응답 메시지 설정("/index.html") */
