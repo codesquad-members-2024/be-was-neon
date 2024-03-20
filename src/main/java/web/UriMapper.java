@@ -33,6 +33,7 @@ public class UriMapper {
         URI_MAP.put("/static", new StaticHtmlProcessor());
         URI_MAP.put("/registration", new MemberSave());
         URI_MAP.put("/login", new MemberLogin());
+        URI_MAP.put("/user/list", new MemberList());
     }
 
     public Optional<HttpProcessor> getProcessor(String uri) {
