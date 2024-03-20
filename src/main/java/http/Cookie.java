@@ -18,6 +18,10 @@ public class Cookie {
         cookieValue += "Path=" + path + SPLITTER + SP;
     }
 
+    public void setMaxAge(int maxAge) {
+        cookieValue += "Max-Age=" + maxAge + SPLITTER + SP;
+    }
+
     public String getCookie() {
         return cookieKey + EQUAL + cookieValue;
     }
