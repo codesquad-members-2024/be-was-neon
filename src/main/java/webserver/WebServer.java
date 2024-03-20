@@ -33,7 +33,7 @@ public class WebServer {
             }
         }
 
-        /* RequestHandler , SocketMessageHandler , MappingMatcher 모두 하나만 있으면 되지 않을까?
+        /* ResourceHandler , SocketMessageHandler , MappingMatcher 모두 하나만 있으면 되지 않을까?
          * WebServer 객체의 멤버로 두고 사용 , addHandler 등으로 핸들러 추가 가능하게 변경?
          */
 
