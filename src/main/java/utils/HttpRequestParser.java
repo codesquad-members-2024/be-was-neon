@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public enum HttpRequestParser {
     REQUEST_LINE(Pattern.compile("(^GET|^POST) (/.*) (HTTP/.{1,3})")),
     HEADERS(Pattern.compile("([^:\\s]+):\\s?(.+)\\s")),
-    QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&\\s]+)")),
+    QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&;\\s]+)")),
     ;
 
     private final Pattern compiledPattern;
