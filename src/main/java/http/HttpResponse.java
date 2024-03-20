@@ -71,7 +71,8 @@ public class HttpResponse {
 
     public HttpResponse setMessageBody(String stringMessageBody) {
         writeString(CRLF);
-        writeString(stringMessageBody + CRLF);
+        writeString(stringMessageBody);
+        writeString(CRLF);
         return this;
     }
 
@@ -92,7 +93,7 @@ public class HttpResponse {
 
     private void writeString(String string) {
         try {
-            dos.writeBytes(string);
+            dos.write(string.getBytes("UTF-8"));
         } catch (IOException e) {
             logger.error("[RESPONSE ERROR]: {}", e.getMessage());
         }
