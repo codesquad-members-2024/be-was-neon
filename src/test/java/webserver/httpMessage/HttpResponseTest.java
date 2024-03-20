@@ -17,7 +17,8 @@ class HttpResponseTest {
     @DisplayName("HttpResponse는 file 내용을 body로 가지고 있어야 한다.")
     void from() throws IOException {
         File file = new File(INDEX_HTML_PATH);
-        HttpResponse actual = HttpResponse.from(file);
+        HttpResponse actual = new HttpResponse();
+        actual.setBody(file);
 
         byte[] expected = Files.readAllBytes(Path.of(INDEX_HTML_PATH));
         Assertions.assertThat(actual.getBody()).isEqualTo(expected);

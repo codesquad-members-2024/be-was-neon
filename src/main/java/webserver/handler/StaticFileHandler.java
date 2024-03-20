@@ -2,6 +2,7 @@ package webserver.handler;
 
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
+import webserver.httpMessage.HttpStatus;
 
 import java.io.File;
 
@@ -13,7 +14,12 @@ public class StaticFileHandler implements Handler {
     public HttpResponse service(HttpRequest request) {
         String uri = request.getUri();
         File file = new File(RESOURCE_PATH.getPath() + uri);
-        return HttpResponse.from(file);
+
+        HttpResponse response = new HttpResponse();
+        response.setStatus(HttpStatus.OK);
+        response.setBody(file);
+
+        return response;
     }
 
 }
