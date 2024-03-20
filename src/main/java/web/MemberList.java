@@ -23,7 +23,7 @@ public class MemberList extends DynamicHtmlProcessor {
 
         if (optionalSession.isEmpty()) {
             /* http response 작성 */
-            responseHeader302(response, getContentType(request), "/login");
+            responseHeader302(response, "/login");
             response.setMessageBody(CRLF);
             response.flush();
             return;

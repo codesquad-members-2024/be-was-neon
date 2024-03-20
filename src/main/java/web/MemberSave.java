@@ -1,6 +1,8 @@
 package web;
 
 
+import static utils.HttpConstant.CRLF;
+
 import db.Database;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
@@ -14,8 +16,8 @@ public class MemberSave extends StaticHtmlProcessor {
         if (request.getMethod() == HttpMethod.POST) {
             Database.addUser(createUser(request));
 
-            responseHeader302(response, getContentType(request), "/index.html");
-            responseMessage(response, "ok");
+            responseHeader302(response, "/index.html");
+            response.setMessageBody(CRLF);
 
             response.flush();
             return;

@@ -36,11 +36,10 @@ public class StaticHtmlProcessor extends HttpProcessor {
                 .setCharset(BASIC_CHAR_SET);
     }
 
-    public void responseHeader302(HttpResponse response, String contentType, String location) {
+    public void responseHeader302(HttpResponse response, String location) {
         response.setHttpVersion(BASIC_HTTP_VERSION)
                 .setStatusCode(HttpStatus.STATUS_FOUND)
                 .setLocation(location)
-                .setContentType(contentType)
                 .setCharset(BASIC_CHAR_SET);
     }
 

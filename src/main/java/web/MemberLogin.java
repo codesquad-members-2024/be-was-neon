@@ -1,7 +1,7 @@
 package web;
 
 import static http.HttpRequest.*;
-import static utils.ResourceHandler.*;
+import static utils.HttpConstant.CRLF;
 
 import http.HttpRequest;
 import http.HttpResponse;
@@ -33,8 +33,8 @@ public class MemberLogin extends StaticHtmlProcessor {
         /* 로그인 실패: login-failed.html 리다이렉션 */
         if (optionalUser.isEmpty()) {
             logger.debug("[LOGIN] failed login. userId={}, password={}", id, password);
-            responseHeader302(response, getContentType(request), request.getRequestURI() + "/login-failed.html");
-            response.setMessageBody("login fail");
+            responseHeader302(response, request.getRequestURI() + "/login-failed.html");
+            response.setMessageBody(CRLF);
             response.flush();
             return;
         }
@@ -49,11 +49,9 @@ public class MemberLogin extends StaticHtmlProcessor {
         logger.debug("[LOGIN] success login. userId={}, sessionId={}", loginUser.getUserId(), sessionId);
 
         /* 응답 헤더 설정 */
-        responseHeader302(response, getContentType(request), "/");
+        responseHeader302(response, "/");
         response.setSetCookie(SESSION_NAME + "=" + sessionId + "; " + "Path= /;");
-
-        /* 응답 메시지 설정("/index.html") */
-        responseMessage(response, read(RESOURCE_PATH + "/" + INDEX_HTML));
+        response.setMessageBody(CRLF);
 
         response.flush();
     }
