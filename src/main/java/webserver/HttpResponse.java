@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpResponse {
-
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     public static void sendHttpResponse(OutputStream out, String filePath) {
@@ -43,7 +42,7 @@ public class HttpResponse {
     private static void response300Redirect(DataOutputStream dos, String location) {
         try {
             // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
-            dos.writeBytes("HTTP/1.1 301 Moved Permanently\r\n");
+            dos.writeBytes("HTTP/1.1 302 \r\n");
             dos.writeBytes("Location: " + location + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {

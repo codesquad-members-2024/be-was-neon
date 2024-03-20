@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import model.HttpBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +20,14 @@ public class HttpRequestBuilder {
     private static final String QUERY_STRING_DELIM = "&";
     private static final String KEY_VALUE_DELIM = "=";
     private static final String SPACE = " ";
-    private final String[] requestLines;
+    private String[] requestLines;
+    private int contentLength;
+    private BufferedReader br;
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestBuilder.class);
-    public HttpRequestBuilder(InputStream in) throws IOException {
-        this.requestLines = getRequestLine(in);
-    }
 
+    public HttpRequestBuilder(InputStream in) throws UnsupportedEncodingException {
+        this.br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+    }
     public String getHttpMethod() {
         String httpMethod = this.requestLines[0];
 
@@ -38,12 +43,8 @@ public class HttpRequestBuilder {
 
         return httpVersion;
     }
-    private String[] getRequestLine(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-
-        String startLine = br.readLine();
-
-        String[] requestLines = startLine.split(SPACE);
+    private String[] getRequestLine(BufferedReader br) throws IOException {
+        String[] requestLines = br.readLine().split(SPACE);
         return requestLines;
     }
 
@@ -72,20 +73,47 @@ public class HttpRequestBuilder {
         return queryMap;
     }
 
-    public void readHttpRequest(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+    public void readHttpRequest() throws IOException {
         //Http Request 는 BlankLine 포함된다.
+        this.requestLines = getRequestLine(br);
         while (true) {
             String line = br.readLine();
             logger.debug("line : {}", line);
-            if (line.isEmpty()) {
+            if(line.startsWith("Content-Length")){
+                Pattern pattern = Pattern.compile("\\d+");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    this.contentLength = Integer.parseInt(matcher.group());
+                }
+            }
+            if (line == null || line.isEmpty()) {
                 break;
             }
         }
     }
 
-    public HttpBody getHttpBody() {
-        HttpBody keyValue = null;
-        return keyValue;
+    public HttpBody getHttpBody() throws IOException {
+        String key = "";
+        String value = "";
+        boolean flag = true;
+        Map<String, String> keyValue = new HashMap<>();
+        for (int index = 0; index < contentLength; index++) {
+            int unicodeCodePoint = br.read();
+            String bodyChar = String.valueOf(Character.toChars(unicodeCodePoint));
+            if(flag && !bodyChar.equals("=") && !bodyChar.equals("&")) key += bodyChar;
+            if(!flag && !bodyChar.equals("=") && !bodyChar.equals("&")) value += bodyChar;
+            if (bodyChar.equals("=")) {
+                flag = false;
+            }
+            if(bodyChar.equals("&")){
+                keyValue.put(key, value);
+                key = "";
+                value = "";
+                flag = true;
+            }
+        }
+        keyValue.put(key, value);
+
+        return new HttpBody(keyValue);
     }
 }

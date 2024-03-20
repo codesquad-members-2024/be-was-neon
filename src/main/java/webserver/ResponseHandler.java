@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import model.HttpBody;
 import model.HttpRequest;
 import model.UserRegistration;
 
@@ -10,10 +11,11 @@ public class ResponseHandler {
     private static final String INDEX_HTML = "/index.html";
     private static final String REGISTRATION = "/registration";
     private static final String CREATE = "/create";
+    private static final String REDIRECT = "redirect:";
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String DOT = ".";
-    public String select(HttpRequest httpRequest, OutputStream out)
+    public String select(HttpRequest httpRequest)
         throws UnsupportedEncodingException {
 
         String requestPath = httpRequest.getPath();
@@ -39,8 +41,9 @@ public class ResponseHandler {
             //POST 메소드로 변경하면서 에러 발생
             //UserRegistration.register(httpRequest.getQueryString());
             //redirect로 보내야 한단 말이지
-            UserRegistration.register(httpRequest.getHttpBody().getKeyValue());
-            return DEFAULT_PATH + INDEX_HTML;
+            HttpBody httpBody = httpRequest.getHttpBody();
+            UserRegistration.register(httpBody.getKeyValue());
+            return REDIRECT+INDEX_HTML;
         }
 
         return DEFAULT_PATH + requestPath;
