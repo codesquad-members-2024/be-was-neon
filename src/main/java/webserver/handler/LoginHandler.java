@@ -4,6 +4,7 @@ import db.Database;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.Session.SessionManger;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
 import webserver.utils.HttpRequestParser;
@@ -43,6 +44,7 @@ public class LoginHandler implements Handler{
         response.redirect(HOME_PAGE.getPath());
         UUID uuid = UUID.randomUUID();
         response.setCookie(uuid);
+        SessionManger.addLoginUser(uuid.toString(), user);
         return response;
     }
 }
