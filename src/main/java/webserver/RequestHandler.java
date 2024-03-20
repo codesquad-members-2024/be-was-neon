@@ -9,20 +9,18 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.Socket;
 
-import static Utils.RouteManager.makePath;
-
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
     private String firstPath;
-    private String requestLine;
     private OutputStream out;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
     }
 
+    @Override
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
@@ -38,65 +36,41 @@ public class RequestHandler implements Runnable {
         }
     }
 
-    private void handleRequest(BufferedReader br) throws IOException {
-        // 요청 라인 읽기
-        this.requestLine = readRequestLine(br);
-        // 요청 경로 파싱
-        parseRequestPath();
-        // 헤더 읽기
-        readHeaders(br);
 
-        // 회원가입 또는 파일 응답 처리
-        handleResponse();
+    private void handleRequest(BufferedReader br) throws IOException {
+        String httpRequest = readFullHttpRequest(br);
+        HttpRequestParser httpRequestParser = new HttpRequestParser(httpRequest); // 파싱 로직은 HttpRequestParser로 이동
+
+        String path = httpRequestParser.extractPath();
+        firstPath = RouteManager.makePath(path);
+        logger.debug("Extracted path: {}", firstPath);
+
+        // FileUtils 사용하여 파일 내용 읽기
+        byte[] body = FileUtils.readFileContent(firstPath); // 수정된 부분
+        handleResponse(body);
     }
 
-    private void handleResponse() throws IOException {
+
+    private String readFullHttpRequest(BufferedReader br) throws IOException {
+        // 전체 HTTP 요청을 문자열로 읽어서 반환하는 로직 구현
+        StringBuilder requestBuilder = new StringBuilder();
+        String line;
+        while (!(line = br.readLine()).isEmpty()) {
+            requestBuilder.append(line).append("\r\n");
+        }
+        // 요청 바디가 있다면 여기에서 추가 처리
+        return requestBuilder.toString();
+    }
+
+
+    private void handleResponse(byte[] body) throws IOException {
+        DataOutputStream dos = new DataOutputStream(out);
         try {
-            HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
-            handleFileRequest(httpRequestParser);
+            response200Header(dos, body.length, firstPath);
+            responseBody(dos, body);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private void handleFileRequest(HttpRequestParser httpRequestParser) throws IOException {
-        String path = makePath(httpRequestParser.extractPath());
-        firstPath = path;
-        byte[] body = readFileContent();
-        DataOutputStream dos = new DataOutputStream(out);
-        response200Header(dos, body.length, firstPath);
-        responseBody(dos, body);
-    }
-
-    private String readRequestLine(BufferedReader br) throws IOException {
-        String line = br.readLine();
-        logger.debug("request line: {}", line);
-        return line;
-    }
-
-    private void parseRequestPath() {
-        HttpRequestParser httpRequestParser = new HttpRequestParser(requestLine);
-        String path = RouteManager.makePath(httpRequestParser.extractPath());
-
-        firstPath = path;
-        logger.debug("Extracted path: {}", firstPath);
-    }
-
-    private void readHeaders(BufferedReader br) throws IOException {
-        String line;
-        while (!(line = br.readLine()).isEmpty()) {
-            logger.debug("header: {}", line);
-        }
-    }
-
-    private byte[] readFileContent() throws IOException {
-        FileUtils fileUtils = new FileUtils(new File(firstPath));
-        byte[] data = fileUtils.readFileToByteArray();
-        if (data.length == 0) { // 파일 내용이 비어있거나 파일을 읽을 수 없는 경우
-            logger.error("Requested file not found or empty: {}", firstPath);
-            throw new FileNotFoundException("File not found or empty: " + firstPath);
-        }
-        return data;
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String filePath) throws IOException {

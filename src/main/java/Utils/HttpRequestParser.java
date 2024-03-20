@@ -18,7 +18,7 @@ public class HttpRequestParser {
 
     public HttpRequestParser(String httpRequest) {
         this.headers = new HashMap<>();
-        String[] requestParts = httpRequest.split("\r\n\r\n", 2);
+        String[] requestParts = httpRequest.split("\r\n", 2);
         parseRequestLineAndHeaders(requestParts[0]);
         if (requestParts.length > 1) {
             this.body = requestParts[1];
