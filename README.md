@@ -141,3 +141,6 @@ sequenceDiagram
 - [x] 세션 ID에 해당하는 User 객체를 찾을 수 있다
   - [x] 세션 ID에 해당하는 User 가 없으면 빈 Optional 을 반환할 수 있다 
 - [x] 특정 세션 ID를 제거할 수 있다
+
+## Cookie
+- [x] 쿠키 값을 설정하고 Path를 설정할 수 있다
