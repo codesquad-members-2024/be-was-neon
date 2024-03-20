@@ -3,6 +3,7 @@ package webserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.httpMessage.HttpRequest;
+import webserver.httpMessage.HttpRequestReader;
 import webserver.httpMessage.HttpResponse;
 
 import java.io.IOException;
@@ -25,7 +26,8 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            HttpRequest httpRequest = HttpRequest.from(in);
+            HttpRequestReader reader = new HttpRequestReader(in);
+            HttpRequest httpRequest = reader.readHttpRequest();
             httpRequest.log();
 
             HttpResponse httpResponse = RequestMapper.service(httpRequest);

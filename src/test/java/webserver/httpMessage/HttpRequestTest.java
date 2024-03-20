@@ -13,7 +13,7 @@ class HttpRequestTest {
 
     @BeforeEach
     void init() {
-        httpRequest = new HttpRequest("GET /create?userId=cori&password=1234&name=cori&email=cori@naver.com HTTP/1.1 \r\n", new HashMap<>(), new HashMap<>());
+        httpRequest = new HttpRequest("GET /create?userId=cori&password=1234&name=cori&email=cori@naver.com HTTP/1.1 \r\n", new HashMap<>(), "");
     }
 
     @Test

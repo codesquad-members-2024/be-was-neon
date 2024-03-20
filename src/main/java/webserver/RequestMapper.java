@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
+import webserver.utils.HttpRequestParser;
 
 import java.io.File;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class RequestMapper {
     }
 
     private static HttpResponse createUser(HttpRequest request) {
-        Map<String, String> userForm = request.getBody();
+        String body = request.getBody();
+        Map<String, String> userForm = HttpRequestParser.parseKeyValuePairs(body);
 
         User user = User.from(userForm);
         Database.addUser(user);

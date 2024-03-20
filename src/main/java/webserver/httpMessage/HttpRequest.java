@@ -2,13 +2,7 @@ package webserver.httpMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.utils.HttpRequestParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
@@ -17,56 +11,18 @@ public class HttpRequest {
     public static final String NO_QUERY_PARAMS = "";
     public static final String BLANK = " ";
     public static final String REQUEST_TARGET_DELIMITER = "?";
-    public static final String CONTENT_LENGTH = "Content-Length";
-    public static final String HEADER_DELIMITER = ":?\\s";
+
 
     private final String startLine;
     private final String requestTarget;
     private final Map<String, String> header;
-    private final Map<String, String> body;
+    private final String body;
 
-    public HttpRequest(String startLine, Map<String, String> header, Map<String, String> body) {
+    public HttpRequest(String startLine, Map<String, String> header, String body) {
         this.startLine = startLine;
         this.requestTarget = getRequestTarget();
         this.header = header;
         this.body = body;
-    }
-
-    public static HttpRequest from(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-        String startLine = br.readLine();
-        Map<String, String> header = readHeader(br);
-        Map<String, String> body = readBody(br, header.get(CONTENT_LENGTH));
-        return new HttpRequest(startLine, header, body);
-    }
-
-    private static Map<String, String> readBody(BufferedReader br, String contentLength) throws IOException {
-        if (contentLength == null) {
-            return Map.of();
-        }
-
-        String body = readBodyContent(br, contentLength);
-        return HttpRequestParser.parseKeyValuePairs(body);
-    }
-
-    private static String readBodyContent(BufferedReader br, String contentLength) throws IOException {
-        StringBuilder bodyBuffer = new StringBuilder();
-        int length = Integer.parseInt(contentLength);
-        for (int i = 0; i < length; i++) {
-            bodyBuffer.append((char) br.read());
-        }
-        return bodyBuffer.toString();
-    }
-
-    private static Map<String, String> readHeader(BufferedReader br) throws IOException {
-        Map<String, String> header = new HashMap<>();
-        String line;
-        while (!(line = br.readLine()).isEmpty()) {
-            String[] split = line.split(HEADER_DELIMITER);
-            header.put(split[0], split[1]);
-        }
-        return header;
     }
 
     public void log() {
@@ -94,7 +50,7 @@ public class HttpRequest {
         return split[1];
     }
 
-    public Map<String, String> getBody() {
+    public String getBody() {
         return body;
     }
 }
