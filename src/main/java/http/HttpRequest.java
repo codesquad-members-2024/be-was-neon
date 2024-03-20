@@ -1,5 +1,8 @@
 package http;
 
+import static utils.HttpRequestParser.parseParams;
+
+import java.util.List;
 import java.util.Map;
 
 public class HttpRequest {
@@ -36,6 +39,15 @@ public class HttpRequest {
 
     public String getParameter(String parameterName) {
         return parameter.getOrDefault(parameterName, "");
+    }
+
+    public List<Cookie> getCookie() {
+        String cookies = getHeader("Cookie");
+        Map<String, String> cookieMap = parseParams(cookies);
+
+        return cookieMap.entrySet().stream()
+                .map(entry -> new Cookie(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
     public enum HttpMethod {
