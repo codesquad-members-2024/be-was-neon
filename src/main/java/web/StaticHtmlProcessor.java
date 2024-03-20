@@ -6,7 +6,7 @@ import http.HttpRequest;
 import http.HttpResponse;
 import http.HttpStatus;
 
-public class HtmlProcessor extends HttpProcessor {
+public class StaticHtmlProcessor extends HttpProcessor {
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         byte[] resource = getBytes(request);

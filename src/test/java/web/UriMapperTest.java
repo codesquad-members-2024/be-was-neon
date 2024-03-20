@@ -23,9 +23,9 @@ class UriMapperTest {
 
         // then
         assertThat(rootProcessor.isPresent()).isTrue();
-        assertThat(rootProcessor.get()).isInstanceOf(HtmlProcessor.class);
+        assertThat(rootProcessor.get()).isInstanceOf(StaticHtmlProcessor.class);
         assertThat(indexProcessor.isPresent()).isTrue();
-        assertThat(indexProcessor.get()).isInstanceOf(HtmlProcessor.class);
+        assertThat(indexProcessor.get()).isInstanceOf(StaticHtmlProcessor.class);
     }
 
     @DisplayName("존재하지 않는 URL은 빈 Optional을 반환한다")

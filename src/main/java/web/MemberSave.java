@@ -7,7 +7,7 @@ import http.HttpRequest.HttpMethod;
 import http.HttpResponse;
 import model.User;
 
-public class MemberSave extends HtmlProcessor {
+public class MemberSave extends StaticHtmlProcessor {
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {

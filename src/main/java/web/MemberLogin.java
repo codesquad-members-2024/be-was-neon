@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MemberLogin extends HtmlProcessor {
+public class MemberLogin extends StaticHtmlProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MemberLogin.class);
     private static final String SESSION_NAME = "SID";
     private final LoginManager loginManager = new LoginManager();

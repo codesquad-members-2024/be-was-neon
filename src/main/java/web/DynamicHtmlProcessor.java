@@ -10,7 +10,7 @@ import model.User;
 import session.SessionManager;
 import utils.HttpRequestParser;
 
-public class DynamicHtmlProcessor extends HtmlProcessor {
+public class DynamicHtmlProcessor extends StaticHtmlProcessor {
 
     private final SessionManager sessionManager = new SessionManager();
     private final StringBuilder htmlBuilder = new StringBuilder();
