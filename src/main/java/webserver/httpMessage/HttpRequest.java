@@ -48,15 +48,7 @@ public class HttpRequest {
         return split[1];
     }
 
-    public String getHeaderByName(String headerName) {
-        return header.get(headerName);
-    }
-
     public String getBody() {
         return body;
-    }
-
-    public boolean hasCookie() {
-        return header.containsKey("Cookie");
     }
 }
