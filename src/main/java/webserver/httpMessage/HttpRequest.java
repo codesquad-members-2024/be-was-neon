@@ -23,9 +23,7 @@ public class HttpRequest {
         this.requestTarget = getRequestTarget();
         this.header = header;
         this.body = body;
-    }
 
-    public void log() {
         logger.info(startLine);
     }
 
