@@ -21,4 +21,12 @@ public class Cookie {
     public String getCookie() {
         return cookieKey + EQUAL + cookieValue;
     }
+
+    public String getCookieKey() {
+        return cookieKey;
+    }
+
+    public String getCookieValue() {
+        return cookieValue;
+    }
 }
