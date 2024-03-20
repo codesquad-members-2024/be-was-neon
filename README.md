@@ -92,7 +92,7 @@ sequenceDiagram
     client->>WebServer: 1. POST /login HTTP/1.1: http body -> "id=yelly&password=qwerty"
     WebServer->>RequestHandler: 2. Socket(connection) 전달
     activate RequestHandler
-    RequestHandler->>RequestHandler: 3. UriMapper 통해 회원가입 처리할 Processor 찾음 (MemberLogin)
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 로그인 처리할 Processor 찾음 (MemberLogin)
     RequestHandler->>Processor: 4. HttpRequest 처리 요청
     activate Processor
     Processor->>LoginManager: 5. LoginManager 검증 요청
@@ -103,7 +103,55 @@ sequenceDiagram
     deactivate Processor
     RequestHandler-->>client: 9. HttpResponse 반환 (302 FOUND 리다이렉션)
     deactivate RequestHandler
-    client->>client: 10. `/index.html` 리다이렉션 (WebServer에 다시 GET 요청)
+    client->>client: 10. `/` 리다이렉션 (WebServer에 다시 GET 요청)
+```
+</details>
+
+## 유저 리스트 요청 흐름 (GET 요청)
+<details>
+<summary>접기/펼치기</summary>
+
+```mermaid
+sequenceDiagram
+    actor client
+    client->>WebServer: 1. GET /user/list HTTP/1.1
+    WebServer->>RequestHandler: 2. Socket(connection) 전달
+    activate RequestHandler
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 유저 리스트 페이지를 처리할 Processor 찾음 (MemberList)
+    RequestHandler->>Processor: 4. HttpRequest 처리 요청
+    activate Processor
+    Processor->>SessionManager: 7. 세션 유저 요청
+    SessionManager-->>Processor: 8. 세션 유저(Optional) 반환
+    Processor-->>RequestHandler: 9-1. (세션 유저가 있으면) 동적 페이지 생성
+    Processor-->>RequestHandler: 9-2. (세션 유저가 없으면) 응답 헤더에 302 FOUND '/login' 입력 
+    deactivate Processor
+    RequestHandler-->>client: 10. HttpResponse 반환
+    deactivate RequestHandler
+    client->>client: 11. HTML 화면 표시
+```
+</details>
+
+## 로그아웃 요청 흐름 (GET 요청)
+<details>
+<summary>접기/펼치기</summary>
+
+```mermaid
+sequenceDiagram
+    actor client
+    client->>WebServer: 1. GET /logout HTTP/1.1
+    WebServer->>RequestHandler: 2. Socket(connection) 전달
+    activate RequestHandler
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 로그아웃 처리할 Processor 찾음 (MemberLogout)
+    RequestHandler->>Processor: 4. HttpRequest 처리 요청
+    activate Processor
+    Processor->>SessionManager: 7. 세션이 존재하는지 확인
+    SessionManager-->>SessionManager: 8. (세션이 있으면) 해당 세션 제거
+    Processor-->>RequestHandler: 9-1. (세션이 있으면) 응답 헤더에 쿠키 만료 및 302 FOUND '/' 입력
+    Processor-->>RequestHandler: 9-2. (세션이 없으면) 응답 헤더에 302 FOUND '/' 입력
+    deactivate Processor
+    RequestHandler-->>client: 10. HttpResponse 반환 (302 FOUND 리다이렉션)
+    deactivate RequestHandler
+    client->>client: 11. `/` 리다이렉션 (WebServer에 다시 GET 요청)
 ```
 </details>
 
