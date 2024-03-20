@@ -26,7 +26,7 @@ public class HttpResponse {
     }
 
     public static HttpResponse from(File file) {
-        List<String> header = getHeader(TypeMapper.getContentType(file), (int) file.length());
+        List<String> header = getOkHeader(TypeMapper.getContentType(file), (int) file.length());
         byte[] body = readFile(file);
         return new HttpResponse(header, body);
     }
@@ -45,7 +45,7 @@ public class HttpResponse {
         return body;
     }
 
-    public List<String> getHeader() {
+    public List<String> getOkHeader() {
         return header;
     }
 
@@ -53,7 +53,7 @@ public class HttpResponse {
         return body;
     }
 
-    private static List<String> getHeader(String contentType, int bodyLength) {
+    private static List<String> getOkHeader(String contentType, int bodyLength) {
         List<String> header = new ArrayList<>();
 
         header.add(HttpStatus.OK.getStatusMessage());
@@ -77,7 +77,7 @@ public class HttpResponse {
     public void send(OutputStream out) {
         DataOutputStream dos = new DataOutputStream(out);
         try {
-            writeHeader(getHeader(), dos);
+            writeHeader(getOkHeader(), dos);
             writeBody(getBody(), dos);
             dos.flush();
         } catch (IOException e) {
