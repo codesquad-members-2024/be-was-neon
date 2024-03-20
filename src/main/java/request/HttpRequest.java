@@ -107,6 +107,10 @@ public class HttpRequest {
         return Integer.parseInt(headersData.get("Content-Length"));
     }
 
+    public boolean isContentLengthExist(){ // Content-Length가 존재하고 0보다 큰지 확인
+        return headersData.containsKey("Content-Length") && (getContentLength() > 0);
+    }
+
     public boolean isPost(){
         return startLineData.get("method").equals(METHOD_POST);
     }
