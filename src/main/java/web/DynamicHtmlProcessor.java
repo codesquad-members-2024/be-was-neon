@@ -8,7 +8,7 @@ import java.util.Optional;
 import model.User;
 import session.SessionManager;
 
-public class DynamicHtmlProcessor extends StaticHtmlProcessor {
+public class DynamicHtmlProcessor extends HttpProcessor {
 
     private final SessionManager sessionManager = new SessionManager();
     private final StringBuilder htmlBuilder = new StringBuilder();
@@ -53,13 +53,6 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         responseMessage(response, htmlBuilder);
 
         response.flush();
-    }
-
-    public void responseMessage(HttpResponse response, StringBuilder htmlBuilder) {
-        response.setContentLength(htmlBuilder.length());
-        response.setMessageBody(htmlBuilder.toString());
-
-        htmlBuilder.setLength(0); // StringBuilder 초기화
     }
 
     private void createHtmlHeader() {
