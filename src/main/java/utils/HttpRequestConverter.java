@@ -1,8 +1,9 @@
 package utils;
 
-import static utils.HttpHeaderParser.*;
+import static http.HttpRequest.*;
+import static utils.HttpConstant.*;
+import static utils.HttpRequestParser.*;
 
-import http.HttpMethod;
 import http.HttpRequest;
 import http.HttpRequestBuilder;
 import java.io.BufferedReader;
@@ -17,9 +18,6 @@ import org.slf4j.LoggerFactory;
 
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
-    private static final String NEWLINE = System.lineSeparator();
-    private static final String BLANK = " ";
-    private static final String QUERY_PARAM_SYMBOL = "\\?";
     private static final int METHOD_INDEX = 0;
     private static final int URL_INDEX = 1;
     private static final int HTTP_VERSION_INDEX = 2;
@@ -39,8 +37,10 @@ public class HttpRequestConverter {
             int contentLength = 0;
 
             while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                contentLength = calculateContentLength(line);
-                requestHeader.append(decode(line)).append(NEWLINE);
+                if (contentLength == 0) {
+                    contentLength = calculateContentLength(line);
+                }
+                requestHeader.append(decode(line)).append(CRLF);
             }
 
             if (contentLength > 0) {
@@ -101,7 +101,7 @@ public class HttpRequestConverter {
     }
 
     private static String[] splitRequestLine(String header) {
-        return parseRequestLine(header).split(BLANK); // 'GET /registration?id=test&password=1234 HTTP/1.1'
+        return parseRequestLine(header).split(SP); // 'GET /registration?id=test&password=1234 HTTP/1.1'
     }
 
     private static HttpMethod getMethod(String[] requestLine) {
@@ -117,10 +117,10 @@ public class HttpRequestConverter {
     }
 
     private static String getHttpBody(String header) {
-        return header.substring(header.lastIndexOf(NEWLINE));
+        return header.substring(header.lastIndexOf(CRLF));
     }
 
     private static String getFullUri(String[] requestLine) {
-        return String.join(BLANK, requestLine);
+        return String.join(SP, requestLine);
     }
 }

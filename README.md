@@ -35,6 +35,9 @@ HttpRequest --URI--> UriMapper --> HttpProcessor --write--> HttpResponse --> Cli
 ```
 
 ## HTTP GET 요청 흐름 (`/index.html`, `/registration`)
+<details>
+<summary>접기/펼치기</summary>
+
 ```mermaid
 sequenceDiagram
     actor client
@@ -54,25 +57,55 @@ sequenceDiagram
     client-->>client: 9. 화면 구성
     deactivate client
 ```
+</details>
 
-## 회원가입 흐름(GET 버전)
+## 회원가입 흐름 (POST 요청)
+<details>
+<summary>접기/펼치기</summary>
+
 ```mermaid
 sequenceDiagram
     actor client
-    client->>WebServer: 1. GET 요청: "/registration?id=yelly&password=qwerty"
+    client->>WebServer: 1. POST /registration HTTP/1.1: http body -> "id=yelly&password=qwerty"
     WebServer->>RequestHandler: 2. Socket(connection) 전달
     activate RequestHandler
-    RequestHandler->>RequestHandler: 3. UriMapper 통해 회원가입 처리할 Processor 찾음
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 회원가입 처리할 Processor 찾음 (MemberSave)
     RequestHandler->>Processor: 4. HttpRequest 처리 요청
     activate Processor
     Processor->>Processor: 5. User 생성
     Processor->>Database: 6. User 등록 요청
+    Processor->>RequestHandler: 7. 응답 헤더에 302 FOUND /index.html 입력
     deactivate Processor
-    RequestHandler-->>client: 7. HttpResponse 반환 (200 OK (추후 201 created로 변경))
+    RequestHandler-->>client: 7. HttpResponse 반환 (302 FOUND 리다이렉션)
     deactivate RequestHandler
-    client->>WebServer: 8. `/registration` 리디렉션 (WebServer에 다시 GET 요청)
-    WebServer-->>client: 9. `/registration` 리디렉션 응답(RequestHandler 전달 생략)
+    client->>client: 8. `/index.html` 리다이렉션 (WebServer에 다시 GET 요청)
 ```
+</details>
+
+## 로그인 요청 흐름 (POST 요청)
+<details>
+<summary>접기/펼치기</summary>
+
+```mermaid
+sequenceDiagram
+    actor client
+    client->>WebServer: 1. POST /login HTTP/1.1: http body -> "id=yelly&password=qwerty"
+    WebServer->>RequestHandler: 2. Socket(connection) 전달
+    activate RequestHandler
+    RequestHandler->>RequestHandler: 3. UriMapper 통해 회원가입 처리할 Processor 찾음 (MemberLogin)
+    RequestHandler->>Processor: 4. HttpRequest 처리 요청
+    activate Processor
+    Processor->>LoginManager: 5. LoginManager 검증 요청
+    LoginManager-->>Processor: 6. Optional<User> 반환
+    Processor->>SessionManager: 7. (User가 있으면) session 생성 및 등록 요청
+    Processor-->>RequestHandler: 8-1. (User가 있으면) 응답 헤더에 302 FOUND /index.html 입력
+    Processor-->>RequestHandler: 8-2. (User가 없으면) 응답 헤더에 302 FOUND /login-failed.html 입력
+    deactivate Processor
+    RequestHandler-->>client: 9. HttpResponse 반환 (302 FOUND 리다이렉션)
+    deactivate RequestHandler
+    client->>client: 10. `/index.html` 리다이렉션 (WebServer에 다시 GET 요청)
+```
+</details>
 
 # 기능 구현 리스트
 ## RequestHandler
@@ -98,3 +131,13 @@ sequenceDiagram
 ## StaticMapper
 - [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
 - [x] 존재하지 않는 URI는 빈 Optional을 반환할 수 있다
+
+## LoginManager
+- [x] 데이터베이스에 등록된 유저인지 검증할 수 있다
+
+## SessionManager
+- [x] 세션 ID를 UUID 로 생성할 수 있다
+- [x] 세션 ID를 key로, User 객체를 value 로 가질 수 있다
+- [x] 세션 ID에 해당하는 User 객체를 찾을 수 있다
+  - [x] 세션 ID에 해당하는 User 가 없으면 빈 Optional 을 반환할 수 있다 
+- [x] 특정 세션 ID를 제거할 수 있다

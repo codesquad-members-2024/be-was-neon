@@ -32,7 +32,7 @@ class HttpResponseTest {
                 .setCharset("utf-8")
                 .setContentLength(100)
                 .setLocation("/myLocation.html")
-                .setSetCookie("myCookie=myValue")
+                .setSetCookie("myCookie=myValue; Path=/index.html;")
                 .setLastModified(
                         LocalDateTime.parse(
                                 "2024-03-13 13:00:12",
@@ -46,7 +46,7 @@ class HttpResponseTest {
                         Content-Type: text/html; charset=utf-8\r
                         Content-Length: 100\r
                         Location: /myLocation.html\r
-                        Set-Cookie: myCookie=myValue;\r
+                        Set-Cookie: myCookie=myValue; Path=/index.html;\r
                         Last-Modified: 2024-03-13T13:00:12\r
                         \r
                         Hi\r

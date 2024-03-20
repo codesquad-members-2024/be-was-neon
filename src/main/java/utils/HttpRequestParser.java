@@ -1,11 +1,12 @@
 package utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum HttpHeaderParser {
+public enum HttpRequestParser {
     REQUEST_LINE(Pattern.compile("(^GET|^POST) (/.*) (HTTP/.{1,3})")),
     HEADERS(Pattern.compile("([^:\\s]+):\\s?(.+)\\s")),
     QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&\\s]+)")),
@@ -13,7 +14,7 @@ public enum HttpHeaderParser {
 
     private final Pattern compiledPattern;
 
-    HttpHeaderParser(Pattern compiledPattern) {
+    HttpRequestParser(Pattern compiledPattern) {
         this.compiledPattern = compiledPattern;
     }
 
@@ -32,7 +33,7 @@ public enum HttpHeaderParser {
         while (headerMatcher.find()) {
             headers.put(headerMatcher.group(1), headerMatcher.group(2));
         }
-        return headers;
+        return Collections.unmodifiableMap(headers);
     }
 
     public static Map<String, String> parseParams(String header) {
@@ -42,6 +43,6 @@ public enum HttpHeaderParser {
         while (paramMatcher.find()) {
             paramMap.put(paramMatcher.group(1), paramMatcher.group(2)); // key = 인덱스 1, value = 인덱스 2
         }
-        return paramMap;
+        return Collections.unmodifiableMap(paramMap);
     }
 }

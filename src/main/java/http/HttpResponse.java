@@ -1,5 +1,7 @@
 package http;
 
+import static utils.HttpConstant.*;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -10,9 +12,6 @@ import org.slf4j.LoggerFactory;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private static final String SP = " ";
-    private static final String CRLF = "\r\n";
-    private static final String SPLITTER = ";";
     private String contentType = "Content-Type: ";
     private String charset = "charset=";
     private String contentLength = "Content-Length: ";
@@ -58,8 +57,8 @@ public class HttpResponse {
         return this;
     }
 
-    public HttpResponse setSetCookie(String setCookie) {
-        this.setCookie += setCookie + SPLITTER;
+    public HttpResponse setSetCookie(String cookie) {
+        this.setCookie += cookie;
         writeString(this.setCookie + CRLF);
         return this;
     }
