@@ -9,15 +9,13 @@ import webserver.Mapping.GetMapping;
 import webserver.Mapping.PostMapping;
 import webserver.eums.FileType;
 
-import java.util.HashMap;
-
 import static webserver.eums.ResponseStatus.FOUND;
 import static webserver.eums.ResponseStatus.OK;
 
 public class UserHandler implements Handler{
 
     private ResponseStartLine startLine;
-    private MessageHeader responseHeader = new MessageHeader(new HashMap<>());
+    private MessageHeader responseHeader;
     private MessageBody responseBody;
 
     private static final Logger log = LoggerFactory.getLogger(ResourceHandler.class);
@@ -41,7 +39,7 @@ public class UserHandler implements Handler{
         }
 
         startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        responseHeader.addHeaderField("Location", "/");
+        responseHeader = MessageHeader.builder().field("Location" , "/").build();
 
         return new Response(startLine).header(responseHeader);
     }
@@ -50,7 +48,7 @@ public class UserHandler implements Handler{
     public Response userList(Request request) {
         if (!verifySession(request)) {
             startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-            responseHeader.addHeaderField("Location", "/");
+            responseHeader = MessageHeader.builder().field("Location" , "/").build();
 
             return new Response(startLine).header(responseHeader);
         }

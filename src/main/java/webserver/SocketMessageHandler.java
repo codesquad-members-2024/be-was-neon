@@ -12,8 +12,6 @@ import webserver.eums.FileType;
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SocketMessageHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
@@ -52,22 +50,22 @@ public class SocketMessageHandler implements Runnable {
         Request request = new Request(startLine);
 
         //header
-        Map<String, String> headerFields = new HashMap<>();
+        MessageHeader.HeaderBuilder builder = MessageHeader.builder();
         String reqLine;
         while ((reqLine = br.readLine()) != null && !reqLine.isEmpty()) {
             String[] headerField = reqLine.split(": ");
-            headerFields.put(headerField[0], headerField[1]);
+            builder.field(headerField[0], headerField[1]);
         }
-        request.header(new MessageHeader(headerFields));
+        request.header(builder.build());
 
         // body
         char[] body;
-        if (headerFields.containsKey("Content-Length")) {
-            body = new char[Integer.parseInt(headerFields.get("Content-Length"))];
+        if (request.getHeaderValue("Content-Length") != null) {
+            body = new char[Integer.parseInt(request.getHeaderValue("Content-Length"))];
             br.read(body);
 
             FileType fileType = Arrays.stream(FileType.values())
-                    .filter(t -> t.getMimeType().equals(headerFields.get("Content-Type"))).findFirst().get();
+                    .filter(t -> t.getMimeType().equals(request.getHeaderValue("Content-Type"))).findFirst().get();
             request.body(new MessageBody(new String(body), fileType));
         }
 

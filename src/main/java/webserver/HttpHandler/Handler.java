@@ -5,16 +5,14 @@ import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.MessageHeader;
 import webserver.HttpMessage.Request;
 
-import java.util.HashMap;
 
 public interface Handler {
 
     default MessageHeader writeContentResponseHeader(MessageBody responseBody) {
-        MessageHeader responseHeader = new MessageHeader(new HashMap<>());
-        responseHeader.addHeaderField("Content-Type", responseBody.getContentType().getMimeType());
-        responseHeader.addHeaderField("Content-Length", responseBody.getContentLength() + "");
-
-        return responseHeader;
+        return MessageHeader.builder()
+                .field("Content-Type", responseBody.getContentType().getMimeType())
+                .field("Content-Length", responseBody.getContentLength() + "")
+                .build();
     }
 
     default boolean verifySession(Request request) {

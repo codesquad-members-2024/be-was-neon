@@ -9,8 +9,25 @@ import java.util.*;
 
 public class MessageHeader {
     Map<String , String> headerFields;
-    public MessageHeader(Map<String ,String> headerFields){
+    private MessageHeader(Map<String ,String> headerFields){
         this.headerFields = headerFields;
+    }
+
+    public static HeaderBuilder builder(){
+        return new HeaderBuilder();
+    }
+
+    public static class HeaderBuilder{
+        private final Map<String , String> headerFields = new HashMap<>();
+
+        public HeaderBuilder field(String key , String value){
+            headerFields.put(key , value);
+            return this;
+        }
+
+        public MessageHeader build(){
+            return new MessageHeader(headerFields);
+        }
     }
 
     public Map<String, String> getHeaderFields() {

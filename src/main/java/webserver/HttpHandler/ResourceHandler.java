@@ -1,25 +1,20 @@
 package webserver.HttpHandler;
 
-import db.Database;
-import db.SessionStore;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.HttpMessage.*;
 import webserver.Mapping.GetMapping;
-import webserver.Mapping.PostMapping;
 import webserver.eums.FileType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import static webserver.WebServer.staticSourcePath;
 import static webserver.eums.ResponseStatus.*;
 
 public class ResourceHandler implements Handler{
     private ResponseStartLine startLine;
-    private MessageHeader responseHeader = new MessageHeader(new HashMap<>());
+    private MessageHeader responseHeader;
     private MessageBody responseBody;
 
     private static final Logger log = LoggerFactory.getLogger(ResourceHandler.class);
