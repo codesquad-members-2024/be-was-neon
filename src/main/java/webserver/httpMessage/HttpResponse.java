@@ -100,10 +100,6 @@ public class HttpResponse {
     }
 
     public void setCookie(UUID uuid) {
-        header += "Cookie: sid=" + uuid + "; Path=/ \r\n";
-    }
-
-    public void remainCookie(String cookie) {
-        header += "Cookie: " + cookie;
+        header += "Set-Cookie: sid=" + uuid + "; Path=/ \r\n";
     }
 }
