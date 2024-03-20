@@ -32,12 +32,13 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
 
             /* http response 작성 */
             responseHeader200(response, getContentType(request));
-            response.setContentLength(htmlBuilder.length());
-            response.setMessageBody(htmlBuilder.toString());
+            responseMessage(response, htmlBuilder);
+
             response.flush();
             return;
         }
 
+        /* 세션 아이디에 해당하는 유저 정보 가져오기 */
         User sessionUser = (User) optionalSession.get();
         String userName = sessionUser.getName();
 
@@ -49,6 +50,12 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
 
         /* http response 작성 */
         responseHeader200(response, getContentType(request));
+        responseMessage(response, htmlBuilder);
+
+        response.flush();
+    }
+
+    public void responseMessage(HttpResponse response, StringBuilder htmlBuilder) {
         response.setContentLength(htmlBuilder.length());
         response.setMessageBody(htmlBuilder.toString());
 

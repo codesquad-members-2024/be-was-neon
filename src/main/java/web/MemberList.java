@@ -43,8 +43,8 @@ public class MemberList extends DynamicHtmlProcessor {
 
         /* http response 작성 */
         responseHeader200(response, getContentType(request));
-        response.setContentLength(htmlBuilder.length());
-        response.setMessageBody(htmlBuilder.toString());
+        responseMessage(response, htmlBuilder);
+
         response.flush();
     }
 
