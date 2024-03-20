@@ -3,6 +3,7 @@ package web;
 import static http.HttpRequest.*;
 import static utils.HttpConstant.CRLF;
 
+import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
@@ -50,7 +51,11 @@ public class MemberLogin extends StaticHtmlProcessor {
 
         /* 응답 헤더 설정 */
         responseHeader302(response, "/");
-        response.setSetCookie(SESSION_NAME + "=" + sessionId + "; " + "Path= /;");
+
+        /* 쿠키 입력 */
+        Cookie cookie = new Cookie(SESSION_NAME, sessionId);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         response.setMessageBody(CRLF);
 
         response.flush();
