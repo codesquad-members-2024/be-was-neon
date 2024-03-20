@@ -1,13 +1,10 @@
-package webserver.http;
+package webserver.requesthandler.http;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.requesthandler.http.ContentType;
-import webserver.requesthandler.http.HttpResponse;
-import webserver.requesthandler.http.HttpStatus;
 
 class HttpResponseTest {
     HttpResponse response;

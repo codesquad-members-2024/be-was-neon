@@ -1,4 +1,4 @@
-package webserver.session;
+package webserver.requesthandler.session;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
-import webserver.requesthandler.session.SessionManager;
 
 class SessionManagerTest {
 

@@ -1,4 +1,4 @@
-package webserver.http;
+package webserver.requesthandler.http;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -10,7 +10,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.requesthandler.http.HttpRequest;
 
 class HttpRequestTest {
     HttpRequest httpRequest;
