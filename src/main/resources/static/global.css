@@ -39,6 +39,15 @@
   text-align: center;
 }
 
+.login-fail {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 38.19px;
+  padding: 20px 0;
+  text-align: center;
+  color: #dd1111;
+}
+
 .btn {
   border: none;
   border-radius: 8px;
