@@ -23,41 +23,45 @@
     - `307 Temporary Redirect`는 `308`과 달리 리다이렉트 요청이 캐싱되지 않는다.
 
 ## 구현 내용
+### STEP 1
 - Thread 대신 ExecutorService 를 사용하도록 리팩토링
 - HTTP Request 내용 출력
-- 파일 형식에 따라 HTTP Response Header 의 content-type을 변경
 - 요청 타켓이 디렉토리면 해당 디렉토리의 `index.html` 파일을 반환하도록 구현
 - RequestHandler의 run 메서드의 코드를 HttpRequest, HttpResponse 클래스로 분할
+
+
+### STEP 2
+- 파일 형식에 따라 HTTP Response Header 의 content-type을 변경
+
+
+### STEP 3
 - 회원 가입 기능 구현
   - 쿼리 파라미터를 파싱해 `Map`으로 저장하는 로직 추가
-  - 유저 정보가 들어있는 `Map` 객체를 받아 `User` 객체를 반환하는 정적 팩토리 메서드 구현  
-  - 회원 가입 시 로그인 페이지로 리다이렉션
+  - 유저 정보가 들어있는 `Map` 객체를 받아 `User` 객체를 반환하는 정적 팩토리 메서드 구현
+- 회원 가입 시 로그인 페이지로 리다이렉션
 - 테스트 코드 작성
+
+
+### STEP 4
 - POST 회원가입 구현
-- 회원가입 성공 시 홈 화면으로 리다이렉션  
+- 회원가입 성공 시 홈 화면으로 리다이렉션
+- GET 핸들러와 POST 핸들러 분할
+
+
+### STEP 5
+- URI 별 동작을 정의해둔 `Handler` 구현체를 각각 정의
+  - URI에 따라 `HttpResponse`를 반환하는 메서드를 클래스 단위로 리팩터링
+- 로그인 기능 구현
+  - 로그인 성공
+    - 쿠키에 세션 아이디 추가
+    - `SessionManager`에 `SessionId, User`를 key-value로 추가
+    - `index.html`로 리다이렉트
+  - 로그인 실패
+    - `/login/login_failed.html`로 리다이렉트
+
 
 ## 요청 타겟 별 기능
 - `/` : `index.html` 을 반환
-- `/login` : `login/index.html` 반환
+- `/login` : 로그인을 시도하고 `/index.html`, `/login/login-failed.html` 중 하나를 반환
 - `/registration` : `registration/index.html`
 - `/create` : 쿼리 파라미터의 값으로 User 객체를 만들어 저장 후 로그인 페이지로 리다이렉트
-
-
-## 고민사항
-- HTTP 요청의 body가 비어있을 경우 처리
-HTTP 요청의 바디가 없을 경우 빈 `Map`을 리턴하는 로직을 작성하던 중 `contentLength == null`과 `return Map.of()` 부분이 어색하게 느껴집니다.  
-```java
-private static Map<String, String> readBody(BufferedReader br, String contentLength) throws IOException {
-        if (contentLength == null) {
-            return Map.of();
-        }
-
-        String body = readBodyContent(br, contentLength);
-        return Parser.parseKeyValuePairs(body);
-    }
-```
-
-- 리소스 파일 경로
-현재는 리소스 파일에 접근할 때 경로를 다음과 같이 상수로 정의하고 있습니다.  
-`private static final String STATIC_PATH = "src/main/resources/static"`
-경로를 상수로 정의해두면 실행 환경에 따라 문제가 생길 수 있다고 하는데, 실제로도 상수로 경로를 정의해두는 방법은 잘 사용하지 않는지 궁금합니다.
