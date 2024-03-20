@@ -1,11 +1,14 @@
 package session;
 
+import http.Cookie;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.HttpConstant;
 
 public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
@@ -32,5 +35,18 @@ public class SessionManager {
 
     public void clear() {
         session.clear();
+    }
+
+    public String findSessionId(List<Cookie> cookies, String sessionKey) {
+        return cookies.stream()
+                .filter(cookie -> cookie.getCookieKey().equals(sessionKey))
+                .map(Cookie::getCookieValue)
+                .map(this::cleanSessionId)
+                .findAny()
+                .orElse("");
+    }
+
+    private String cleanSessionId(String sessionId) {
+        return sessionId.replace(HttpConstant.SPLITTER, "").trim();
     }
 }
