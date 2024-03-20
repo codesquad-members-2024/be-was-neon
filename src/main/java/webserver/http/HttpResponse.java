@@ -1,5 +1,12 @@
 package webserver.http;
 
+import static webserver.http.HttpConst.CONTENT_LENGTH_LABEL;
+import static webserver.http.HttpConst.CONTENT_TYPE_LABEL;
+import static webserver.http.HttpConst.COOKIE_VALUE_DELIMITER;
+import static webserver.http.HttpConst.CRLF;
+import static webserver.http.HttpConst.HTTP_VERSION;
+import static webserver.http.HttpConst.START_LINE_DELIMITER;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +16,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 public class HttpResponse {
-    public static final String HTTP_VERSION = "HTTP/1.1 ";
     private final OutputStream out;
     private HttpStatus status;
     private final Map<String, String> headers;
@@ -31,11 +37,11 @@ public class HttpResponse {
 
     public void send() throws IOException {
         DataOutputStream dos = new DataOutputStream(out);
-        dos.writeBytes(HTTP_VERSION + status.getValue() + " " + status.getReasonPhrase() + "\r\n");
+        dos.writeBytes(HTTP_VERSION + status.getValue() + START_LINE_DELIMITER + status.getReasonPhrase() + CRLF);
         for (String name : headers.keySet()) {
-            dos.writeBytes(name + ": " + headers.get(name) + "\r\n");
+            dos.writeBytes(name + HttpConst.HEADER_DELIMITER + headers.get(name) + CRLF);
         }
-        dos.writeBytes("\r\n");
+        dos.writeBytes(CRLF);
         if (body.length > 0) {
             dos.write(body);
         }
@@ -71,7 +77,7 @@ public class HttpResponse {
     }
 
     public void setCookie(HttpCookie cookie) {
-        StringJoiner sj = new StringJoiner("; ");
+        StringJoiner sj = new StringJoiner(COOKIE_VALUE_DELIMITER);
         sj.add(cookie.getName() + "=" + cookie.getValue());
         if (cookie.getMaxAge() != -1) {
             sj.add("Max-Age=" + cookie.getMaxAge());
@@ -81,11 +87,11 @@ public class HttpResponse {
     }
 
     private void setContentType(ContentType contentType) {
-        headers.put("Content-Type", contentType.getMimeType());
+        headers.put(CONTENT_TYPE_LABEL, contentType.getMimeType());
     }
 
     private void setContentLength(int length) {
-        headers.put("Content-Length", String.valueOf(length));
+        headers.put(CONTENT_LENGTH_LABEL, String.valueOf(length));
     }
 
     public HttpStatus getStatus() {

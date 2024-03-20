@@ -1,5 +1,18 @@
 package webserver.http;
 
+import static webserver.http.HttpConst.CONTENT_LENGTH_LABEL;
+import static webserver.http.HttpConst.CONTENT_TYPE_LABEL;
+import static webserver.http.HttpConst.COOKIE_VALUE_DELIMITER;
+import static webserver.http.HttpConst.EMPTY_STRING;
+import static webserver.http.HttpConst.HEADER_DELIMITER;
+import static webserver.http.HttpConst.HTML_FORM_CONTENT_TYPE;
+import static webserver.http.HttpConst.PARAMS_DELIMITER;
+import static webserver.http.HttpConst.PARAMS_LENGTH;
+import static webserver.http.HttpConst.PARAM_DELIMITER;
+import static webserver.http.HttpConst.QUERY_COMMAND_START;
+import static webserver.http.HttpConst.SPACE_REGEX;
+import static webserver.http.HttpConst.START_LINE_DELIMITER;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,15 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
-    public static final String REQUEST_LINE_DELIMITER = " ";
-    public static final String QUERY_COMMAND_START = "?";
-    public static final String PARAMS_DELIMITER = "&";
-    public static final String PARAM_DELIMITER = "=";
-    public static final String CONTENT_LENGTH_LABEL = "Content-Length";
-    public static final String EMPTY_STRING = "";
-    public static final String HEADER_DELIMITER = ":";
-    public static final int PARAMS_LENGTH = 2;
-    public static final String HTML_FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
     private String method;
     private String path;
     private Map<String, String> headers;
@@ -47,7 +51,7 @@ public class HttpRequest {
         if (cookieValues == null) {
             return null;
         }
-        String[] cookieParts = cookieValues.split(";\\s");
+        String[] cookieParts = cookieValues.split(COOKIE_VALUE_DELIMITER + SPACE_REGEX);
         return Arrays.stream(cookieParts)
                 .map(cookiePart -> HttpCookie.parse(cookiePart).get(0))
                 .filter(cookie -> cookie.getName().equals(cookieName))
@@ -105,7 +109,7 @@ public class HttpRequest {
 
     private String[] extractRequestLineParts(BufferedReader br) throws IOException {
         String requestLine = br.readLine();
-        return requestLine.split(REQUEST_LINE_DELIMITER);
+        return requestLine.split(START_LINE_DELIMITER);
     }
 
     private String extractPath(String url) {
@@ -153,7 +157,7 @@ public class HttpRequest {
 
     private Map<String, String> extractBodyParams() {
         Map<String, String> params = new HashMap<>();
-        String contentType = headers.get("Content-Type");
+        String contentType = headers.get(CONTENT_TYPE_LABEL);
         if (contentType != null && contentType.equals(HTML_FORM_CONTENT_TYPE)) {
             String decoded = URLDecoder.decode(body, StandardCharsets.UTF_8);
             String[] paramParts = decoded.split(PARAMS_DELIMITER);
