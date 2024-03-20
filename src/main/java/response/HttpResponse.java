@@ -1,11 +1,10 @@
-package webserver;
+package response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Map;
-import java.util.Objects;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
@@ -13,9 +12,8 @@ public class HttpResponse {
 
     public void respondHtmlFile (DataOutputStream dos, String fileName, String fileType){
         try{
-            response200Header(dos, Objects.requireNonNull(HttpFileHandler.htmlToByte(fileName)).length, fileType);
+            send200Response(dos, HttpFileHandler.htmlToByte(fileName).length, fileType);
             responseBody(dos, HttpFileHandler.htmlToByte(fileName));
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -24,18 +22,31 @@ public class HttpResponse {
         try{
             Map<String, String> paramMap = RegistrationHandler.extractUserData(postBody);
             UserHandler.createUserFromData(paramMap);
-            response302Redirect(dos, MAIN_PAGE_URL);
+            send302Redirect(dos, MAIN_PAGE_URL);
         } catch (Exception e) {
-            logger.error("Error handling registration request: {}", e.getMessage());
+            logger.error(e.getMessage());
         }
     }
+    public static void send200Response(DataOutputStream dos, int lengthOfBodyContent, String fileType) {
+        sendResponse(dos, "HTTP/1.1 200 OK", lengthOfBodyContent, fileType, "");
+    }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String fileType) {
+    public static void send302Redirect(DataOutputStream dos, String location) {
+        sendResponse(dos, "HTTP/1.1 302 Found", -1, "", "Location: " + location);
+    }
+
+    private static void sendResponse(DataOutputStream dos, String statusLine, int lengthOfBodyContent, String fileType, String additionalHeader) {
         try {
-            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes(statusLine + "\r\n");
             dos.writeBytes("Content-Type: " + fileType + ";charset=utf-8\r\n");
-            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            if (lengthOfBodyContent >= 0) {
+                dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            }
+            if (additionalHeader != null && !additionalHeader.isEmpty()) {
+                dos.writeBytes(additionalHeader + "\r\n");
+            }
             dos.writeBytes("\r\n");
+            dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -46,17 +57,6 @@ public class HttpResponse {
             dos.flush();
         } catch (IOException e) {
             logger.error(e.getMessage());
-        }
-    }
-    private void response302Redirect(DataOutputStream dos, String location){
-        // 302 response 는 get 으로 유저 데이터를 받아온후에 redirect 하여 클라이언트를 로그인 페이지로 연결시켜줍니다.
-        try{
-            dos.writeBytes("HTTP/1.1 302 Found \r\n");
-            dos.writeBytes("Location: " + location);
-            dos.writeBytes("\r\n");
-            dos.flush();
-        }catch (IOException e) {
-            logger.error("Error sending 302 redirect response: {}", e.getMessage());
         }
     }
 }
