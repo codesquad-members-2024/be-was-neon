@@ -19,7 +19,8 @@ public class WebServer {
             port = Integer.parseInt(args[0]);
         }
 
-        // html파일을 응답하는 웹 서버의 경우 일반적으로 I/O 바운드 작업이 주이기 때문에 스레드풀을 동적으로 사용할 수 있는 캐시된 스레드 풀 사용
+        // html파일을 응답하는 웹 서버의 경우 일반적으로 I/O 바운드 작업이 주이기 때문에 스레드풀을 동적으로 사용할 수 있는 캐쉬드 스레드 풀 사용
+        // I/O바운드 작업에는 자원을 효율적으로 관리하여 빠른 응답을 위해 캐쉬드 사용이 적합하다고 판단
         ExecutorService threadPool = Executors.newCachedThreadPool();
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
