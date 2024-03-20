@@ -17,19 +17,22 @@ public class SessionStore {
         return sessions.get(cookie);
     }
 
+    public static int getSize(){
+        return sessions.size();
+    }
+
     public static void addSession(String cookie, User user , long expirationTimeMills) {
         sessions.put(cookie, user);
         setExpiration(cookie, expirationTimeMills);
     }
 
     public static void removeSession(String cookie){
-        sessions.remove(cookie);
+        if(sessions.remove(cookie )!= null) log.info("Removing log-out Cookie : " + cookie);
     }
 
     private static void setExpiration(String cookie, long expirationTimeMillis) {
         Runnable removeTask = () -> {
-            sessions.remove(cookie);
-            log.info("Removing expired session: " + cookie);
+            if(sessions.remove(cookie) !=null) log.info("Removing expired session: " + cookie);
         };
 
         executorService.schedule(removeTask, expirationTimeMillis, TimeUnit.MILLISECONDS);
