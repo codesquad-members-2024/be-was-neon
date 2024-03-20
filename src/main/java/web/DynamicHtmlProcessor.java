@@ -107,7 +107,7 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         htmlBuilder.append("</li>");
 
         htmlBuilder.append("<li class=\"header__menu__item\">");
-        htmlBuilder.append("<button id=\"logout-btn\" class=\"btn btn_ghost btn_size_s\">로그아웃</button>");
+        htmlBuilder.append("<a href=\"/logout\" id=\"logout-btn\" class=\"btn btn_danger btn_size_s\">로그아웃</a>");
         htmlBuilder.append("</li>");
 
         htmlBuilder.append("</ul>");
