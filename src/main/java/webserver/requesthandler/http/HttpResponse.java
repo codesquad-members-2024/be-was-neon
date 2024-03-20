@@ -49,7 +49,7 @@ public class HttpResponse {
     }
 
     public void setRedirect(String url) {
-        setHeader("Location", url);
+        setHeader(HttpConst.HEADER_LOCATION, url);
         setStatus(HttpStatus.FOUND);
     }
 
@@ -73,20 +73,20 @@ public class HttpResponse {
 
     public void setCookie(HttpCookie cookie) {
         StringJoiner sj = new StringJoiner(HttpConst.COOKIE_VALUE_DELIMITER);
-        sj.add(cookie.getName() + "=" + cookie.getValue());
+        sj.add(cookie.getName() + HttpConst.PARAM_DELIMITER + cookie.getValue());
         if (cookie.getMaxAge() != -1) {
             sj.add("Max-Age=" + cookie.getMaxAge());
         }
 
-        headers.put("Set-Cookie", sj.toString());
+        headers.put(HttpConst.HEADER_SET_COOKIE, sj.toString());
     }
 
     private void setContentType(ContentType contentType) {
-        headers.put(HttpConst.CONTENT_TYPE_LABEL, contentType.getMimeType());
+        headers.put(HttpConst.HEADER_CONTENT_TYPE, contentType.getMimeType());
     }
 
     private void setContentLength(int length) {
-        headers.put(HttpConst.CONTENT_LENGTH_LABEL, String.valueOf(length));
+        headers.put(HttpConst.HEADER_CONTENT_LENGTH, String.valueOf(length));
     }
 
     public HttpStatus getStatus() {

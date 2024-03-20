@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpRequestParser;
 import webserver.requesthandler.http.HttpResponse;
 
 class SessionManagerTest {
@@ -29,7 +30,7 @@ class SessionManagerTest {
         byte[] byteArray = requestString.getBytes(StandardCharsets.UTF_8);
 
         InputStream in = new ByteArrayInputStream(byteArray);
-        request = new HttpRequest(in);
+        request = HttpRequestParser.parse(in);
         response = new HttpResponse();
     }
 

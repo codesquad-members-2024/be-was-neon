@@ -11,6 +11,7 @@ import webserver.requesthandler.authenticator.UnauthenticatedURLs;
 import webserver.requesthandler.handlerMapper.RequestHandlerMapper;
 import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpRequestParser;
 import webserver.requesthandler.http.HttpResponse;
 
 public class MainRequestHandler implements Runnable {
@@ -30,7 +31,7 @@ public class MainRequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-            HttpRequest request = new HttpRequest(in);
+            HttpRequest request = HttpRequestParser.parse(in);
             HttpResponse response = new HttpResponse(out);
 
             Authenticator authenticator = new Authenticator(new UnauthenticatedURLs());

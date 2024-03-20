@@ -4,8 +4,13 @@ public interface HttpConst {
     String QUERY_COMMAND_START = "?";
     String PARAMS_DELIMITER = "&";
     String PARAM_DELIMITER = "=";
-    String CONTENT_LENGTH_LABEL = "Content-Length";
-    String CONTENT_TYPE_LABEL = "Content-Type";
+    String HEADER_COOKIE = "Cookie";
+    String HEADER_SET_COOKIE = "Set-Cookie";
+    String HEADER_CONTENT_LENGTH = "Content-Length";
+    String HEADER_CONTENT_TYPE = "Content-Type";
+    String HEADER_LOCATION = "Location";
+    String METHOD_GET = "GET";
+    String METHOD_POST = "POST";
     String EMPTY_STRING = "";
     String HEADER_DELIMITER = ":";
     int PARAMS_LENGTH = 2;
