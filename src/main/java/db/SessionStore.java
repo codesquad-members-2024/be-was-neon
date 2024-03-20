@@ -22,6 +22,10 @@ public class SessionStore {
         setExpiration(cookie, expirationTimeMills);
     }
 
+    public static void removeSession(String cookie){
+        sessions.remove(cookie);
+    }
+
     private static void setExpiration(String cookie, long expirationTimeMillis) {
         Runnable removeTask = () -> {
             sessions.remove(cookie);
