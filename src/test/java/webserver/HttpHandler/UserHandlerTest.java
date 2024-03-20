@@ -9,7 +9,6 @@ import webserver.HttpMessage.Response;
 import webserver.TestUtils;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 class UserHandlerTest {

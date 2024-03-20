@@ -34,7 +34,7 @@ public class MessageHeader {
         return Collections.unmodifiableMap(headerFields);
     }
 
-    public void addHeaderField(String key , String value){
+    private void addHeaderField(String key , String value){
         headerFields.put(key, value);
     }
 
@@ -52,11 +52,10 @@ public class MessageHeader {
         String formattedDateTime = dateTime.format(formatter);
 
         addHeaderField("Set-Cookie", "sid="+ newCookie + "; Path=/" + "; Expires=" + formattedDateTime);
-        System.out.println(formattedDateTime);
         return newCookie;
     }
 
-    private static String makeCookie(int length) {
+    private String makeCookie(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();
 

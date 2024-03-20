@@ -1,17 +1,10 @@
 package webserver.HttpHandler;
 
-import db.Database;
-import db.SessionStore;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import webserver.HttpHandler.ResourceHandler;
-import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
-import webserver.TestUtils;
-import webserver.eums.FileType;
 
 import java.util.Map;
 
