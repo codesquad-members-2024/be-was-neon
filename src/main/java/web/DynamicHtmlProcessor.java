@@ -22,8 +22,6 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         Optional<Object> optionalSession = sessionManager.getSession(sessionId);
 
         if (optionalSession.isEmpty()) {
-            // TODO: 로그인 버튼이 있는 화면 구현
-
             /* HTML 작성 */
             createHtmlHeader();
             createBodyTopPart();
@@ -40,7 +38,6 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
             return;
         }
 
-        // TODO: 사용자 이름이 있는 화면 구현
         User sessionUser = (User) optionalSession.get();
         String userName = sessionUser.getName();
 
@@ -59,7 +56,7 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         htmlBuilder.setLength(0); // StringBuilder 초기화
     }
 
-    private String getSessionId(Map<String, String> cookieMap) {
+    public String getSessionId(Map<String, String> cookieMap) {
         String sessionId = cookieMap.get("SID");
         if (sessionId == null) {
             return "";
@@ -67,7 +64,7 @@ public class DynamicHtmlProcessor extends StaticHtmlProcessor {
         return sessionId.split(SPLITTER)[0];
     }
 
-    private Map<String, String> getCookieMap(HttpRequest request) {
+    public Map<String, String> getCookieMap(HttpRequest request) {
         String cookie = request.getHeader("Cookie");
         return HttpRequestParser.parseParams(cookie);
     }
