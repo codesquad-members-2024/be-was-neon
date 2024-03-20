@@ -29,7 +29,7 @@ public class UriMapper {
     }
 
     private static void setUriMap() {
-        URI_MAP.put("/", new HtmlProcessor());
+        URI_MAP.put("/", new DynamicHtmlProcessor());
         URI_MAP.put("/static", new StaticHtmlProcessor());
         URI_MAP.put("/registration", new MemberSave());
         URI_MAP.put("/login", new MemberLogin());
