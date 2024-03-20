@@ -25,7 +25,7 @@ public class Authenticator {
             return true;
         }
 
-        response.sendRedirect("/login?redirectURL=" + requestPath); // 로그인이 되어있지 않으면 리다이렉트 설정
+        response.setRedirect("/login?redirectURL=" + requestPath); // 로그인이 되어있지 않으면 리다이렉트 설정
         return false;
     }
 

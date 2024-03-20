@@ -13,6 +13,7 @@ import webserver.requesthandler.handlerimpl.RequestHandler;
 import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpRequestParser;
 import webserver.requesthandler.http.HttpResponse;
+import webserver.requesthandler.http.HttpResponseWriter;
 
 public class MainRequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MainRequestHandler.class);
@@ -32,29 +33,32 @@ public class MainRequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             HttpRequest request = HttpRequestParser.parse(in);
-            HttpResponse response = new HttpResponse(out);
+            HttpResponse response = new HttpResponse();
+            HttpResponseWriter httpResponseWriter = new HttpResponseWriter(out);
 
             Authenticator authenticator = new Authenticator(new UnauthenticatedURLs());
             boolean isAuthenticated = authenticator.isAuthenticated(request, response);// 인증이 필요한 페이지에 접근하는지 확인
 
             if (!isAuthenticated) {
+                httpResponseWriter.send(response);
                 return;
             }
             RequestHandler requestHandler = requestHandlerMapper.findRequestHandler(request);
-            handleMethod(request, response, requestHandler);
-            response.send();
+            requestHandler.handle(request, response);
+
+            httpResponseWriter.send(response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
-
-    private void handleMethod(HttpRequest request, HttpResponse response, RequestHandler requestHandler)
-            throws IOException {
-        if (request.isGET()) {
-            requestHandler.handleGet(request, response);
-        }
-        if (request.isPOST()) {
-            requestHandler.handlePost(request, response);
-        }
-    }
+//
+//    private void handleMethod(HttpRequest request, HttpResponse response, RequestHandler requestHandler)
+//            throws IOException {
+//        if (request.isGET()) {
+//            requestHandler.handleGet(request, response);
+//        }
+//        if (request.isPOST()) {
+//            requestHandler.handlePost(request, response);
+//        }
+//    }
 }

@@ -10,6 +10,15 @@ import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.http.HttpResponse;
 
 public interface RequestHandler {
+    default void handle(HttpRequest request, HttpResponse response) throws IOException {
+        if (request.isGET()) {
+            handleGet(request, response);
+        }
+        if (request.isPOST()) {
+            handlePost(request, response);
+        }
+    }
+
     void handleGet(HttpRequest request, HttpResponse response) throws IOException;
 
     void handlePost(HttpRequest request, HttpResponse response) throws IOException;

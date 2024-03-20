@@ -2,7 +2,6 @@ package webserver.requesthandler.authenticator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +24,7 @@ class AuthenticatorTest {
     void setUp() {
         authenticator = new Authenticator(new UnauthenticatedURLs());
         request = new HttpRequest();
-        response = new HttpResponse(new ByteArrayOutputStream());
+        response = new HttpResponse();
     }
 
     @ParameterizedTest
