@@ -2,8 +2,8 @@ package webserver.requesthandler.authenticator;
 
 import java.io.IOException;
 import model.User;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.session.SessionManager;
 
 public class Authenticator {

@@ -1,17 +1,4 @@
-package webserver.http;
-
-import static webserver.http.HttpConst.CONTENT_LENGTH_LABEL;
-import static webserver.http.HttpConst.CONTENT_TYPE_LABEL;
-import static webserver.http.HttpConst.COOKIE_VALUE_DELIMITER;
-import static webserver.http.HttpConst.EMPTY_STRING;
-import static webserver.http.HttpConst.HEADER_DELIMITER;
-import static webserver.http.HttpConst.HTML_FORM_CONTENT_TYPE;
-import static webserver.http.HttpConst.PARAMS_DELIMITER;
-import static webserver.http.HttpConst.PARAMS_LENGTH;
-import static webserver.http.HttpConst.PARAM_DELIMITER;
-import static webserver.http.HttpConst.QUERY_COMMAND_START;
-import static webserver.http.HttpConst.SPACE_REGEX;
-import static webserver.http.HttpConst.START_LINE_DELIMITER;
+package webserver.requesthandler.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +38,7 @@ public class HttpRequest {
         if (cookieValues == null) {
             return null;
         }
-        String[] cookieParts = cookieValues.split(COOKIE_VALUE_DELIMITER + SPACE_REGEX);
+        String[] cookieParts = cookieValues.split(HttpConst.COOKIE_VALUE_DELIMITER + HttpConst.SPACE_REGEX);
         return Arrays.stream(cookieParts)
                 .map(cookiePart -> HttpCookie.parse(cookiePart).get(0))
                 .filter(cookie -> cookie.getName().equals(cookieName))
@@ -109,12 +96,12 @@ public class HttpRequest {
 
     private String[] extractRequestLineParts(BufferedReader br) throws IOException {
         String requestLine = br.readLine();
-        return requestLine.split(START_LINE_DELIMITER);
+        return requestLine.split(HttpConst.START_LINE_DELIMITER);
     }
 
     private String extractPath(String url) {
-        if (url.contains(QUERY_COMMAND_START)) {
-            return url.substring(0, url.indexOf(QUERY_COMMAND_START));
+        if (url.contains(HttpConst.QUERY_COMMAND_START)) {
+            return url.substring(0, url.indexOf(HttpConst.QUERY_COMMAND_START));
         }
         return url;
     }
@@ -124,20 +111,20 @@ public class HttpRequest {
         Map<String, String> headers = new HashMap<>();
         String line;
         while ((line = br.readLine()) != null && !line.isEmpty()) {
-            String[] headerParts = line.split(HEADER_DELIMITER);
+            String[] headerParts = line.split(HttpConst.HEADER_DELIMITER);
             headers.put(headerParts[0].trim(), headerParts[1].trim());
         }
         return headers;
     }
 
     private String extractBody(BufferedReader br) throws IOException {
-        if (headers.containsKey(CONTENT_LENGTH_LABEL)) {
-            int contentLength = Integer.parseInt(headers.get(CONTENT_LENGTH_LABEL));
+        if (headers.containsKey(HttpConst.CONTENT_LENGTH_LABEL)) {
+            int contentLength = Integer.parseInt(headers.get(HttpConst.CONTENT_LENGTH_LABEL));
             char[] body = new char[contentLength];
             br.read(body);
             return new String(body);
         }
-        return EMPTY_STRING;
+        return HttpConst.EMPTY_STRING;
     }
 
     private Map<String, String> extractParams(String url) {
@@ -148,8 +135,9 @@ public class HttpRequest {
 
     private Map<String, String> extractQueryParams(String url) {
         Map<String, String> params = new HashMap<>();
-        if (url.contains(QUERY_COMMAND_START)) {
-            String[] paramParts = url.substring(url.indexOf(QUERY_COMMAND_START) + 1).split(PARAMS_DELIMITER);
+        if (url.contains(HttpConst.QUERY_COMMAND_START)) {
+            String[] paramParts = url.substring(url.indexOf(HttpConst.QUERY_COMMAND_START) + 1).split(
+                    HttpConst.PARAMS_DELIMITER);
             addParams(paramParts, params);
         }
         return params;
@@ -157,10 +145,10 @@ public class HttpRequest {
 
     private Map<String, String> extractBodyParams() {
         Map<String, String> params = new HashMap<>();
-        String contentType = headers.get(CONTENT_TYPE_LABEL);
-        if (contentType != null && contentType.equals(HTML_FORM_CONTENT_TYPE)) {
+        String contentType = headers.get(HttpConst.CONTENT_TYPE_LABEL);
+        if (contentType != null && contentType.equals(HttpConst.HTML_FORM_CONTENT_TYPE)) {
             String decoded = URLDecoder.decode(body, StandardCharsets.UTF_8);
-            String[] paramParts = decoded.split(PARAMS_DELIMITER);
+            String[] paramParts = decoded.split(HttpConst.PARAMS_DELIMITER);
             addParams(paramParts, params);
         }
         return params;
@@ -168,8 +156,8 @@ public class HttpRequest {
 
     private void addParams(String[] paramParts, Map<String, String> params) {
         for (String param : paramParts) {
-            String[] splitedParam = param.split(PARAM_DELIMITER);
-            if (splitedParam.length == PARAMS_LENGTH) {
+            String[] splitedParam = param.split(HttpConst.PARAM_DELIMITER);
+            if (splitedParam.length == HttpConst.PARAMS_LENGTH) {
                 params.put(splitedParam[0], splitedParam[1]);
             }
         }

@@ -10,7 +10,7 @@ import static webserver.requesthandler.URLConst.USER_LIST_URL;
 
 import java.util.HashMap;
 import java.util.Map;
-import webserver.http.HttpRequest;
+import webserver.requesthandler.http.HttpRequest;
 import webserver.requesthandler.handlerimpl.ArticleHandler;
 import webserver.requesthandler.handlerimpl.CommentHandler;
 import webserver.requesthandler.handlerimpl.HomeHandler;

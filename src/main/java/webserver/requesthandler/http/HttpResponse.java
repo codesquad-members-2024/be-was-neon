@@ -1,11 +1,4 @@
-package webserver.http;
-
-import static webserver.http.HttpConst.CONTENT_LENGTH_LABEL;
-import static webserver.http.HttpConst.CONTENT_TYPE_LABEL;
-import static webserver.http.HttpConst.COOKIE_VALUE_DELIMITER;
-import static webserver.http.HttpConst.CRLF;
-import static webserver.http.HttpConst.HTTP_VERSION;
-import static webserver.http.HttpConst.START_LINE_DELIMITER;
+package webserver.requesthandler.http;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -37,11 +30,12 @@ public class HttpResponse {
 
     public void send() throws IOException {
         DataOutputStream dos = new DataOutputStream(out);
-        dos.writeBytes(HTTP_VERSION + status.getValue() + START_LINE_DELIMITER + status.getReasonPhrase() + CRLF);
+        dos.writeBytes(
+                HttpConst.HTTP_VERSION + status.getValue() + HttpConst.START_LINE_DELIMITER + status.getReasonPhrase() + HttpConst.CRLF);
         for (String name : headers.keySet()) {
-            dos.writeBytes(name + HttpConst.HEADER_DELIMITER + headers.get(name) + CRLF);
+            dos.writeBytes(name + HttpConst.HEADER_DELIMITER + headers.get(name) + HttpConst.CRLF);
         }
-        dos.writeBytes(CRLF);
+        dos.writeBytes(HttpConst.CRLF);
         if (body.length > 0) {
             dos.write(body);
         }
@@ -77,7 +71,7 @@ public class HttpResponse {
     }
 
     public void setCookie(HttpCookie cookie) {
-        StringJoiner sj = new StringJoiner(COOKIE_VALUE_DELIMITER);
+        StringJoiner sj = new StringJoiner(HttpConst.COOKIE_VALUE_DELIMITER);
         sj.add(cookie.getName() + "=" + cookie.getValue());
         if (cookie.getMaxAge() != -1) {
             sj.add("Max-Age=" + cookie.getMaxAge());
@@ -87,11 +81,11 @@ public class HttpResponse {
     }
 
     private void setContentType(ContentType contentType) {
-        headers.put(CONTENT_TYPE_LABEL, contentType.getMimeType());
+        headers.put(HttpConst.CONTENT_TYPE_LABEL, contentType.getMimeType());
     }
 
     private void setContentLength(int length) {
-        headers.put(CONTENT_LENGTH_LABEL, String.valueOf(length));
+        headers.put(HttpConst.CONTENT_LENGTH_LABEL, String.valueOf(length));
     }
 
     public HttpStatus getStatus() {

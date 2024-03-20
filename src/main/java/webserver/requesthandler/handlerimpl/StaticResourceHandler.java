@@ -3,9 +3,9 @@ package webserver.requesthandler.handlerimpl;
 import java.io.IOException;
 import java.io.InputStream;
 import utils.FileManager;
-import webserver.http.ContentType;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.ContentType;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.URLConst;
 
 public class StaticResourceHandler implements RequestHandler {

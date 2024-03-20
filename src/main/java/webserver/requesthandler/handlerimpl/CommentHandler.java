@@ -1,8 +1,8 @@
 package webserver.requesthandler.handlerimpl;
 
 import java.io.IOException;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.URLConst;
 
 public class CommentHandler implements RequestHandler {

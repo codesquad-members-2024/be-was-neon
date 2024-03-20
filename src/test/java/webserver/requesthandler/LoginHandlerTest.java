@@ -11,8 +11,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 import webserver.requesthandler.handlerimpl.LoginHandler;
 import webserver.requesthandler.handlerimpl.RequestHandler;
 

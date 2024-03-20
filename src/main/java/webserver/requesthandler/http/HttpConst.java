@@ -1,4 +1,4 @@
-package webserver.http;
+package webserver.requesthandler.http;
 
 public interface HttpConst {
     String QUERY_COMMAND_START = "?";

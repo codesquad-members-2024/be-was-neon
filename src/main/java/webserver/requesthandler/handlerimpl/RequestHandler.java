@@ -5,9 +5,9 @@ import static webserver.requesthandler.URLConst.STATIC_DIRECTORY;
 
 import java.io.IOException;
 import java.util.Objects;
-import webserver.http.ContentType;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.ContentType;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 
 public interface RequestHandler {
     void handleGet(HttpRequest request, HttpResponse response) throws IOException;

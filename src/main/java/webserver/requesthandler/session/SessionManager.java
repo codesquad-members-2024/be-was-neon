@@ -4,8 +4,8 @@ import java.net.HttpCookie;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import webserver.http.HttpRequest;
-import webserver.http.HttpResponse;
+import webserver.requesthandler.http.HttpRequest;
+import webserver.requesthandler.http.HttpResponse;
 
 public class SessionManager {
     public static final String SESSION_COOKIE_NAME = "SID";
