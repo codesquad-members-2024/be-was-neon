@@ -10,7 +10,7 @@ import webserver.utils.HttpRequestParser;
 
 import java.util.Map;
 
-import static webserver.handler.Path.INDEX_HTML;
+import static webserver.handler.Path.HOME_PAGE;
 
 public class UserCreateHandler implements Handler {
 
@@ -24,6 +24,6 @@ public class UserCreateHandler implements Handler {
         User user = User.from(userForm);
         Database.addUser(user);
         logger.debug("User created : {}", Database.findUserById(user.getUserId()));
-        return HttpResponse.redirect(INDEX_HTML.path);
+        return HttpResponse.redirect(HOME_PAGE.getPath());
     }
 }

@@ -11,7 +11,7 @@ public class RegistrationHandler implements Handler {
 
     @Override
     public HttpResponse service(HttpRequest request) {
-        File file = new File(STATIC_PATH.path + REGISTRATION.path + INDEX_HTML.path);
+        File file = new File(REGISTRATION_PAGE.getRelativePath());
         return HttpResponse.from(file);
     }
 }
