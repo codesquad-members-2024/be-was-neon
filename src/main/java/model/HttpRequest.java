@@ -1,6 +1,7 @@
 package model;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import webserver.HttpRequestBuilder;
 
@@ -15,8 +16,11 @@ public class HttpRequest {
         this.path = httpRequestBuilder.getPath();
         this.queryString = httpRequestBuilder.getQueryString();
         this.httpVersion = httpRequestBuilder.getHttpVersion();
-        this.httpBody = httpRequestBuilder.getHttpBody();
+        if (this.httpMethod.equals("POST")){
+            this.httpBody = httpRequestBuilder.getHttpBody();
+        }
     }
+
     public String getHttpMethod() {
         return httpMethod;
     }
@@ -36,5 +40,6 @@ public class HttpRequest {
     public HttpBody getHttpBody() {
         return httpBody;
     }
+
 
 }

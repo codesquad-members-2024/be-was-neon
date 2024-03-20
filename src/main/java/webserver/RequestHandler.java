@@ -28,14 +28,20 @@ public class RequestHandler implements Runnable {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             //http Request 정보 설정
             HttpRequestBuilder httpRequestBuilder = new HttpRequestBuilder(in);
+            httpRequestBuilder.readHttpRequest();
             HttpRequest httpRequest = new HttpRequest(httpRequestBuilder);
             //HTTP Response 정보 설정
             ResponseHandler responseHandler = new ResponseHandler();
             //requestUri 를 통해서 해당하는 동작 실행 + HttpMethod 를 통해 실행할 동작을 찾는다.
-            String filePath = responseHandler.select(httpRequest, out);
+            String filePath = responseHandler.select(httpRequest);
             //response를 보낸다
-            //여기서 보내는 방법을 결정해야하는데
-            HttpResponse.sendHttpResponse(out,filePath);
+            //여기서 보내는 방법을 결정해야하는데 리다이렉트 여부 결정해서 보내준다.
+            if(filePath.startsWith("redirect:")){
+                filePath = filePath.substring(filePath.indexOf(":")+1);
+                HttpResponse.redirectHttpResponse(out, filePath);
+            }else{
+                HttpResponse.sendHttpResponse(out,filePath);
+            }
 
         } catch (IOException e) {
             logger.error(e.getMessage());
