@@ -2,14 +2,10 @@ package webserver.HttpMessage;
 
 import db.SessionStore;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Random;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class MessageHeader {
     Map<String , String> headerFields;
@@ -35,10 +31,11 @@ public class MessageHeader {
         String newCookie = makeCookie(length);
 
         ZonedDateTime dateTime = ZonedDateTime.now().plus(1 , ChronoUnit.MINUTES);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
         String formattedDateTime = dateTime.format(formatter);
 
         addHeaderField("Set-Cookie", "sid="+ newCookie + "; Path=/" + "; Expires=" + formattedDateTime);
+        System.out.println(formattedDateTime);
         return newCookie;
     }
 
