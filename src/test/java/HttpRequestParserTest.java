@@ -31,7 +31,6 @@ class HttpRequestParserTest {
 
     @Test
     void testParseUserFromGetRequest() {
-        // 이 경우 사용자 정보를 파싱할 수 없으므로 빈 Optional을 반환해야겠죠....?
         assertThat(parser.parseUserFromGetRequest()).isEmpty().withFailMessage("GET 요청에서 사용자 정보를 파싱하지 못해야 합니다.");
     }
 
