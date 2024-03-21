@@ -6,6 +6,7 @@ public class FileInfo {
     private static final String BASIC_STATIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
     public static final String REGISTER_ACTION = "/user/create";
+    public static final String LOGIN_FAIL_PATH = "/login/fail";
     private static final String DOT = "\\.";
 
     public static String makeCompletePath(String url){ // /registration
@@ -18,6 +19,14 @@ public class FileInfo {
             completePath.append(INDEX_FILE_NAME);
         }
         return completePath.toString();
+    }
+
+    public static String makeLoginCompletePath(boolean loginSuccess){
+        if(loginSuccess){
+            return BASIC_STATIC_FILE_PATH + INDEX_FILE_NAME;
+        }else{
+            return BASIC_STATIC_FILE_PATH + LOGIN_FAIL_PATH + INDEX_FILE_NAME;
+        }
     }
 
     public static String getFileType(String getCompletePath){
