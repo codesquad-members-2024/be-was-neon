@@ -28,23 +28,32 @@ public class LoginHandler implements Handler{
         String password = loginQuery.get("password");
 
         User user = Database.findUserById(id);
-        HttpResponse response = new HttpResponse();
-        if (user == null) {
-            logger.info("존재하지 않는 ID");
-            response.redirect(LOGIN_FAILED_PAGE.getPath());
-            return response;
+        if (canLogin(user, password)) {
+            return loginSuccess(user);
         }
-        if (!user.verifyPassword(password)) {
-            logger.info("비밀번호 불일치 {}, {}", user.getPassword(), password);
-            response.redirect(LOGIN_FAILED_PAGE.getPath());
-            return response;
-        }
+        return loginFailed();
+    }
+
+    private static boolean canLogin(User user, String password) {
+        return user != null && user.verifyPassword(password);
+    }
+
+    private static HttpResponse loginSuccess(User user) {
         logger.info("{} : 로그인 성공", user.getUserId());
 
-        response.redirect(HOME_PAGE.getPath());
+        HttpResponse response = new HttpResponse();
         UUID uuid = UUID.randomUUID();
         response.setCookie(uuid);
         SessionManger.addLoginUser(uuid.toString(), user);
+        response.redirect(HOME_PAGE.getPath());
+        return response;
+    }
+
+    private static HttpResponse loginFailed() {
+        logger.info("로그인 실패");
+        
+        HttpResponse response = new HttpResponse();
+        response.redirect(LOGIN_FAILED_PAGE.getPath());
         return response;
     }
 }
