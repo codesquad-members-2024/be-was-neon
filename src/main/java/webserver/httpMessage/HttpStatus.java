@@ -1,9 +1,9 @@
 package webserver.httpMessage;
 
 public enum HttpStatus {
-    OK("HTTP/1.1 200 OK \r\n"),
-    TEMPORARY_REDIRECTION("HTTP/1.1 307 Temporary Redirect \r\n"),
-    SEE_OTHER("HTTP/1.1 303 See Other \r\n");
+    OK("HTTP/1.1 200 OK"),
+    TEMPORARY_REDIRECTION("HTTP/1.1 307 Temporary Redirect"),
+    SEE_OTHER("HTTP/1.1 303 See Other");
 
     private final String statusMessage;
 

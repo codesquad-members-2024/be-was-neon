@@ -11,6 +11,7 @@ public class HttpResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     private static final String BLANK_HEADER = "";
+    public static final String CRLF = "\r\n";
 
     private String header;
     private byte[] body;
@@ -60,19 +61,19 @@ public class HttpResponse {
     }
 
     public void setContentType(String contentType) {
-        header += "Content-Type: " + contentType + ";charset=utf-8 \r\n";
+        header += "Content-Type: " + contentType + ";charset=utf-8" + CRLF;
     }
 
     public void setContentLength(int bodyLength) {
-        header += "Content-Length: " + bodyLength + " \r\n";
+        header += "Content-Length: " + bodyLength + CRLF;
     }
 
     public void setLocation(String location) {
-        header += "Location: " + location + " \r\n";
+        header += "Location: " + location + CRLF;
     }
 
     public void setStatus(HttpStatus status) {
-        header += status.getStatusMessage();
+        header += status.getStatusMessage() + CRLF;
     }
 
     public void send(OutputStream out) {
@@ -92,7 +93,7 @@ public class HttpResponse {
     }
 
     private static void writeBlankLine(DataOutputStream dos) throws IOException {
-        dos.writeBytes("\r\n");
+        dos.writeBytes(CRLF);
     }
 
     private void writeBody(byte[] body, DataOutputStream dos) throws IOException {
@@ -104,6 +105,6 @@ public class HttpResponse {
     }
 
     public void setCookie(UUID uuid) {
-        header += "Set-Cookie: sid=" + uuid + "; Path=/ \r\n";
+        header += "Set-Cookie: sid=" + uuid + "; Path=/" + CRLF;
     }
 }
