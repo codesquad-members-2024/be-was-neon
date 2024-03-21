@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class    FileUtils {
+public class FileUtils {
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
     private File file;
 
