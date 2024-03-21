@@ -7,6 +7,7 @@ public class HttpResponseHeader {
     private static final String VERSION = "HTTP/1.1";
     private static final String ESCAPE_SEQUENCE = "\r\n";
     private static final String SPACE = " ";
+    private static final String SEMI_COLON = ";";
 
     private String statusCode;
     private String statusMessage;
@@ -32,6 +33,10 @@ public class HttpResponseHeader {
         return ("Content-Length:" + SPACE + headersData.get("Content-Length") + ESCAPE_SEQUENCE);
     }
 
+    public String makeCookie() {
+        return ("Set-Cookie:" + SPACE + "sid=" + headersData.get("Set-Cookie") + SEMI_COLON + SPACE + "Path=/" + ESCAPE_SEQUENCE);
+    }
+
     public String makeEmptyLine(){
         return ESCAPE_SEQUENCE;
     }
@@ -54,6 +59,10 @@ public class HttpResponseHeader {
         this.headersData.put("Content-Length", contentLength);
     }
 
+    public void setCookie(String cookie){
+        this.headersData.put("Set-Cookie", cookie);
+    }
+
     // ------------------------- headers 값이 존재하는지 확인 -------------------------
     public boolean isLocationExist(){
         return headersData.containsKey("Location");
@@ -65,6 +74,10 @@ public class HttpResponseHeader {
 
     public boolean isContentLengthExist(){
         return headersData.containsKey("Content-Length");
+    }
+
+    public boolean isCookieExist(){
+        return headersData.containsKey("Set-Cookie");
     }
 
 }
