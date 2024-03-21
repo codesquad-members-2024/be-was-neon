@@ -22,7 +22,6 @@ public class HttpRequest {
     private void init(BufferedReader br) throws IOException {
         startRequest = br.readLine();
         String tempRequest = br.readLine();
-        logger.debug("startRequest : {}", startRequest);
         while (!tempRequest.isEmpty()) {
             String[] headers = Parser.splitColon(tempRequest);
             requestHeader.put(headers[0], headers[1]);
@@ -34,5 +33,8 @@ public class HttpRequest {
         return Parser.getURI(startRequest);
     }
 
+    public String getStartRequest() {
+        return startRequest;
+    }
 
 }

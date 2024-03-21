@@ -15,6 +15,4 @@ public class URL {
         }
         return new File(ROOT_PATH + RESOURCES_PATH + uri);
     }
-
-
 }
