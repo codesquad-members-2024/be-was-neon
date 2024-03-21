@@ -31,11 +31,23 @@ public class RequestHandler implements Runnable {
 
             File file = URL.getFile(uri);
 
+            String content = "text/html";
+            if (uri.endsWith("css")) {
+                content = "text/css";
+            } else if (uri.endsWith("svg")) {
+                content = "image/svg+xml";
+            } else if (uri.endsWith("ico")) {
+                content = "image/vnd.microsoft.icon";
+            } else if (uri.endsWith("js")) {
+                content = "text/javascript";
+            }
+
+
             FileInputStream fis = new FileInputStream(file);
             byte[] body = fis.readAllBytes();
 
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, content);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -47,6 +59,18 @@ public class RequestHandler implements Runnable {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String content) {
+        String type = "";
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: "+content+";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
