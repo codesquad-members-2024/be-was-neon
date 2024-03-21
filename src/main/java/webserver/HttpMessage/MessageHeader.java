@@ -44,14 +44,14 @@ public class MessageHeader {
         return sj + "\r\n";
     }
 
-    public String addCookie(int length){
+    public String addCookie(int length , String cookieName){
         String newCookie = makeCookie(length);
 
         ZonedDateTime dateTime = ZonedDateTime.now().plus(1 , ChronoUnit.MINUTES);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
         String formattedDateTime = dateTime.format(formatter);
 
-        addHeaderField("Set-Cookie", "sid="+ newCookie + "; Path=/" + "; Expires=" + formattedDateTime);
+        addHeaderField("Set-Cookie", cookieName + "="+ newCookie + "; Path=/" + "; Expires=" + formattedDateTime);
         return newCookie;
     }
 
