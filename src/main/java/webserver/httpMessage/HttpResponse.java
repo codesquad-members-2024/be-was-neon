@@ -41,6 +41,10 @@ public class HttpResponse {
         setContentLength(body.length);
     }
 
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
     private static byte[] readFile(File file) {
         byte[] body = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {

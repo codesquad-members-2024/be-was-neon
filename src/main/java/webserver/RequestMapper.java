@@ -11,8 +11,10 @@ public class RequestMapper {
             Map.entry("/", new HomeHandler()),
             Map.entry("/registration", new RegistrationHandler()),
             Map.entry("/create", new UserCreateHandler()),
-            Map.entry("/login", new LoginHandler())
+            Map.entry("/login", new LoginHandler()),
+            Map.entry("/user/list", new UserListHandler())
     );
+
     private static final StaticFileHandler fileHandler = new StaticFileHandler();
 
     public static Handler findHandler(HttpRequest request) {
