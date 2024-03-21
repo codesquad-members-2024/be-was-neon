@@ -9,10 +9,8 @@ public class RouteManager {
 
         switch (requestURL) {
             case "/registration":
-                completePath.append("/registration").append(INDEX_FILE_NAME);
-                break;
             case "/login":
-                completePath.append("/login").append(INDEX_FILE_NAME);
+                completePath.append(requestURL).append(INDEX_FILE_NAME);
                 break;
             default:
                 if (requestURL.equals("/")) {
@@ -21,33 +19,15 @@ public class RouteManager {
                     completePath.append(requestURL);
                     if (!requestURL.contains(".")) {
                         completePath.append(".html"); // 기본적으로 .html 추가
-                    } else {
-                        String extension = requestURL.substring(requestURL.lastIndexOf("."));
-                        switch (extension) {
-                            case ".css":
-                            case ".js":
-                            case ".ico":
-                            case ".png":
-                            case ".jpg":
-                            case ".svg":
-                                break;
-                            default:
-                                //TODO 지원하지 않는 확장자 로직
-                                break;
-                        }
                     }
                 }
                 break;
         }
         return completePath.toString();
     }
-    public static String getContentType(String filePath) {
-        String extension = "";
 
-        int lastIndexOfDot = filePath.lastIndexOf('.');
-        if (lastIndexOfDot > 0) {
-            extension = filePath.substring(lastIndexOfDot).toLowerCase();
-        }
+    public static String getContentType(String filePath) {
+        String extension = getFileExtension(filePath);
 
         switch (extension) {
             case ".css":
@@ -68,5 +48,14 @@ public class RouteManager {
             default:
                 return "application/octet-stream"; // 일치하는 확장자가 없는 경우
         }
+    }
+
+    private static String getFileExtension(String filePath) {
+        String extension = "";
+        int lastIndexOfDot = filePath.lastIndexOf('.');
+        if (lastIndexOfDot > 0) {
+            extension = filePath.substring(lastIndexOfDot).toLowerCase();
+        }
+        return extension;
     }
 }

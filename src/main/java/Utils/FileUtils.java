@@ -19,7 +19,7 @@ public class FileUtils {
      * @return 파일 내용을 담은 byte 배열. 파일 읽기 실패 시 빈 배열 반환.
      */
     public byte[] readFileToByteArray() {
-        byte[] data = new byte[0]; // 결과 데이터를 담을 배열 초기화
+        byte[] data;
 
         try (FileInputStream fis = new FileInputStream(this.file);
              ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -40,12 +40,6 @@ public class FileUtils {
 
         return data; // 메소드의 맨 마지막에서 정상 흐름의 결과 반환
     }
-    /**
-     * 파일의 내용을 byte 배열로 읽어서 반환하는 메소드를 RequestHandler에서 호출할 수 있도록 추가
-     * @param filePath 파일 경로
-     * @return 파일 내용을 담은 byte 배열. 파일 읽기 실패 시 예외 발생.
-     * @throws FileNotFoundException 파일을 찾을 수 없을 경우 발생
-     */
     public static byte[] readFileContent(String filePath) throws IOException {
         File file = new File(filePath);
         FileUtils fileUtils = new FileUtils(file);
