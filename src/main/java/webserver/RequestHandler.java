@@ -46,15 +46,16 @@ public class RequestHandler implements Runnable {
         }
 
         String requestLine = extractRequestURL(line);
-        //컨텐츠 타입 지원 구현
-        ContentTypeHandler contentTypeHandler = new ContentTypeHandler();
-        contentTypeHandler.handleContent(requestLine, out);
-
 
         if (line.startsWith("GET /create?")) {
             registrationHandler(out, line);
             return;
         }
+
+       //컨텐츠 타입 지원 구현
+        ContentTypeHandler contentTypeHandler = new ContentTypeHandler();
+        contentTypeHandler.handleContent(requestLine, out);
+
 
         File file = new File(INDEX_FILE_PATH + requestLine);
         if (file.isDirectory()) {
