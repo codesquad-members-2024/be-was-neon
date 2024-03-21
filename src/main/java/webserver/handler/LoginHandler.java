@@ -42,10 +42,10 @@ public class LoginHandler implements Handler{
         logger.info("{} : 로그인 성공", user.getUserId());
 
         HttpResponse response = new HttpResponse();
+        response.redirect(HOME_PAGE.getPath());
         UUID uuid = UUID.randomUUID();
         response.setCookie(uuid);
         SessionManger.addLoginUser(uuid.toString(), user);
-        response.redirect(HOME_PAGE.getPath());
         return response;
     }
 
