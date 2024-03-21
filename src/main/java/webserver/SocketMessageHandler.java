@@ -64,8 +64,7 @@ public class SocketMessageHandler implements Runnable {
             body = new char[Integer.parseInt(request.getHeaderValue("Content-Length"))];
             br.read(body);
 
-            FileType fileType = Arrays.stream(FileType.values())
-                    .filter(t -> t.getMimeType().equals(request.getHeaderValue("Content-Type"))).findFirst().get();
+            FileType fileType = FileType.of(request);
             request.body(new MessageBody(new String(body), fileType));
         }
 

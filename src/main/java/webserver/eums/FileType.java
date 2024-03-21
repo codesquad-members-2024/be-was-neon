@@ -1,5 +1,9 @@
 package webserver.eums;
 
+import webserver.HttpMessage.Request;
+
+import java.util.Arrays;
+
 public enum FileType {
         HTML("text/html; charset=utf-8"),
         CSS("text/css"),
@@ -21,4 +25,9 @@ public enum FileType {
         public String getMimeType() {
             return mimeType;
         }
+
+        public static FileType of(Request request) {
+                return Arrays.stream(FileType.values())
+                        .filter(t -> t.getMimeType().equals(request.getHeaderValue("Content-Type"))).findFirst().get();
+    }
     }
