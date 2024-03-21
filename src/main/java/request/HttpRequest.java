@@ -3,11 +3,8 @@ package request;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import db.Database;
-import model.User;
 
 public class HttpRequest {
-    public static final String METHOD_POST = "POST";
     private static final String SPACE = " ";
     private static final String AMPERSAND = "&";
     private static final String EQUAL = "=";
@@ -62,46 +59,19 @@ public class HttpRequest {
         }
     }
 
-    public User createUser(){
-        return new User(bodyData.get("userId"), bodyData.get("password"), bodyData.get("name"), bodyData.get("email"));
-    }
-
-    // 회원가입 데이터 DB에 추가
-    public void storeDatabase(User user){
-        Database.addUser(user);
-    }
-
-
     // -------------------------  getter -------------------------
-    public String getStartLine(){
-        return startLine;
+    public String getStartLineInfo(String startLinekey){
+        return startLineData.get(startLinekey);
     }
 
-    public String getMethod(){
-        return startLineData.get("method");
+    public String getHeaderInfo(String headerInfoKey){
+        return headersData.get(headerInfoKey);
     }
 
-    public String getUrl(){
-        return startLineData.get("url");
+    public String getBodyInfo(String bodyInfoKey){
+        return bodyData.get(bodyInfoKey);
     }
 
-    public String getVersion(){
-        return startLineData.get("version");
-    }
-
-    public String getUserId(){
-        return bodyData.get("userId");
-    }
-
-    public String getPassword(){
-        return bodyData.get("password");
-    }
-    public String getName(){
-        return bodyData.get("name");
-    }
-    public String getEmail(){
-        return bodyData.get("email");
-    }
 
     public int getContentLength(){
         return Integer.parseInt(headersData.get("Content-Length"));
@@ -111,11 +81,4 @@ public class HttpRequest {
         return headersData.containsKey("Content-Length") && (getContentLength() > 0);
     }
 
-    public boolean isPost(){
-        return startLineData.get("method").equals(METHOD_POST);
-    }
-
-    public boolean isUserCreate(){
-        return startLineData.get("url").equals("/user/create");
-    }
 }
