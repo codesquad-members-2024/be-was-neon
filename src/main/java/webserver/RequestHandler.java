@@ -3,6 +3,7 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.URL;
@@ -23,10 +24,11 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String uri = URL.getTargetURI(br);
-            logger.debug("uri : {}", uri);
+
+            HttpRequest httpRequest = new HttpRequest(br);
+            String uri = httpRequest.getTargetURI();
+
             File file = URL.getFile(uri);
 
             FileInputStream fis = new FileInputStream(file);
