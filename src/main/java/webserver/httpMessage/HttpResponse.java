@@ -10,14 +10,14 @@ import java.util.UUID;
 public class HttpResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private static final String BLANK_HEADER = "";
+    private static final String EMPTY_HEADER = "";
     public static final String CRLF = "\r\n";
 
     private String header;
     private byte[] body;
 
     public HttpResponse() {
-        header = BLANK_HEADER;
+        header = EMPTY_HEADER;
         body = new byte[0];
     }
 
