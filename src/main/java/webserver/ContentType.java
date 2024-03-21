@@ -3,11 +3,12 @@ package webserver;
 public enum ContentType {
     HTML("text/html"),
     CSS("text/css"),
-    JAVASCRIPT("text/javascript"),
+    JS("text/javascript"),
     ICO("image/x-icon"),
     PNG("image/png"),
     JPG("image/jpeg"),
-    SVG("image/svg+xml");
+    SVG("image/svg+xml"),
+    JPEG("image/jpeg");
 
     private final String value;
 
@@ -18,4 +19,5 @@ public enum ContentType {
     public String getValue() {
         return value;
     }
+
 }
