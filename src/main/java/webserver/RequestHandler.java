@@ -5,15 +5,11 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import request.FileInfo;
-import request.HttpRequest;
-import response.ContentType;
-import response.HttpResponseBody;
-import response.HttpResponseHeader;
+import request.RequestManager;
+import response.ResponseManager;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
     private Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
@@ -25,62 +21,18 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            RequestManager requestManager = new RequestManager(in);
+            ResponseManager responseManager = new ResponseManager(requestManager);
 
-            HttpRequest httpRequest = new HttpRequest();
-
-            String line = br.readLine();
-            httpRequest.storeStartLineData(line); // start line 저장
-            logger.debug("request line : {}", httpRequest.getStartLine());
-
-            line = br.readLine();
-            while(!line.isEmpty()){ // 나머지 header 순회
-                httpRequest.storeHeadersData(line); // header 저장
-                logger.debug("request header : {}", line);
-                line = br.readLine();
-            }
-
-            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // 회원가입 정보가 POST, /user/create로 전달되었다면
-                char[] buffer = new char[httpRequest.getContentLength()];
-                br.read(buffer, 0, buffer.length); // context length 만큼 읽기
-
-                httpRequest.storeBodyData(new String(buffer)); // body 저장
-                httpRequest.storeDatabase(httpRequest.createUser()); // user 생성 후 db에 저장
-            }
+            requestManager.readRequestMessage();
 
             DataOutputStream dos = new DataOutputStream(out);
-            sendResponse(dos, httpRequest);
+            responseManager.setResponse();
+            responseManager.writeResponse(dos);
+            dos.flush();
 
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
-
-    private void sendResponse(DataOutputStream dos, HttpRequest httpRequest) throws IOException {
-        HttpResponseHeader httpResponseHeader = new HttpResponseHeader(dos);
-        HttpResponseBody httpResponseBody = new HttpResponseBody(dos);
-        String completePath = FileInfo.getCompletePath(httpRequest.getUrl());
-        String contentType = ContentType.getContentType(FileInfo.getFileType(completePath));
-
-        File file = new File(completePath);
-        if(FileInfo.checkValidFile(file)){ // 파일이 존재한다면
-            FileInputStream fis = new FileInputStream(file);
-            byte[] fileContent = fis.readAllBytes();
-            fis.close();
-
-            if(httpRequest.isPost() && httpRequest.isUserCreate()){ // 회원가입 정보가 POST, /user/create로 전달되었다면
-                httpResponseHeader.response302("/index.html", contentType, fileContent.length); // 처음 페이지로 redirect
-            }else{
-                httpResponseHeader.response200(contentType, fileContent.length);
-            }
-            httpResponseBody.setBody(fileContent);
-
-        }else{ // 파일이 존재하지 않는다면
-            byte[] fileContent = "<h1>404 Not Found</h1>".getBytes();
-            httpResponseHeader.response404(contentType, fileContent.length);
-            httpResponseBody.setBody(fileContent);
-        }
-        dos.flush();
-    }
-
 }
