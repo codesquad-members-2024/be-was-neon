@@ -21,7 +21,7 @@ public class ResponseHandler {
             byte[] body = new byte[(int) file.length()];
             fis.read(body);
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
+            response200HeaderContent(dos, body.length,contentType );
             responseBody(dos, body);
         }
     }
@@ -38,6 +38,17 @@ public class ResponseHandler {
         }
     }
 
+    public static void response200HeaderContent(DataOutputStream dos, int lengthOfBodyContent, ContentType contentType) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: " + contentType.getValue() + "\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public static void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
@@ -48,7 +59,6 @@ public class ResponseHandler {
             logger.error(e.getMessage());
         }
     }
-
     public static void responseBody(DataOutputStream dos, byte[] body) {
         try {
             dos.write(body, 0, body.length);
