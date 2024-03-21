@@ -5,4 +5,5 @@ public interface HttpConstant {
     String CRLF = System.lineSeparator();
     String SPLITTER = ";";
     String QUERY_PARAM_SYMBOL = "\\?";
+    String EQUAL = "=";
 }

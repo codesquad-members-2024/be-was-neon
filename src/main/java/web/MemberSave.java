@@ -1,21 +1,23 @@
 package web;
 
 
+import static utils.HttpConstant.CRLF;
+
 import db.Database;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
 import http.HttpResponse;
 import model.User;
 
-public class MemberSave extends HtmlProcessor {
+public class MemberSave extends StaticHtmlProcessor {
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         if (request.getMethod() == HttpMethod.POST) {
             Database.addUser(createUser(request));
 
-            responseHeader302(response, getContentType(request), "/index.html");
-            responseMessage(response, "ok");
+            responseHeader302(response, "/index.html");
+            response.setMessageBody(CRLF);
 
             response.flush();
             return;

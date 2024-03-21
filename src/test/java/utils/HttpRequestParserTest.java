@@ -89,4 +89,22 @@ class HttpRequestParserTest {
         assertThat(headerMap).containsEntry("Accept-Language", "ko,en-US;q=0.9,en;q=0.8,ko-KR;q=0.7");
         assertThat(headerMap).containsEntry("Cookie", "Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f; JSESSIONID=98B78C0DDB07A7320453FE9FB565C7F3; Idea-fcd223d5=56a54692-c173-433b-b8a0-65b80db19507");
     }
+
+    @DisplayName("Cookie: MyCookie=Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f; "
+            + "JSESSIONID=98B78C0DDB07A7320453FE9FB565C7F3;"
+            + "쿠키를 파싱하면 '=' 를 기준으로 Key-Value HashMap으로 파싱할 수 있다")
+    @Test
+    void parse_cookie() {
+        // given
+        String allCookie = "Cookie: MyCookie=Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f; "
+                + "JSESSIONID=98B78C0DDB07A7320453FE9FB565C7F3;";
+
+        // when
+        Map<String, String> cookieMap = parseParams(allCookie);
+
+        // then
+        assertThat(cookieMap.size()).isEqualTo(2);
+        assertThat(cookieMap).containsEntry("MyCookie", "Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f")
+                .containsEntry("JSESSIONID", "98B78C0DDB07A7320453FE9FB565C7F3");
+    }
 }

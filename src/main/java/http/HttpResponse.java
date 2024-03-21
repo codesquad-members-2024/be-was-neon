@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +18,6 @@ public class HttpResponse {
     private String charset = "charset=";
     private String contentLength = "Content-Length: ";
     private String lastModified = "Last-Modified: ";
-    private String setCookie = "Set-Cookie: ";
     private String location = "Location: ";
     private final DataOutputStream dos;
 
@@ -57,9 +58,17 @@ public class HttpResponse {
         return this;
     }
 
-    public HttpResponse setSetCookie(String cookie) {
-        this.setCookie += cookie;
-        writeString(this.setCookie + CRLF);
+    public HttpResponse addCookie(Cookie cookie) {
+        writeString("Set-Cookie: " + cookie.getCookie() + CRLF);
+        return this;
+    }
+
+    public HttpResponse addCookies(List<Cookie> cookies) {
+        String cookieString = cookies.stream()
+                .map(Cookie::getCookie)
+                .collect(Collectors.joining());
+
+        writeString("Set-Cookie: " + cookieString + CRLF);
         return this;
     }
 
@@ -71,7 +80,8 @@ public class HttpResponse {
 
     public HttpResponse setMessageBody(String stringMessageBody) {
         writeString(CRLF);
-        writeString(stringMessageBody + CRLF);
+        writeString(stringMessageBody);
+        writeString(CRLF);
         return this;
     }
 
@@ -92,7 +102,7 @@ public class HttpResponse {
 
     private void writeString(String string) {
         try {
-            dos.writeBytes(string);
+            dos.write(string.getBytes("UTF-8"));
         } catch (IOException e) {
             logger.error("[RESPONSE ERROR]: {}", e.getMessage());
         }

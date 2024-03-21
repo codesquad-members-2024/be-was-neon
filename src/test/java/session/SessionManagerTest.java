@@ -2,6 +2,8 @@ package session;
 
 import static org.assertj.core.api.Assertions.*;
 
+import http.Cookie;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import model.User;
@@ -59,5 +61,25 @@ class SessionManagerTest {
         // then
         assertThat(session.isEmpty()).isTrue();
         assertThatThrownBy(session::get).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @DisplayName("쿠키(SID=test-test)로부터 세션 아이디(test-test)를 가져올 수 있다")
+    @Test
+    void findSessionId_success() {
+        // given
+        String sessionKey = "SID";
+        String sessionId = "test-test";
+        Cookie cookie1 = new Cookie(sessionKey, sessionId);
+        Cookie cookie2 = new Cookie("MyKey", "MyId");
+
+        List<Cookie> cookies = List.of(cookie1, cookie2);
+
+        sessionManager.enroll(sessionKey, sessionId);
+
+        // when
+        String result = sessionManager.findSessionId(cookies, "SID");
+
+        // then
+        assertThat(result).isEqualTo("test-test");
     }
 }

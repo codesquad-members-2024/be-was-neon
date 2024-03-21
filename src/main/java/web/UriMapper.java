@@ -29,9 +29,12 @@ public class UriMapper {
     }
 
     private static void setUriMap() {
-        URI_MAP.put("/", new HtmlProcessor());
+        URI_MAP.put("/", new DynamicHtmlProcessor());
+        URI_MAP.put("/static", new StaticHtmlProcessor());
         URI_MAP.put("/registration", new MemberSave());
         URI_MAP.put("/login", new MemberLogin());
+        URI_MAP.put("/logout", new MemberLogout());
+        URI_MAP.put("/user/list", new MemberList());
     }
 
     public Optional<HttpProcessor> getProcessor(String uri) {
@@ -39,7 +42,7 @@ public class UriMapper {
             return Optional.of(URI_MAP.get(uri));
         }
         if (FILE_EXTENSION_MAP.containsKey(getExtension(uri))) {
-            return Optional.of(URI_MAP.get("/"));
+            return Optional.of(URI_MAP.get("/static"));
         }
         logger.debug("[STATIC MAPPER] NOT FOUND: {}", uri);
         return Optional.empty();
