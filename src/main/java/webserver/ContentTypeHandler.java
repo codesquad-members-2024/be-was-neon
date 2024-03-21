@@ -8,6 +8,7 @@ import static webserver.ResponseHandler.*;
 import static webserver.RequestHandler.INDEX_FILE_PATH;
 
 public class ContentTypeHandler {
+    public static final String INDEX_FILE_PATH = "src/main/resources/static";
     public void handleContent(String requestLine, OutputStream out) throws IOException {
         String extension = extractExtension(requestLine);
         ContentType contentType = getContentType(extension);
@@ -39,9 +40,10 @@ public class ContentTypeHandler {
     }
 
     private String extractExtension(String requestLine) {
+        System.out.println(requestLine);
         int dotIndex = requestLine.lastIndexOf(".");
         if (dotIndex != -1) {
-            return requestLine.substring(dotIndex + 1).toLowerCase();
+            return requestLine.substring(dotIndex + 1);
         }
         return null;
     }
