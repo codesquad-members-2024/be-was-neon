@@ -41,4 +41,32 @@ public class RouteManager {
         }
         return completePath.toString();
     }
+    public static String getContentType(String filePath) {
+        String extension = "";
+
+        int lastIndexOfDot = filePath.lastIndexOf('.');
+        if (lastIndexOfDot > 0) {
+            extension = filePath.substring(lastIndexOfDot).toLowerCase();
+        }
+
+        switch (extension) {
+            case ".css":
+                return "text/css;charset=utf-8";
+            case ".js":
+                return "application/javascript;charset=utf-8";
+            case ".png":
+                return "image/png";
+            case ".jpg":
+            case ".jpeg":
+                return "image/jpeg";
+            case ".ico":
+                return "image/x-icon";
+            case ".svg":
+                return "image/svg+xml";
+            case ".html":
+                return "text/html;charset=utf-8";
+            default:
+                return "application/octet-stream"; // 일치하는 확장자가 없는 경우
+        }
+    }
 }
