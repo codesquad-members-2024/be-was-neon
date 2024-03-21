@@ -25,8 +25,11 @@ public class RequestManager {
 
         readStartLine(br);
         readHeaders(br);
-        if(isMethodPost() && isUrlUserCreate() && httpRequest.isContentLengthExist()){
+        if(httpRequest.isContentLengthExist()){
             readBody(br);
+        }
+
+        if(isMethodPost() && isUrlUserCreate()){ // POST이고 /user/create 라면
             storeDatabase(createUser()); // user 생성한 뒤 db에 저장
         }
     }
@@ -64,6 +67,16 @@ public class RequestManager {
     // 회원가입 데이터 DB에 추가
     public void storeDatabase(User user){
         Database.addUser(user);
+    }
+
+    // ------------------------- 로그인 성공 확인 -------------------------
+    public boolean isLoginSuccess(){
+        String inputUserId = httpRequest.getBodyInfo("userId");
+        String inputPassword = httpRequest.getBodyInfo("password");
+        String dbUserId = Database.findUserById(inputUserId).getUserId();
+        String dbPassword = Database.findUserById(inputUserId).getPassword();
+
+        return (inputUserId.equals(dbUserId) && inputPassword.equals(dbPassword));
     }
 
     // ------------------------- getter -------------------------
