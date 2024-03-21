@@ -1,4 +1,4 @@
-package webserver;
+package webserver.html;
 
 import model.User;
 

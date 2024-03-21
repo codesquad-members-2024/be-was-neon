@@ -1,7 +1,7 @@
 package webserver.handler;
 
 import model.User;
-import webserver.DynamicHtml;
+import webserver.html.DynamicHtml;
 import webserver.Session.SessionManger;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
