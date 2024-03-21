@@ -22,6 +22,10 @@ public class Database {
         return users.values();
     }
 
+    public static void clear(){
+        users = new HashMap<>();
+    }
+
     private static boolean contains(User user){
         return users.containsKey(user.getUserId());
     }

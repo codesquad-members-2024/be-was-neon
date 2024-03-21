@@ -1,9 +1,7 @@
-package webserver;
+package webserver.HttpMessage;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.HttpMessage.Request;
-import webserver.HttpMessage.RequestStartLine;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -35,17 +33,5 @@ class RequestTest {
             softly.assertThat(request.getRequestQuery("email")).isEqualTo("test%40naver.com");
             softly.assertThat(request.getRequestQuery("name")).isEqualTo("test");
         });
-    }
-
-    @Test
-    @DisplayName("header fields가 알맞게 파싱되어 Map 형태로 저장되고 , 조회 가능하다")
-    void createHeader(){
-
-    }
-
-    @Test
-    @DisplayName("body에 담긴 정보가 Content-Type , Length에 따라 알맞게 저장되고 , 조회 가능하다")
-    void createBody(){
-
     }
 }

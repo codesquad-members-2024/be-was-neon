@@ -6,33 +6,31 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.*;
 
 public class SessionStore {
-    private static final Map<String, User> sessions = new HashMap<>();
+    private static Map<String, User> sessions = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(SessionStore.class);
-    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
 
-    public static User getSession(String cookie){
-        return sessions.get(cookie);
+    public static User getSession(String sessionId){
+        return sessions.get(sessionId);
     }
 
-    public static void addSession(String cookie, User user , long expirationTimeMills) {
-        sessions.put(cookie, user);
-        setExpiration(cookie, expirationTimeMills);
+    public static int getSize(){
+        return sessions.size();
     }
 
-    public static void removeSession(String cookie){
-        sessions.remove(cookie);
+    public static void addSession(String sessionId, User user) {
+        sessions.put(sessionId, user);
+        log.debug("New Session : " + sessionId);
     }
 
-    private static void setExpiration(String cookie, long expirationTimeMillis) {
-        Runnable removeTask = () -> {
-            sessions.remove(cookie);
-            log.info("Removing expired session: " + cookie);
-        };
-
-        executorService.schedule(removeTask, expirationTimeMillis, TimeUnit.MILLISECONDS);
+    public static void removeSession(String sessionId){
+        if(sessions.remove(sessionId )!= null) log.info("Removing log-out Session : " + sessionId);
     }
+
+    public static void clear(){
+        sessions = new HashMap<>();
+    }
+
 }
 

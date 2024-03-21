@@ -5,11 +5,12 @@ import webserver.eums.FileType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static webserver.WebServerConst.*;
 
 public class MessageBody {
     private final byte[] body;
@@ -25,7 +26,7 @@ public class MessageBody {
             Matcher matcher = paramPattern.matcher("?" + body);
 
             while (matcher.find()) {
-                String[] param = matcher.group().substring(1).split("=");
+                String[] param = matcher.group().substring(1).split(QUERY_DELIM);
                 content.put(param[0], param[1]);
             }
         }
@@ -36,7 +37,7 @@ public class MessageBody {
         try (FileInputStream fis = new FileInputStream(file)) {
             fis.read(body);
         }
-        String[] fileName = file.getName().split("\\.");
+        String[] fileName = file.getName().split(EXTENDER_START);
         this.contentType = FileType.valueOf(fileName[fileName.length - 1].toUpperCase());
     }
 

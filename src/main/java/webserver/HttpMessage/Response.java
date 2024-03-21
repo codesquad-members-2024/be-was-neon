@@ -2,6 +2,8 @@ package webserver.HttpMessage;
 
 import java.util.StringJoiner;
 
+import static webserver.WebServerConst.CRLF;
+
 public class Response {
     private final ResponseStartLine startLine;
     private MessageHeader header;
@@ -35,9 +37,9 @@ public class Response {
     }
 
     public String toString() {
-        StringJoiner sj = new StringJoiner("\r\n");
+        StringJoiner sj = new StringJoiner(CRLF);
         sj.add(startLine.toString())
-                .add(header.toString() + "\r\n");
+                .add(header.toString() + CRLF);
         return sj.toString();
     }
 }
