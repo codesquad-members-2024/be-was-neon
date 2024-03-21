@@ -1,71 +1,70 @@
 package response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.util.HashMap;
 
 public class HttpResponseHeader {
-    private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
+    //private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
     private static final String VERSION = "HTTP/1.1";
     private static final String ESCAPE_SEQUENCE = "\r\n";
     private static final String SPACE = " ";
-    private DataOutputStream dos;
 
-    public HttpResponseHeader(DataOutputStream dos){
-        this.dos = dos;
+    private String statusCode;
+    private String statusMessage;
+    private HashMap<String, String> headersData;
+
+    public HttpResponseHeader(){
+        this.headersData = new HashMap<String, String>();
     }
 
-    public void response200(String contentType, int contentLength){ // statusCode 200에 맞는 ResponseHeader 작성
-        setStartLine("200", "OK");
-        setContentType(contentType);
-        setContentLength(contentLength);
+    public String makeStartLine(){
+        return (VERSION + SPACE + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
     }
 
-    public void response302(String location, String contentType, int contentLength){ // statusCode 302에 맞는 ResponseHeader 작성
-        setStartLine("302", "FOUND");
-        setLocation(location);
-        setContentType(contentType);
-        setContentLength(contentLength);
+    public String makeLocation() {
+        return ("Location:" + SPACE + headersData.get("Location") + ESCAPE_SEQUENCE);
     }
 
-    public void response404(String contentType, int contentLength){ // statusCode 404에 맞는 ResponseHeader 작성
-        setStartLine("404", "Not Found");
-        setContentType(contentType);
-        setContentLength(contentLength);
+    public String makeContentType() {
+        return ("Content-Type:" + SPACE + headersData.get("Content-Type") + ESCAPE_SEQUENCE);
     }
 
-    private void setStartLine(String statusCode, String statusMessage){
-        try {
-            dos.writeBytes(VERSION + SPACE + statusCode + SPACE +statusMessage + ESCAPE_SEQUENCE);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    public String makeContentLength() {
+        return ("Content-Length:" + SPACE + headersData.get("Content-Length") + ESCAPE_SEQUENCE);
     }
 
-    private void setLocation(String location) {
-        try {
-            dos.writeBytes("Location:" + SPACE + location + ESCAPE_SEQUENCE);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    public String makeEmptyLine(){
+        return ESCAPE_SEQUENCE;
     }
 
-    private void setContentType(String contentType) {
-        try {
-            dos.writeBytes("Content-Type:" + SPACE + contentType + ESCAPE_SEQUENCE);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    // ------------------------- setter -------------------------
+    public void setStartLine(String statusCode, String statusMessage){
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
     }
 
-    private void setContentLength(int contentLength) {
-        try {
-            dos.writeBytes("Content-Length:" + SPACE + contentLength + ESCAPE_SEQUENCE);
-            dos.writeBytes(ESCAPE_SEQUENCE);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
+    public void setLocation(String location){
+        this.headersData.put("Location", location);
     }
+
+    public void setContentType(String contentType){
+        this.headersData.put("Content-Type", contentType);
+    }
+
+    public void setContentLength(String contentLength){
+        this.headersData.put("Content-Length", contentLength);
+    }
+
+    // ------------------------- headers 값이 존재하는지 확인 -------------------------
+    public boolean isLocationExist(){
+        return headersData.containsKey("Location");
+    }
+
+    public boolean isContentTypeExist(){
+        return headersData.containsKey("Content-Type");
+    }
+
+    public boolean isContentLengthExist(){
+        return headersData.containsKey("Content-Length");
+    }
+
 }
