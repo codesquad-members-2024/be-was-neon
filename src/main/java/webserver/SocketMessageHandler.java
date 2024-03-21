@@ -11,7 +11,6 @@ import webserver.eums.FileType;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class SocketMessageHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
@@ -59,12 +58,13 @@ public class SocketMessageHandler implements Runnable {
         request.header(builder.build());
 
         // body
+        String contentLength;
         char[] body;
-        if (request.getHeaderValue("Content-Length") != null) {
-            body = new char[Integer.parseInt(request.getHeaderValue("Content-Length"))];
+        if ((contentLength = request.getHeaderValue("Content-Length")) != null) {
+            body = new char[Integer.parseInt(contentLength)];
             br.read(body);
 
-            FileType fileType = FileType.of(request);
+            FileType fileType = FileType.of(request.getHeaderValue("Content-Type"));
             request.body(new MessageBody(new String(body), fileType));
         }
 
