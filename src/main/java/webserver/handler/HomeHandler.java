@@ -1,5 +1,8 @@
 package webserver.handler;
 
+import model.User;
+import webserver.DynamicHtml;
+import webserver.Session.SessionManger;
 import webserver.httpMessage.HttpRequest;
 import webserver.httpMessage.HttpResponse;
 import webserver.httpMessage.HttpStatus;
@@ -13,9 +16,17 @@ public class HomeHandler implements Handler {
 
     @Override
     public HttpResponse service(HttpRequest request) {
-        File file = new File(HOME_PAGE.getRelativePath());
-
         HttpResponse response = new HttpResponse();
+
+        String sid = request.getSessionId();
+        if (SessionManger.isLogin(sid)) {
+            User user = SessionManger.getUser(sid);
+            response.setStatus(HttpStatus.OK);
+            response.setBody(DynamicHtml.getLoginIndexHtml(user));
+            return response;
+        }
+
+        File file = new File(HOME_PAGE.getRelativePath());
         response.setStatus(HttpStatus.OK);
         response.setBody(file);
         return response;

@@ -41,8 +41,8 @@ public class HttpResponse {
         setContentLength(body.length);
     }
 
-    public void setBody(byte[] body) {
-        this.body = body;
+    public void setBody(String body) {
+        this.body = body.getBytes();
     }
 
     private static byte[] readFile(File file) {
