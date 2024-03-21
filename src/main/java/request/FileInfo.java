@@ -8,7 +8,7 @@ public class FileInfo {
     public static final String REGISTER_ACTION = "/user/create";
     private static final String DOT = "\\.";
 
-    public static String getCompletePath(String url){ // /registration
+    public static String makeCompletePath(String url){ // /registration
         StringBuilder completePath = new StringBuilder(BASIC_STATIC_FILE_PATH);
         if(!url.contains(REGISTER_ACTION)){
             completePath.append(url);
