@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import model.HttpBody;
+import model.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,7 @@ public class HttpRequestBuilder {
     }
 
     public void readHttpRequest() throws IOException {
-        //Http Request 는 BlankLine 포함된다.
+        //헤더를 읽는다.
         this.requestLines = getRequestLine(br);
         while (true) {
             String line = br.readLine();

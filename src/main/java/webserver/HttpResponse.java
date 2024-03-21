@@ -7,26 +7,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ContentType;
 
 public class HttpResponse {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
-    public static void sendHttpResponse(OutputStream out, String filePath) {
+    public void sendHttpResponse(OutputStream out, String filePath) {
         DataOutputStream dos = new DataOutputStream(out);
-
         byte[] body = readFile(filePath);
-        String contentType = getContentType(filePath);
+        String contentType = ContentType.getContentType(filePath);
         response200Header(dos, body.length, contentType);
         responseBody(dos, body);
     }
 
-    public static void redirectHttpResponse(OutputStream out, String filePath) {
+    public void redirectHttpResponse(OutputStream out, String filePath) {
         DataOutputStream dos = new DataOutputStream(out);
 
         response300Redirect(dos, filePath);
     }
 
-    private static void response200Header(DataOutputStream dos, int lengthOfBodyContent,
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent,
         String contentType) {
         try {
             // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
@@ -39,7 +39,7 @@ public class HttpResponse {
         }
     }
 
-    private static void response300Redirect(DataOutputStream dos, String location) {
+    private void response300Redirect(DataOutputStream dos, String location) {
         try {
             // 캐릭터 라인을 기본이 되는 출력 스트림에 일련의 바이트로서 출력합니다.
             dos.writeBytes("HTTP/1.1 302 \r\n");
@@ -50,7 +50,7 @@ public class HttpResponse {
         }
     }
 
-    private static void responseBody(DataOutputStream dos, byte[] body) {
+    private void responseBody(DataOutputStream dos, byte[] body) {
         try {
             //지정된 바이트 배열의 오프셋(offset) 위치 off로 부터 시작되는 len 바이트를 기본이 되는 출력 스트림에 출력합니다.
             dos.write(body, 0, body.length);
@@ -60,7 +60,7 @@ public class HttpResponse {
         }
     }
 
-    private static byte[] readFile(String path) {
+    private byte[] readFile(String path) {
 
         File file = new File(path);
         byte[] byteArray = new byte[(int) file.length()];
@@ -72,31 +72,4 @@ public class HttpResponse {
         return byteArray;
     }
 
-    private static String getContentType(String filePath) {
-        String contentType = "application/octet-stream";
-
-        if (filePath.endsWith(".html")) {
-            contentType = "text/html;charset=utf-8";
-        }
-        if (filePath.endsWith(".css")) {
-            contentType = "text/css";
-        }
-        if (filePath.endsWith(".js")) {
-            contentType = "text/javascript";
-        }
-        if (filePath.endsWith(".png")) {
-            contentType = "image/png";
-        }
-        if (filePath.endsWith(".jpg")) {
-            contentType = "image/jpeg";
-        }
-        if (filePath.endsWith(".ico")) {
-            contentType = "image/x-icon";
-        }
-        if (filePath.endsWith(".svg")) {
-            contentType = "image/svg+xml";
-        }
-
-        return contentType;
-    }
 }

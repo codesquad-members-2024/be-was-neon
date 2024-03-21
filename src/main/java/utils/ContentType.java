@@ -18,16 +18,14 @@ public enum ContentType {
         this.extension = extension;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public static String getContentTypeForExtension(String extension) {
+    public static String getContentType(String path) {
+        String extension = path.substring(path.indexOf("."));
         for (ContentType type : ContentType.values()) {
             if (type.extension.equals(extension)) {
                 return type.contentType;
             }
         }
-        return OCTET_STREAM.contentType; // 기본값인 application/octet-stream을 반환
+        return OCTET_STREAM.contentType;
     }
+
 }

@@ -21,13 +21,11 @@ public class ResponseHandler {
         String requestPath = httpRequest.getPath();
         String httpMethod = httpRequest.getHttpMethod();
 
-        //controller 역할
         if(httpMethod.equals(GET) && requestPath.contains(INDEX_HTML)){
             return DEFAULT_PATH + requestPath;
         }
 
         if (httpMethod.equals(GET) && requestPath.contains(REGISTRATION)) {
-            // src/main/resources/static + /registration/index.html
             return DEFAULT_PATH + requestPath + INDEX_HTML;
         }
 
@@ -38,9 +36,6 @@ public class ResponseHandler {
         }
 
         if(httpMethod.equals(POST) && requestPath.contains(CREATE)){
-            //POST 메소드로 변경하면서 에러 발생
-            //UserRegistration.register(httpRequest.getQueryString());
-            //redirect로 보내야 한단 말이지
             HttpBody httpBody = httpRequest.getHttpBody();
             UserRegistration.register(httpBody.getKeyValue());
             return REDIRECT+INDEX_HTML;

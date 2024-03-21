@@ -11,6 +11,7 @@ public class HttpRequest {
     private Map<String, String> queryString;
     private String httpVersion;
     private HttpBody httpBody;
+    private int contentLength;
     public HttpRequest(HttpRequestBuilder httpRequestBuilder) throws IOException {
         this.httpMethod = httpRequestBuilder.getHttpMethod();
         this.path = httpRequestBuilder.getPath();
