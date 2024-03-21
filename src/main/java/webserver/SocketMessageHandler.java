@@ -12,6 +12,8 @@ import webserver.eums.FileType;
 import java.io.*;
 import java.net.Socket;
 
+import static webserver.WebServerConst.*;
+
 public class SocketMessageHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
     private final Socket connection;
@@ -52,19 +54,18 @@ public class SocketMessageHandler implements Runnable {
         MessageHeader.HeaderBuilder builder = MessageHeader.builder();
         String reqLine;
         while ((reqLine = br.readLine()) != null && !reqLine.isEmpty()) {
-            String[] headerField = reqLine.split(": ");
+            String[] headerField = reqLine.split(HEADER_DELIM);
             builder.field(headerField[0], headerField[1]);
         }
         request.header(builder.build());
 
         // body
-        String contentLength;
         char[] body;
-        if ((contentLength = request.getHeaderValue("Content-Length")) != null) {
-            body = new char[Integer.parseInt(contentLength)];
+        if (request.getHeader().hasContent()){
+            body = new char[Integer.parseInt(request.getHeaderValue(CONTENT_LEN))];
             br.read(body);
 
-            FileType fileType = FileType.of(request.getHeaderValue("Content-Type"));
+            FileType fileType = FileType.of(request.getHeaderValue(CONTENT_TYPE));
             request.body(new MessageBody(new String(body), fileType));
         }
 

@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import static webserver.WebServerConst.*;
+
 public class MappingMatcher {
     private final Request request;
     private final RequestStartLine startLine;
@@ -28,12 +30,12 @@ public class MappingMatcher {
 
     public Response getResponse() throws Exception {
         final String httpMethod = startLine.getMethod();
-        final String path = startLine.getUri().split("\\?")[0];
+        final String path = startLine.getUri().split(QUERY_START)[0];
 
-        if (httpMethod.equals("GET")) {
+        if (httpMethod.equals(GET)) {
             return handleRequest(path, this::matchGetMapping);
         }
-        if (httpMethod.equals("POST")) {
+        if (httpMethod.equals(POST)) {
             return handleRequest(path, this::matchPostMapping);
         } else throw new IllegalAccessException("설정되어 있지 않은 http 메소드입니다.");
     }

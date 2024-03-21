@@ -9,6 +9,8 @@ import webserver.Mapping.GetMapping;
 import webserver.Mapping.PostMapping;
 import webserver.eums.FileType;
 
+import static webserver.WebServerConst.HTTP_VERSION;
+import static webserver.WebServerConst.LOCATION;
 import static webserver.eums.ResponseStatus.FOUND;
 import static webserver.eums.ResponseStatus.OK;
 
@@ -38,8 +40,8 @@ public class UserHandler implements Handler{
             log.info("Fail to create new user : " + fail.getMessage());
         }
 
-        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        responseHeader = MessageHeader.builder().field("Location" , "/").build();
+        startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
+        responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
 
         return new Response(startLine).header(responseHeader);
     }
@@ -47,13 +49,13 @@ public class UserHandler implements Handler{
     @GetMapping(path = "/user/list")
     public Response userList(Request request) {
         if (!verifySession(request)) {
-            startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-            responseHeader = MessageHeader.builder().field("Location" , "/").build();
+            startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
+            responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
 
             return new Response(startLine).header(responseHeader);
         }
 
-        startLine = new ResponseStartLine("HTTP/1.1", OK);
+        startLine = new ResponseStartLine(HTTP_VERSION, OK);
         responseBody = new MessageBody(HtmlMaker.getListHtml(), FileType.HTML);
         responseHeader = writeContentResponseHeader(responseBody);
 

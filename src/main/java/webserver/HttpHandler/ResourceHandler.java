@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static webserver.WebServer.staticSourcePath;
+import static webserver.WebServerConst.HTTP_VERSION;
 import static webserver.eums.ResponseStatus.*;
 
 public class ResourceHandler implements Handler{
@@ -33,11 +34,11 @@ public class ResourceHandler implements Handler{
         log.debug("filepath : " + getFilePath(path));
         try {
             responseBody = new MessageBody(file);
-            startLine = new ResponseStartLine("HTTP/1.1", OK);
+            startLine = new ResponseStartLine(HTTP_VERSION, OK);
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
             responseBody = new MessageBody(NotFound.getMessage(), FileType.TXT);
-            startLine = new ResponseStartLine("HTTP/1.1", NotFound);
+            startLine = new ResponseStartLine(HTTP_VERSION, NotFound);
         }
 
         responseHeader = writeContentResponseHeader(responseBody);

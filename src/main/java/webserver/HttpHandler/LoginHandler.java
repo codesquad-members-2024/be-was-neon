@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import webserver.HttpMessage.*;
 import webserver.Mapping.PostMapping;
 
+import static webserver.WebServerConst.*;
 import static webserver.eums.ResponseStatus.FOUND;
 
 public class LoginHandler implements Handler{
@@ -21,12 +22,12 @@ public class LoginHandler implements Handler{
     @PostMapping(path = "/login")
     public Response login(Request request) {
         MessageBody requestBody = request.getBody();
-        User user = Database.findUserById(requestBody.getContentByKey("userId"));
+        User user = Database.findUserById(requestBody.getContentByKey(USER_ID));
 
-        responseHeader = MessageHeader.builder().field("Location" , "/").build();
+        responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
 
         try {
-            if (user.getPassword().equals(requestBody.getContentByKey("password"))) {
+            if (user.getPassword().equals(requestBody.getContentByKey(USER_PW))) {
                 String cookie = responseHeader.addCookie(10 , "sid");
                 SessionStore.addSession(cookie, user);
                 log.info("login : " + user.getName());
@@ -37,18 +38,18 @@ public class LoginHandler implements Handler{
             log.info("login failed : notExistUser");
         }
 
-        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
+        startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
         return new Response(startLine).header(responseHeader);
     }
 
     @PostMapping(path = "/logout")
     public Response logout(Request request) {
-        String cookie = request.getHeaderValue("Cookie").split("sid=")[1];
+        String cookie = request.getHeaderValue(COOKIE).split("sid=")[1];
         SessionStore.removeSession(cookie);
         log.info("logout");
 
-        startLine = new ResponseStartLine("HTTP/1.1", FOUND);
-        responseHeader = MessageHeader.builder().field("Location" , "/").build();
+        startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
+        responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
         return new Response(startLine).header(responseHeader);
     }
 }
