@@ -3,8 +3,10 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 
+import http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Resister;
 import util.URL;
 
 public class RequestHandler implements Runnable {
@@ -23,21 +25,45 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String uri = URL.getTargetURI(br);
-            logger.debug("uri : {}", uri);
+            HttpRequest httpRequest = new HttpRequest(br);
+
+            String startRequest = httpRequest.getStartRequest();
+            String uri = httpRequest.getTargetURI();
+
+            if (uri.startsWith("/create")) {
+                new Resister().create(startRequest);
+                uri = "/index.html";
+            }
+
+
             File file = URL.getFile(uri);
+            String content = getContentType(uri);
+
 
             FileInputStream fis = new FileInputStream(file);
             byte[] body = fis.readAllBytes();
 
             DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
+            response200Header(dos, body.length, content);
             responseBody(dos, body);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private static String getContentType(String uri) {
+        String content = "text/html";
+        if (uri.endsWith("css")) {
+            content = "text/css";
+        } else if (uri.endsWith("svg")) {
+            content = "image/svg+xml";
+        } else if (uri.endsWith("ico")) {
+            content = "image/vnd.microsoft.icon";
+        } else if (uri.endsWith("js")) {
+            content = "text/javascript";
+        }
+        return content;
     }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
@@ -45,6 +71,18 @@ public class RequestHandler implements Runnable {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String content) {
+        String type = "";
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: "+content+";charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
@@ -60,4 +98,6 @@ public class RequestHandler implements Runnable {
             logger.error(e.getMessage());
         }
     }
+
+
 }
