@@ -24,12 +24,19 @@ public class DynamicHtml {
         sb.append("        <ul class=\"header__menu\">");
         sb.append("          <li class=\"header__menu__item\">");
         sb.append("            <a class=\"btn btn_ghost btn_size_s\">" + user.getName() + "</a>");
-        sb.append("          </li>");
+
         sb.append("          <li class=\"header__menu__item\">");
-        sb.append("            <a class=\"btn btn_ghost btn_size_s\" href=\"/registration\">");
-        sb.append("              회원 가입");
+        sb.append("            <a class=\"btn btn_ghost btn_size_s\" href=\"/article\">");
+        sb.append("              글쓰기");
         sb.append("            </a>");
         sb.append("          </li>");
+
+        sb.append("          <li class=\"header__menu__item\">");
+        sb.append("            <a id=\"logout-btn\" class=\"btn btn_contained btn_size_s\" href=\"/logout\">");
+        sb.append("              로그아웃");
+        sb.append("            </a>");
+        sb.append("          </li>");
+
         sb.append("        </ul>");
         sb.append("      </header>");
         sb.append("      <div class=\"wrapper\">");
