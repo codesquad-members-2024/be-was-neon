@@ -22,7 +22,7 @@ public class UserHandler implements Handler{
 
     private static final Logger log = LoggerFactory.getLogger(ResourceHandler.class);
 
-    @PostMapping(path = "/create")
+    @PostMapping(path = "/registration")
     public Response createUser(Request request) {
         MessageBody reqBody = request.getBody();
 
