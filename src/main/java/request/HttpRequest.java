@@ -21,14 +21,15 @@ public class HttpRequest {
     public RequestLine getRequestLine(){
         return requestLine;
     }
-    public String getRequestMethod() {
-        return requestLine.getRequestMethod();
+    public String getMethod() {
+        return requestLine.getMethod();
     }
-    public String getRequestPath() {
-        return requestLine.getRequestPath();
+    public String getPath() {
+        return requestLine.getPath();
     }
-    public String getRequestProtocol() {
-        return requestLine.getRequestProtocol();
+    public String getQueryParam(){return requestLine.getQueryParam();}
+    public String getProtocol() {
+        return requestLine.getProtocol();
     }
     public String getMimeType() {
         return requestLine.getMimeType();
