@@ -23,6 +23,9 @@ public class MainHandler implements Runnable {
             RequestParser requestParser = new RequestParser();
             HttpRequest httpRequest = requestParser.parse(in);
 
+            logger.debug("Request: {}",httpRequest.getRequestLine());
+            logger.debug("Header: {}",httpRequest.getRequestHeader());
+
             DataOutputStream dos = new DataOutputStream(out);
             ResponseHandler responseHandler = new ResponseHandler(httpRequest);
             responseHandler.sendResponseDependOnRequest(dos);
