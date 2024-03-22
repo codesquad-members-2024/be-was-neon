@@ -27,7 +27,7 @@ public class LoginHandler implements Handler{
         responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
 
         try {
-            if (user.getPassword().equals(requestBody.getContentByKey(USER_PW))) {
+            if (user.isCorrectPassword(requestBody.getContentByKey(USER_PW))) {
                 String cookie = responseHeader.addCookie(10 , "sid");
                 SessionStore.addSession(cookie, user);
                 log.info("login : " + user.getName());

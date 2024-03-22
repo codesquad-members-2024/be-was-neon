@@ -19,16 +19,16 @@ public class User {
         return userId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getName() {
         return name;
     }
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isCorrectPassword(String password){
+        return password.equals(this.password);
     }
 
     @Override
