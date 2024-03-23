@@ -1,7 +1,8 @@
-package webserver.HttpHandler;
+package application.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HttpHandler.Handler;
 import webserver.HttpMessage.*;
 import webserver.Mapping.GetMapping;
 import webserver.eums.FileType;
@@ -13,7 +14,7 @@ import static webserver.WebServer.staticSourcePath;
 import static webserver.WebServerConst.HTTP_VERSION;
 import static webserver.eums.ResponseStatus.*;
 
-public class ResourceHandler implements Handler{
+public class ResourceHandler implements Handler {
     private ResponseStartLine startLine;
     private MessageHeader responseHeader;
     private MessageBody responseBody;

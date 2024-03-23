@@ -1,9 +1,10 @@
-package webserver.HttpHandler;
+package application.handler;
 
-import db.Database;
-import model.User;
+import application.db.Database;
+import application.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HttpHandler.Handler;
 import webserver.HttpMessage.*;
 import webserver.Mapping.GetMapping;
 import webserver.Mapping.PostMapping;
@@ -14,7 +15,7 @@ import static webserver.WebServerConst.LOCATION;
 import static webserver.eums.ResponseStatus.FOUND;
 import static webserver.eums.ResponseStatus.OK;
 
-public class UserHandler implements Handler{
+public class UserHandler implements Handler {
 
     private ResponseStartLine startLine;
     private MessageHeader responseHeader;

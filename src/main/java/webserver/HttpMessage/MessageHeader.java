@@ -1,6 +1,6 @@
 package webserver.HttpMessage;
 
-import db.SessionStore;
+import application.db.SessionStore;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;

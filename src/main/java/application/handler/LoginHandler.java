@@ -1,17 +1,18 @@
-package webserver.HttpHandler;
+package application.handler;
 
-import db.Database;
-import db.SessionStore;
-import model.User;
+import application.db.Database;
+import application.db.SessionStore;
+import application.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HttpHandler.Handler;
 import webserver.HttpMessage.*;
 import webserver.Mapping.PostMapping;
 
 import static webserver.WebServerConst.*;
 import static webserver.eums.ResponseStatus.FOUND;
 
-public class LoginHandler implements Handler{
+public class LoginHandler implements Handler {
 
     private ResponseStartLine startLine;
     private MessageHeader responseHeader;

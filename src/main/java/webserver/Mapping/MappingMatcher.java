@@ -1,9 +1,9 @@
 package webserver.Mapping;
 
 import webserver.HttpHandler.Handler;
-import webserver.HttpHandler.LoginHandler;
-import webserver.HttpHandler.ResourceHandler;
-import webserver.HttpHandler.UserHandler;
+import application.handler.LoginHandler;
+import application.handler.ResourceHandler;
+import application.handler.UserHandler;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.RequestStartLine;
 import webserver.HttpMessage.Response;

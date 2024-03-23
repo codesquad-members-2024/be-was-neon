@@ -1,6 +1,6 @@
 package webserver.HttpHandler;
 
-import db.SessionStore;
+import application.db.SessionStore;
 import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.MessageHeader;
 import webserver.HttpMessage.Request;

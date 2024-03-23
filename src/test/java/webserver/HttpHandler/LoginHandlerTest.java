@@ -1,8 +1,8 @@
 package webserver.HttpHandler;
 
-import db.Database;
-import db.SessionStore;
-import org.junit.jupiter.api.AfterEach;
+import application.handler.LoginHandler;
+import application.db.Database;
+import application.db.SessionStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
