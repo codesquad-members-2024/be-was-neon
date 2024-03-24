@@ -94,6 +94,7 @@ public class HttpResponse {
 
     private static void writeBlankLine(DataOutputStream dos) throws IOException {
         dos.writeBytes(CRLF);
+
     }
 
     private void writeBody(byte[] body, DataOutputStream dos) throws IOException {

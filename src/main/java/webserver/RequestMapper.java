@@ -15,7 +15,6 @@ public class RequestMapper {
             Map.entry("/login", new LoginHandler()),
             Map.entry("/user/list", new UserListHandler())
     );
-
     private static final StaticFileHandler fileHandler = new StaticFileHandler();
 
     public static Handler findHandler(HttpRequest request) {
