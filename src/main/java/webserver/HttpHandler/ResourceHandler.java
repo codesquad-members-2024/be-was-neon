@@ -1,8 +1,7 @@
-package application.handler;
+package webserver.HttpHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.HttpHandler.Handler;
 import webserver.HttpMessage.*;
 import webserver.HttpHandler.Mapping.GetMapping;
 import webserver.HttpMessage.constants.eums.FileType;

@@ -1,4 +1,4 @@
-package application.handler;
+package application.handler.utils;
 
 import application.db.Database;
 import application.model.User;

@@ -2,7 +2,7 @@ package webserver.HttpHandler.Mapping;
 
 import webserver.HttpHandler.Handler;
 import application.handler.LoginHandler;
-import application.handler.ResourceHandler;
+import webserver.HttpHandler.ResourceHandler;
 import application.handler.UserHandler;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.RequestStartLine;
