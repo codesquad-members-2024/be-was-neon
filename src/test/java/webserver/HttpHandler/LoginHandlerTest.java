@@ -3,6 +3,7 @@ package webserver.HttpHandler;
 import application.handler.LoginHandler;
 import application.db.Database;
 import application.db.SessionStore;
+import application.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,7 @@ class LoginHandlerTest {
     @Test
     void login() throws Exception {
         // given
-        MappingMatcher matcher = new MappingMatcher(TestUtils.createUserRequest);
-        matcher.getResponse();
+        Database.addUser(new User("test" , "test", "test", "test@naver.com"));
 
         // when
         Response response = loginHandler.login(new Request("POST /login HTTP/1.1")
@@ -48,9 +48,7 @@ class LoginHandlerTest {
     @Test
     void loginFail() throws Exception {
         // given
-        MappingMatcher matcher = new MappingMatcher(TestUtils.createUserRequest);
-        matcher.getResponse();
-
+        Database.addUser(new User("test" , "test", "test", "test@naver.com"));
 
         // when
         Response response = loginHandler.login(new Request("POST /login HTTP/1.1")
