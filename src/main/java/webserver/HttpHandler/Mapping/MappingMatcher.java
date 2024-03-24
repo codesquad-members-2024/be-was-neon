@@ -9,38 +9,38 @@ import webserver.HttpMessage.RequestStartLine;
 import webserver.HttpMessage.Response;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
 import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MappingMatcher {
-    private final Request request;
-    private final RequestStartLine startLine;
-    private final List<Handler> handlers = List.of(
-            new LoginHandler(),
-            new ResourceHandler(),
-            new UserHandler()
-    );
+    private final List<Handler> handlers = new ArrayList<>();
 
-    public MappingMatcher(Request request) {
-        this.request = request;
-        this.startLine = request.getStartLine();
+    public MappingMatcher(List<Handler> appHandlers) {
+        // default
+        this.handlers.add(new ResourceHandler());
+
+        // application handlers
+        this.handlers.addAll(appHandlers);
     }
 
-    public Response getResponse() throws Exception {
+    public Response getResponse(Request request) throws Exception {
+        RequestStartLine startLine = request.getStartLine();
+
         final String httpMethod = startLine.getMethod();
         final String path = startLine.getUri().split(QUERY_START)[0];
 
         if (httpMethod.equals(GET)) {
-            return handleRequest(path, this::matchGetMapping);
+            return handleRequest(request, path, this::matchGetMapping);
         }
         if (httpMethod.equals(POST)) {
-            return handleRequest(path, this::matchPostMapping);
+            return handleRequest(request, path, this::matchPostMapping);
         } else throw new IllegalAccessException("설정되어 있지 않은 http 메소드입니다.");
     }
 
-    private Response handleRequest(String uri, BiPredicate<Method, String> matchMapping) throws Exception {
+    private Response handleRequest(Request request , String uri, BiPredicate<Method, String> matchMapping) throws Exception {
         for(Handler handler : handlers) {
             for (Method method : handler.getClass().getDeclaredMethods()) {
                 if (matchMapping.test(method, uri)) {
@@ -49,7 +49,7 @@ public class MappingMatcher {
             }
         }
         // default : get Resource
-        return handleRequest("/" , matchMapping);
+        return handleRequest(request , "/" , matchMapping);
     }
 
     private boolean matchGetMapping(Method method, String uri) {
