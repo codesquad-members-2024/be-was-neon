@@ -1,4 +1,4 @@
-package webserver;
+package webserver.HttpMessage.constants;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;

@@ -2,14 +2,12 @@ package webserver.Mapping;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import webserver.HttpHandler.Mapping.MappingMatcher;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
 import webserver.TestUtils;
-import webserver.eums.ResponseStatus;
+import webserver.HttpMessage.constants.eums.ResponseStatus;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 class MappingMatcherTest {

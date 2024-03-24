@@ -2,7 +2,7 @@ package webserver;
 
 import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.Request;
-import webserver.eums.FileType;
+import webserver.HttpMessage.constants.eums.FileType;
 
 public class TestUtils {
     public static final Request getIndexRequest = new Request("GET /index.html HTTP/1.1");

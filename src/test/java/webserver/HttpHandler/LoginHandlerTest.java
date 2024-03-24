@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
-import webserver.Mapping.MappingMatcher;
+import webserver.HttpHandler.Mapping.MappingMatcher;
 import webserver.TestUtils;
-import webserver.eums.FileType;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 

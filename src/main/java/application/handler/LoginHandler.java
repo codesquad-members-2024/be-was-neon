@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.HttpHandler.Handler;
 import webserver.HttpMessage.*;
-import webserver.Mapping.PostMapping;
+import webserver.HttpHandler.Mapping.PostMapping;
 
-import static webserver.WebServerConst.*;
-import static webserver.eums.ResponseStatus.FOUND;
+import static webserver.HttpMessage.constants.WebServerConst.*;
+import static webserver.HttpMessage.constants.eums.ResponseStatus.FOUND;
 
 public class LoginHandler implements Handler {
 

@@ -1,4 +1,4 @@
-package webserver.Mapping;
+package webserver.HttpHandler.Mapping;
 
 import webserver.HttpHandler.Handler;
 import application.handler.LoginHandler;
@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import static webserver.WebServerConst.*;
+import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MappingMatcher {
     private final Request request;

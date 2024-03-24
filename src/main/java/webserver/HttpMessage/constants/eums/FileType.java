@@ -1,4 +1,4 @@
-package webserver.eums;
+package webserver.HttpMessage.constants.eums;
 
 import java.util.Arrays;
 

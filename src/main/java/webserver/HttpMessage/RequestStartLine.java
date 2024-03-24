@@ -7,8 +7,8 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static webserver.WebServerConst.QUERY_DELIM;
-import static webserver.WebServerConst.STARTLINE_DELIM;
+import static webserver.HttpMessage.constants.WebServerConst.QUERY_DELIM;
+import static webserver.HttpMessage.constants.WebServerConst.STARTLINE_DELIM;
 
 public class RequestStartLine {
     private final String method;

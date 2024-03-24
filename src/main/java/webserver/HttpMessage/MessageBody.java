@@ -1,6 +1,6 @@
 package webserver.HttpMessage;
 
-import webserver.eums.FileType;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static webserver.WebServerConst.*;
+import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MessageBody {
     private final byte[] body;

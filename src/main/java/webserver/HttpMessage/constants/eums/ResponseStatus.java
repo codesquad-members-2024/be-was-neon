@@ -1,4 +1,4 @@
-package webserver.eums;
+package webserver.HttpMessage.constants.eums;
 
 
 public enum ResponseStatus {

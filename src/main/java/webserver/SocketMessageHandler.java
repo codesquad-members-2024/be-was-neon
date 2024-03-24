@@ -6,13 +6,13 @@ import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.MessageHeader;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
-import webserver.Mapping.MappingMatcher;
-import webserver.eums.FileType;
+import webserver.HttpHandler.Mapping.MappingMatcher;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import java.io.*;
 import java.net.Socket;
 
-import static webserver.WebServerConst.*;
+import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class SocketMessageHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
