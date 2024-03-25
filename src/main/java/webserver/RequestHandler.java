@@ -20,7 +20,7 @@ public class RequestHandler implements Runnable {
     public void run() {
         try {
             HttpRequest request = new HttpRequest(connection);
-            String firstPath = RouteManager.makePath(request.getPath());
+            String firstPath = RouteManager.getFilePath(request.getPath());
             new HttpResponse(connection.getOutputStream(), firstPath);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -35,5 +35,4 @@ public class RequestHandler implements Runnable {
             }
         }
     }
-
 }
