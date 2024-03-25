@@ -32,6 +32,7 @@ public class RequestHandler implements Runnable {
 
             HttpResponse httpResponse;
 
+            // request message의 url에 맞는 manager 클래스 실행
             if(httpRequest.getStartLineInfo("url").equals("/registration")){
                 RegisterManager registerManager = new RegisterManager(httpRequest);
                 httpResponse = registerManager.responseMaker();
@@ -49,7 +50,7 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             ResponseManager responseManager = new ResponseManager(httpResponse);
 
-            responseManager.writeResponse(dos);
+            responseManager.writeResponse(dos); // httpResponse 클래스의 정보를 dos에 write한다.
             dos.flush();
 
         } catch (IOException e) {
