@@ -10,13 +10,14 @@ import java.util.UUID;
 public class HttpResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private static final String BLANK_HEADER = "";
+    private static final String EMPTY_HEADER = "";
+    public static final String CRLF = "\r\n";
 
     private String header;
     private byte[] body;
 
     public HttpResponse() {
-        header = BLANK_HEADER;
+        header = EMPTY_HEADER;
         body = new byte[0];
     }
 
@@ -41,6 +42,10 @@ public class HttpResponse {
         setContentLength(body.length);
     }
 
+    public void setBody(String body) {
+        this.body = body.getBytes();
+    }
+
     private static byte[] readFile(File file) {
         byte[] body = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -56,19 +61,19 @@ public class HttpResponse {
     }
 
     public void setContentType(String contentType) {
-        header += "Content-Type: " + contentType + ";charset=utf-8 \r\n";
+        header += "Content-Type: " + contentType + ";charset=utf-8" + CRLF;
     }
 
     public void setContentLength(int bodyLength) {
-        header += "Content-Length: " + bodyLength + " \r\n";
+        header += "Content-Length: " + bodyLength + CRLF;
     }
 
     public void setLocation(String location) {
-        header += "Location: " + location + " \r\n";
+        header += "Location: " + location + CRLF;
     }
 
     public void setStatus(HttpStatus status) {
-        header += status.getStatusMessage();
+        header += status.getStatusMessage() + CRLF;
     }
 
     public void send(OutputStream out) {
@@ -88,7 +93,8 @@ public class HttpResponse {
     }
 
     private static void writeBlankLine(DataOutputStream dos) throws IOException {
-        dos.writeBytes("\r\n");
+        dos.writeBytes(CRLF);
+
     }
 
     private void writeBody(byte[] body, DataOutputStream dos) throws IOException {
@@ -100,6 +106,6 @@ public class HttpResponse {
     }
 
     public void setCookie(UUID uuid) {
-        header += "Set-Cookie: sid=" + uuid + "; Path=/ \r\n";
+        header += "Set-Cookie: sid=" + uuid + "; Path=/" + CRLF;
     }
 }

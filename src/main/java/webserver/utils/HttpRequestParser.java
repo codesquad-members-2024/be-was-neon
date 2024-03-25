@@ -31,4 +31,15 @@ public class HttpRequestParser {
         }
         return parsedHeader;
     }
+
+    public static Map<String, String> parseCookie(String cookie) {
+        Map<String, String> parsedCookie = new HashMap<>();
+
+        String[] pairs = cookie.split(";\\s?");
+        for (String pair : pairs) {
+            String[] split = pair.split(KEY_VALUE_DELIMITER);
+            parsedCookie.put(split[0], split[1]);
+        }
+        return parsedCookie;
+    }
 }

@@ -2,6 +2,7 @@ package webserver.httpMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.utils.HttpRequestParser;
 
 import java.util.Map;
 
@@ -11,6 +12,8 @@ public class HttpRequest {
     public static final String NO_QUERY_PARAMS = "";
     public static final String BLANK = " ";
     public static final String REQUEST_TARGET_DELIMITER = "?";
+    public static final String COOKIE = "Cookie";
+    public static final String SID = "sid";
 
 
     private final String startLine;
@@ -50,5 +53,11 @@ public class HttpRequest {
 
     public String getBody() {
         return body;
+    }
+
+    public String getSessionId() {
+        String cookie = header.get(COOKIE);
+        Map<String, String> parseCookie = HttpRequestParser.parseCookie(cookie);
+        return parseCookie.get(SID);
     }
 }
