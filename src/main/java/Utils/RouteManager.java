@@ -4,24 +4,20 @@ public class RouteManager {
     private static final String BASIC_FILE_PATH = "src/main/resources/static";
     private static final String INDEX_FILE_NAME = "/index.html";
 
-    public static String makePath(String requestURL) {
+    public static String getFilePath(String requestURL) {
         StringBuilder completePath = new StringBuilder(BASIC_FILE_PATH);
 
-        switch (requestURL) {
-            case "/registration":
-            case "/login":
-                completePath.append(requestURL).append(INDEX_FILE_NAME);
-                break;
-            default:
-                if (requestURL.equals("/")) {
-                    completePath.append(INDEX_FILE_NAME);
-                } else {
-                    completePath.append(requestURL);
-                    if (!requestURL.contains(".")) {
-                        completePath.append(".html"); // 기본적으로 .html 추가
-                    }
-                }
-                break;
+        if ("/".equals(requestURL)) {
+            return completePath.append(INDEX_FILE_NAME).toString();
+        }
+
+        if ("/registration".equals(requestURL) || "/login".equals(requestURL)) {
+            return completePath.append(requestURL).append(INDEX_FILE_NAME).toString();
+        }
+
+        completePath.append(requestURL);
+        if (!requestURL.contains(".")) {
+            completePath.append(".html"); // 파일 확장자가 없는 경우 .html 추가
         }
         return completePath.toString();
     }
@@ -29,25 +25,16 @@ public class RouteManager {
     public static String getContentType(String filePath) {
         String extension = getFileExtension(filePath);
 
-        switch (extension) {
-            case ".css":
-                return "text/css;charset=utf-8";
-            case ".js":
-                return "application/javascript;charset=utf-8";
-            case ".png":
-                return "image/png";
-            case ".jpg":
-            case ".jpeg":
-                return "image/jpeg";
-            case ".ico":
-                return "image/x-icon";
-            case ".svg":
-                return "image/svg+xml";
-            case ".html":
-                return "text/html;charset=utf-8";
-            default:
-                return "application/octet-stream"; // 일치하는 확장자가 없는 경우
-        }
+        return switch (extension) {
+            case ".css" -> "text/css;charset=utf-8";
+            case ".js" -> "application/javascript;charset=utf-8";
+            case ".png" -> "image/png";
+            case ".jpg", ".jpeg" -> "image/jpeg";
+            case ".ico" -> "image/x-icon";
+            case ".svg" -> "image/svg+xml";
+            case ".html" -> "text/html;charset=utf-8";
+            default -> "application/octet-stream"; // 일치하는 확장자가 없는 경우
+        };
     }
 
     private static String getFileExtension(String filePath) {
