@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import request.HttpRequest;
 import request.RequestParser;
 import response.HttpResponse;
-import response.ResponseManager;
+import response.ResponseHandler;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -48,9 +48,9 @@ public class RequestHandler implements Runnable {
             }
 
             DataOutputStream dos = new DataOutputStream(out);
-            ResponseManager responseManager = new ResponseManager(httpResponse);
+            ResponseHandler responseHandler = new ResponseHandler(httpResponse);
 
-            responseManager.writeResponse(dos); // httpResponse 클래스의 정보를 dos에 write한다.
+            responseHandler.writeResponse(dos); // httpResponse 클래스의 정보를 dos에 write한다.
             dos.flush();
 
         } catch (IOException e) {

@@ -3,10 +3,10 @@ package response;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ResponseManager {
+public class ResponseHandler {
     HttpResponse httpResponse;
 
-    public ResponseManager(HttpResponse httpResponse){
+    public ResponseHandler(HttpResponse httpResponse){
         this.httpResponse = httpResponse;
     }
 

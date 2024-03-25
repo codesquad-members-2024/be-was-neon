@@ -10,7 +10,7 @@ public class Session {
     private static final Map<String, String> session = new HashMap<>(); // key: 세션id, value: user id
     public static final int SESSION_ID_LENGTH = 6;
 
-    public static String storeSession(String userId){
+    public static String storeSession(String userId){ // 입력받은 userId를 임의의 sessionId와 함께 저장
         String sessionId = makeSessionId();
         session.put(sessionId, userId);
         return sessionId;

@@ -9,7 +9,7 @@ public class FileInfoTest {
     @Test
     @DisplayName("static 폴더에 있는 파일의 경로를 반환해야 한다.")
     void getCompletePath() {
-        String completePath = FileInfo.getCompletePath("/registration");
+        String completePath = FileInfo.makeCompletePath("/registration");
         assertThat(completePath).isEqualTo("src/main/resources/static/registration/index.html");
     }
 
