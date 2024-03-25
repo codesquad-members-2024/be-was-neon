@@ -2,9 +2,7 @@ package webserver.HttpMessage;
 
 import webserver.HttpMessage.constants.eums.FileType;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -21,7 +19,7 @@ public class MessageBody {
     private final Map<String, String> content = new HashMap<>();
 
     /**
-     * @param body HTTP Message body 문자열
+     * @param body        HTTP Message body 문자열
      * @param contentType body 내용 유형
      */
     public MessageBody(String body, FileType contentType) {
@@ -30,9 +28,9 @@ public class MessageBody {
 
         if (contentType == FileType.URLENCODED) {
             // tokenizer
-            StringTokenizer st = new StringTokenizer(body , QUERY_START+QUERY_DELIM);
+            StringTokenizer st = new StringTokenizer(body, QUERY_START + QUERY_DELIM);
 
-            while (st.hasMoreTokens()){
+            while (st.hasMoreTokens()) {
                 String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
                 content.put(token[0], token[1]);
             }
@@ -40,10 +38,13 @@ public class MessageBody {
     }
 
     public MessageBody(File file) throws IOException {
-        this.body = new byte[(int) file.length()];
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(body);
-        }
+        StringBuilder sb = new StringBuilder();
+        BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        fileReader.lines().forEach(string -> {
+                    sb.append(string).append("\r\n");
+        });
+
+        this.body = sb.toString().getBytes();
         String[] fileName = file.getName().split(EXTENDER_START);
         this.contentType = FileType.valueOf(fileName[fileName.length - 1].toUpperCase());
     }
@@ -60,10 +61,10 @@ public class MessageBody {
         return contentType;
     }
 
-    public String getContentByKey(String key) throws IllegalArgumentException{
+    public String getContentByKey(String key) throws IllegalArgumentException {
         String value = content.get(key);
 
-        if(value == null) throw new IllegalArgumentException("not exists key :" + key);
+        if (value == null) throw new IllegalArgumentException("not exists key :" + key);
         return content.get(key);
     }
 

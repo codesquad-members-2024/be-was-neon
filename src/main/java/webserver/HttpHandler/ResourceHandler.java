@@ -20,14 +20,8 @@ public class ResourceHandler implements Handler {
 
     private static final Logger log = LoggerFactory.getLogger(ResourceHandler.class);
 
-    @GetMapping(path = "/")
     public Response responseGet(Request request) {
         String path = request.getStartLine().getUri();
-
-        if (verifySession(request) && path.equals("/")) {
-            path = path + "/main"; // 로그인 된 세션의 사용자가 /로 접속하면 main/ 으로 보냄
-            log.info("welcome Logged-in user ");
-        }
 
         log.debug("path : " + path);
         File file = new File(getFilePath(path));

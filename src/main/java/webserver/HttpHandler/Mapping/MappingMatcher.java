@@ -21,11 +21,9 @@ public class MappingMatcher {
      * WAS 에서 사용할 Handler 리스트
      */
     private final List<Handler> handlers = new ArrayList<>();
+    private final ResourceHandler resourceHandler = new ResourceHandler();
 
     public MappingMatcher(List<Handler> appHandlers) {
-        // default
-        this.handlers.add(new ResourceHandler());
-
         // application handlers
         this.handlers.addAll(appHandlers);
     }
@@ -65,7 +63,7 @@ public class MappingMatcher {
             }
         }
         // default : get Resource
-        return handleRequest(request , "/" , matchMapping);
+        return resourceHandler.responseGet(request);
     }
 
     /**

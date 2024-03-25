@@ -6,9 +6,11 @@ import application.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.HttpHandler.Handler;
+import webserver.HttpHandler.Mapping.GetMapping;
+import webserver.HttpHandler.Mapping.PostMapping;
 import webserver.HttpHandler.ResourceHandler;
 import webserver.HttpMessage.*;
-import webserver.HttpHandler.Mapping.PostMapping;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import static webserver.HttpMessage.constants.WebServerConst.*;
 import static webserver.HttpMessage.constants.eums.ResponseStatus.FOUND;
@@ -26,11 +28,11 @@ public class LoginHandler implements Handler {
         MessageBody requestBody = request.getBody();
         User user = Database.findUserById(requestBody.getContentByKey(USER_ID));
 
-        responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
+        responseHeader = MessageHeader.builder().field(LOCATION, "/").build();
 
         try {
             if (user.isCorrectPassword(requestBody.getContentByKey(USER_PW))) {
-                String cookie = responseHeader.addCookie(10 , "sid");
+                String cookie = responseHeader.addCookie(10, "sid");
                 SessionStore.addSession(cookie, user);
                 log.info("login : " + user.getName());
             } else {
@@ -51,7 +53,27 @@ public class LoginHandler implements Handler {
         log.info("logout");
 
         startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
-        responseHeader = MessageHeader.builder().field(LOCATION , "/").build();
+        responseHeader = MessageHeader.builder().field(LOCATION, "/").build();
         return new Response(startLine).header(responseHeader);
+    }
+
+    @GetMapping(path = "/")
+    public Response loginUser(Request request) {
+        ResourceHandler resourceHandler = new ResourceHandler();
+        String path = request.getStartLine().getUri();
+
+        if (verifySession(request)) {
+            User user = SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]);
+            Response mainIndex = resourceHandler.responseGet(new Request("GET /main " + HTTP_VERSION));
+
+            String loginUserIndexPage = new String(mainIndex.getBody()).replace("<!--UserName-->", user.getName());
+            responseBody = new MessageBody(loginUserIndexPage, FileType.HTML);
+            writeContentResponseHeader(responseBody);
+            log.info("welcome Logged-in user : " + user.getName());
+
+            return mainIndex.header(responseHeader).body(responseBody);
+        }
+
+        return resourceHandler.responseGet(request);
     }
 }
