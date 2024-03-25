@@ -1,8 +1,11 @@
 package response;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 
-public class HttpResponseHeader {
+public class HttpResponse {
     //private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
     private static final String VERSION = "HTTP/1.1";
     private static final String ESCAPE_SEQUENCE = "\r\n";
@@ -12,8 +15,9 @@ public class HttpResponseHeader {
     private String statusCode;
     private String statusMessage;
     private HashMap<String, String> headersData;
+    byte[] body;
 
-    public HttpResponseHeader(){
+    public HttpResponse(){
         this.headersData = new HashMap<String, String>();
     }
 
@@ -41,6 +45,10 @@ public class HttpResponseHeader {
         return ESCAPE_SEQUENCE;
     }
 
+    public byte[] getBody(){
+        return body;
+    }
+
     // ------------------------- setter -------------------------
     public void setStartLine(String statusCode, String statusMessage){
         this.statusCode = statusCode;
@@ -61,6 +69,10 @@ public class HttpResponseHeader {
 
     public void setCookie(String cookie){
         this.headersData.put("Set-Cookie", cookie);
+    }
+
+    public void setBody(byte[] body) throws IOException {
+        this.body = body;
     }
 
     // ------------------------- headers 값이 존재하는지 확인 -------------------------
