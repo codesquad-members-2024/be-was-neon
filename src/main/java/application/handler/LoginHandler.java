@@ -63,7 +63,7 @@ public class LoginHandler implements Handler {
         String path = request.getStartLine().getUri();
 
         if (verifySession(request)) {
-            User user = SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]);
+            User user = getCookie(request);
             Response mainIndex = resourceHandler.responseGet(new Request("GET /main " + HTTP_VERSION));
 
             String loginUserIndexPage = new String(mainIndex.getBody()).replace("<!--UserName-->", user.getName());

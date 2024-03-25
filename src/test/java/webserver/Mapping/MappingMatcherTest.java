@@ -45,14 +45,15 @@ class MappingMatcherTest {
     }
 
     @Test
-    @DisplayName("등록되지 않은 메서드의 요청이 들어오면 예외를 던진다")
+    @DisplayName("등록되지 않은 메서드의 요청이 들어오면 405 응답을 보낸다")
     void getInvalidMethodResponse() throws Exception {
         // given
         Request request = new Request("PUT / HTTP/1.1");
 
         //when
+        Response response = matcher.getResponse(request);
+
         //then
-        assertThatThrownBy(() -> matcher.getResponse(request))
-                .isInstanceOf(IllegalAccessException.class).hasMessage("설정되어 있지 않은 http 메소드입니다.");
+        assertThat(response.getStartLine().toString()).contains("405 Method Not Allowed");
     }
 }

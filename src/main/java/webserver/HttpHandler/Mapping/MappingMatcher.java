@@ -1,5 +1,6 @@
 package webserver.HttpHandler.Mapping;
 
+import webserver.HttpHandler.ErrorHandler;
 import webserver.HttpHandler.Handler;
 import application.handler.LoginHandler;
 import webserver.HttpHandler.ResourceHandler;
@@ -7,6 +8,7 @@ import application.handler.UserHandler;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.RequestStartLine;
 import webserver.HttpMessage.Response;
+import webserver.HttpMessage.constants.eums.ResponseStatus;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class MappingMatcher {
      */
     private final List<Handler> handlers = new ArrayList<>();
     private final ResourceHandler resourceHandler = new ResourceHandler();
+    private final ErrorHandler errorHandler = new ErrorHandler();
 
     public MappingMatcher(List<Handler> appHandlers) {
         // application handlers
@@ -32,7 +35,7 @@ public class MappingMatcher {
      * HTTP 요청에 알맞는 핸들러를 찾아 응답을 반환한다
      * @param request HTTP 요청
      * @return HTTP 응답
-     * @throws Exception GET , POST 이외의 요청이 들어오면 IllegalAccessException
+     * @throws Exception 요청 처리중 발생한 예외
      */
     public Response getResponse(Request request) throws Exception {
         RequestStartLine startLine = request.getStartLine();
@@ -45,7 +48,9 @@ public class MappingMatcher {
         }
         if (httpMethod.equals(POST)) {
             return handleRequest(request, path, this::matchPostMapping);
-        } else throw new IllegalAccessException("설정되어 있지 않은 http 메소드입니다.");
+        } else {
+            return errorHandler.getErrorResponse(ResponseStatus.MethodNotAllowed);
+        }
     }
 
     /**

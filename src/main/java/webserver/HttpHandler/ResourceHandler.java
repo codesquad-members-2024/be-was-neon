@@ -31,8 +31,7 @@ public class ResourceHandler implements Handler {
             startLine = new ResponseStartLine(HTTP_VERSION, OK);
         } catch (IOException noSuchFile) { // 해당 경로의 파일이 없을 때 getFileBytes 에서 예외 발생 , 로그 출력 후 던짐
             // 404 페이지 응답
-            responseBody = new MessageBody(NotFound.getMessage(), FileType.TXT);
-            startLine = new ResponseStartLine(HTTP_VERSION, NotFound);
+            return new ErrorHandler().getErrorResponse(NotFound);
         }
 
         responseHeader = writeContentResponseHeader(responseBody);
