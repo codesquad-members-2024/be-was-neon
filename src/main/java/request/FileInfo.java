@@ -9,24 +9,16 @@ public class FileInfo {
     public static final String LOGIN_FAIL_PATH = "/login/fail";
     private static final String DOT = "\\.";
 
-    public static String makeCompletePath(String url){ // /registration
+    public static String makeCompletePath(String url){
         StringBuilder completePath = new StringBuilder(BASIC_STATIC_FILE_PATH);
-        if(!url.contains(REGISTER_ACTION)){
-            completePath.append(url);
-        }
+
+        completePath.append(url);
+
         File file = new File(completePath.toString());
         if(file.isDirectory()){ // file이 아니라 폴더이면 "/index.html" 추가
             completePath.append(INDEX_FILE_NAME);
         }
         return completePath.toString();
-    }
-
-    public static String makeLoginCompletePath(boolean loginSuccess){
-        if(loginSuccess){
-            return BASIC_STATIC_FILE_PATH + INDEX_FILE_NAME;
-        }else{
-            return BASIC_STATIC_FILE_PATH + LOGIN_FAIL_PATH + INDEX_FILE_NAME;
-        }
     }
 
     public static String getFileType(String getCompletePath){
