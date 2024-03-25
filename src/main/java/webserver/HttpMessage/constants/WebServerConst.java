@@ -28,7 +28,8 @@ public class WebServerConst {
 
     // queries
     public static final String QUERY_START = "\\?";
-    public static final String QUERY_DELIM = "=";
+    public static final String QUERY_DELIM = "&";
+    public static final String QUERY_VALUE_DELIM = "=";
     public static final String USER_ID = "userId";
     public static final String USER_PW = "password";
 

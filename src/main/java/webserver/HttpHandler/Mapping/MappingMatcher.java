@@ -16,6 +16,10 @@ import java.util.function.BiPredicate;
 import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MappingMatcher {
+
+    /**
+     * WAS 에서 사용할 Handler 리스트
+     */
     private final List<Handler> handlers = new ArrayList<>();
 
     public MappingMatcher(List<Handler> appHandlers) {
@@ -26,6 +30,12 @@ public class MappingMatcher {
         this.handlers.addAll(appHandlers);
     }
 
+    /**
+     * HTTP 요청에 알맞는 핸들러를 찾아 응답을 반환한다
+     * @param request HTTP 요청
+     * @return HTTP 응답
+     * @throws Exception GET , POST 이외의 요청이 들어오면 IllegalAccessException
+     */
     public Response getResponse(Request request) throws Exception {
         RequestStartLine startLine = request.getStartLine();
 
@@ -40,6 +50,12 @@ public class MappingMatcher {
         } else throw new IllegalAccessException("설정되어 있지 않은 http 메소드입니다.");
     }
 
+    /**
+     * @param request HTTP 요청
+     * @param uri 요청 URI
+     * @param matchMapping 어노테이션 확인 메서드
+     * @return HTTP 응답
+     */
     private Response handleRequest(Request request , String uri, BiPredicate<Method, String> matchMapping) throws Exception {
         for(Handler handler : handlers) {
             for (Method method : handler.getClass().getDeclaredMethods()) {
@@ -52,6 +68,11 @@ public class MappingMatcher {
         return handleRequest(request , "/" , matchMapping);
     }
 
+    /**
+     * @param method HTTP Method
+     * @param uri 요청 URI
+     * @return 요청과 일치하는 핸들러인지 여부
+     */
     private boolean matchGetMapping(Method method, String uri) {
         if (method.isAnnotationPresent(GetMapping.class)) {
             String path = method.getAnnotation(GetMapping.class).path();
