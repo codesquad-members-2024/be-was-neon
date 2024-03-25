@@ -1,12 +1,9 @@
 package response;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
 public class HttpResponse {
-    //private static final Logger logger = LoggerFactory.getLogger(HttpResponseHeader.class);
     private static final String VERSION = "HTTP/1.1";
     private static final String ESCAPE_SEQUENCE = "\r\n";
     private static final String SPACE = " ";

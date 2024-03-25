@@ -19,7 +19,7 @@ public class LogoutManager {
         httpResponse = new HttpResponse();
     }
 
-    public HttpResponse responseMaker() throws IOException {
+    public HttpResponse responseMaker() throws IOException { // 로그아웃 후 main 페이지로 가는 response 반환
         removeSessionId(); // 세션 id 삭제
 
         String completePath = FileInfo.makeCompletePath("/index.html");
@@ -37,7 +37,7 @@ public class LogoutManager {
         return httpResponse;
     }
 
-    private void removeSessionId(){
+    private void removeSessionId(){ // 저장되어 있는 session id 삭제
         Session.deleteSession(parseSidValue());
         // 해당 session id가 없을 경우도 생각해야...
     }

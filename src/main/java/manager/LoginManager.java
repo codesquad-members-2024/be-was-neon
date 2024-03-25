@@ -30,7 +30,7 @@ public class LoginManager {
         return httpResponse;
     }
 
-    public void getResponseSetter() throws IOException {
+    private void getResponseSetter() throws IOException {  // 로그인 페이지로 이동하는 response 반환
         String completePath = FileInfo.makeCompletePath(httpRequest.getStartLineInfo("url"));
         String contextType = ContentType.getContentType(FileInfo.getFileType(completePath));
 
@@ -46,8 +46,7 @@ public class LoginManager {
         httpResponse.setBody(body);
     }
 
-    public void postResponseSetter() throws IOException {
-        String completePath;
+    private void postResponseSetter() throws IOException { // 로그인 결과에 따라 response 반환
         if(isLoginSuccess()){
             loginSuccessResponse();
         }else{
@@ -55,7 +54,7 @@ public class LoginManager {
         }
     }
 
-    private void loginSuccessResponse() throws IOException {
+    private void loginSuccessResponse() throws IOException { // 로그인 성공했을 때 response 만들기
         String completePath = FileInfo.makeCompletePath("/main");
         File file = new File(completePath);
         FileInputStream fis = new FileInputStream(file);
@@ -70,7 +69,7 @@ public class LoginManager {
         httpResponse.setBody(body);
     }
 
-    private void loginFailResponse() throws IOException {
+    private void loginFailResponse() throws IOException { // 로그인 실패했을 때 response 만들기
         String completePath = FileInfo.makeCompletePath("/login/fail");
         File file = new File(completePath);
         FileInputStream fis = new FileInputStream(file);
@@ -83,8 +82,7 @@ public class LoginManager {
         httpResponse.setBody(body);
     }
 
-    // ------------------------- 로그인 성공 확인 -------------------------
-    public boolean isLoginSuccess(){
+    private boolean isLoginSuccess(){ // 로그인 성공 또는 실패 확인
         String inputUserId = httpRequest.getBodyInfo("userId");
         String inputPassword = httpRequest.getBodyInfo("password");
 

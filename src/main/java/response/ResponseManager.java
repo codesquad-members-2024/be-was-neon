@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ResponseManager {
-    //RequestParser requestParser;
     HttpResponse httpResponse;
 
     public ResponseManager(HttpResponse httpResponse){
