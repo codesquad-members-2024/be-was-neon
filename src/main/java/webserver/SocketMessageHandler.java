@@ -38,6 +38,8 @@ public class SocketMessageHandler implements Runnable {
             dos.writeBytes(response.toString());
             if(response.getBody() != null) dos.write(response.getBody());
             log.debug("Send : " + response.getStartLine().toString() + " for " + request.getStartLine().toString());
+
+            dos.flush();
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
