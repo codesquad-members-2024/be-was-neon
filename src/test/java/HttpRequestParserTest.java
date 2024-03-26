@@ -1,54 +1,38 @@
 import Utils.HttpRequestParser;
-import Utils.RouteManager;
 import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HttpRequestParserTest {
 
-    private HttpRequestParser parser;
-    private RouteManager PathMaker;
+    private HttpRequestParser parserWithUser;
 
     @BeforeEach
-    void setUp() {
-        // 예제 HTTP 요청
-        String httpRequest = "GET /index.html HTTP/1.1\r\n" +
-                "Host: localhost:8080\r\n" +
-                "Connection: keep-alive\r\n\r\n" +
-                "Accept: */*";
-        this.parser = new HttpRequestParser(httpRequest);
+    void setUp() throws UnsupportedEncodingException {
+        // 사용자 정보가 포함된 POST 요청 바디를 시뮬레이션
+        String httpRequestWithUser = "POST /create HTTP/1.1\r\n" +
+                "Content-Type: application/x-www-form-urlencoded\r\n" +
+                "Content-Length: 57\r\n" +
+                "\r\n" +
+                "userId=123&password=123&name=123&email=123@123";
+        parserWithUser = new HttpRequestParser(httpRequestWithUser);
     }
 
     @Test
-    void testMakePath() {
-        String expectedPath = "src/main/resources/static/index.html";
-        assertThat(PathMaker.makeURLPath(expectedPath)).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
-    }
-
-    @Test
-    void testParseUserFromGetRequest() {
-        assertThat(parser.parseUserFromGetRequest()).isEmpty().withFailMessage("GET 요청에서 사용자 정보를 파싱하지 못해야 합니다.");
-    }
-
-    @Test
-    void testParseUserFromGetRequestWithUserInfo() {
-        // 사용자 정보가 포함된 GET 요청
-        String httpRequestWithUser = "GET /create?userId=123&password=456&name=kalia&email=kalia@123456 HTTP/1.1\r\n" +
-                "Host: localhost:8080\r\n\r\n";
-        HttpRequestParser parserWithUser = new HttpRequestParser(httpRequestWithUser);
-        Optional<User> userOptional = parserWithUser.parseUserFromGetRequest();
+    void testParseUserFromBodyWithUserInfo() {
+        Optional<User> userOptional = parserWithUser.parseUserFromBody();
 
         assertThat(userOptional).isPresent().withFailMessage("사용자 정보가 포함된 요청에서 사용자 객체가 생성되어야 합니다.");
         userOptional.ifPresent(user -> {
             assertThat(user.getUserId()).isEqualTo("123").withFailMessage("사용자 ID가 일치하지 않습니다.");
-            assertThat(user.getPassword()).isEqualTo("456").withFailMessage("비밀번호가 일치하지 않습니다.");
-            assertThat(user.getName()).isEqualTo("kalia").withFailMessage("이름이 일치하지 않습니다.");
-            assertThat(user.getEmail()).isEqualTo("kalia@123456").withFailMessage("이메일이 일치하지 않습니다.");
+            assertThat(user.getPassword()).isEqualTo("123").withFailMessage("비밀번호가 일치하지 않습니다.");
+            assertThat(user.getName()).isEqualTo("123").withFailMessage("이름이 일치하지 않습니다.");
+            assertThat(user.getEmail()).isEqualTo("123@123").withFailMessage("이메일이 일치하지 않습니다.");
         });
     }
-
 }

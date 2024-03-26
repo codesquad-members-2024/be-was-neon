@@ -8,18 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * HTTP 요청을 파싱하여 다양한 정보를 추출하고, 요청된 URL의 경로에 따른 파일 경로를 생성하는 클래스
- */
 public class HttpRequestParser {
     private String requestLine;
     private Map<String, String> headers;
     private String body;
 
-    public HttpRequestParser(String httpRequest) {
+    public HttpRequestParser(String httpRequest) throws UnsupportedEncodingException {
         this.headers = new HashMap<>();
-        String[] requestParts = httpRequest.split("\r\n", 2);
+        String[] requestParts = httpRequest.split("\r\n\r\n", 2);
         parseRequestLineAndHeaders(requestParts[0]);
+
+        if (requestParts.length > 1) {
+            this.body = requestParts[1];
+            this.body = URLDecoder.decode(this.body, "UTF-8");
+        }
     }
 
     private void parseRequestLineAndHeaders(String requestHeaders) {
@@ -40,42 +42,32 @@ public class HttpRequestParser {
         return tokens[1];
     }
 
-    public Optional<User> parseUserFromGetRequest() {
-        try {
-            String path = extractPath();
-            if (!path.startsWith("/create")) {
-                return Optional.empty();
-            }
-
-            String query = path.split("\\?", 2).length > 1 ? path.split("\\?", 2)[1] : "";
-            if (query.isEmpty()) {
-                return Optional.empty();
-            }
-
-            Map<String, String> queryParams = new HashMap<>();
-            String[] params = query.split("&");
-
-            for (String param : params) {
-                String[] keyValue = param.split("=", 2);
-                if (keyValue.length < 2) {
-                    continue; // 값이 없는 파라미터는 무시
-                }
-                String key = keyValue[0];
-                String value = URLDecoder.decode(keyValue[1], "UTF-8");
-                queryParams.put(key, value);
-            }
-
-            User user = new User(
-                    queryParams.getOrDefault("userId", ""),
-                    queryParams.getOrDefault("password", ""),
-                    queryParams.getOrDefault("name", ""),
-                    queryParams.getOrDefault("email", "")
-            );
-
-            return Optional.of(user);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+    // POST 요청의 바디에서 User 객체를 파싱
+    public Optional<User> parseUserFromBody() {
+        if (this.body == null || this.body.isEmpty()) {
             return Optional.empty();
         }
+
+        Map<String, String> formParams = new HashMap<>();
+        String[] params = this.body.split("&");
+
+        for (String param : params) {
+            String[] keyValue = param.split("=", 2);
+            if (keyValue.length < 2) {
+                continue; // 값이 없는 파라미터는 무시
+            }
+            String key = keyValue[0];
+            String value = keyValue[1]; // 이미 URLDecode 처리됨
+            formParams.put(key, value);
+        }
+
+        User user = new User(
+                formParams.getOrDefault("userId", ""),
+                formParams.getOrDefault("password", ""),
+                formParams.getOrDefault("name", ""),
+                formParams.getOrDefault("email", "")
+        );
+
+        return Optional.of(user);
     }
 }
