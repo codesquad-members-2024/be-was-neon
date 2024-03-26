@@ -5,17 +5,16 @@ import Utils.RouteManager;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class HttpResponse {
-    private OutputStream out;
-    private byte[] body;
-    private String contentType;
+    private final HttpResponseWriter out;
+    private final byte[] body;
+    private final String contentType;
 
-    public HttpResponse(OutputStream out, String filePath) throws IOException {
+    public HttpResponse(HttpResponseWriter out, String filePath) throws IOException {
         this.out = out;
         this.body = FileUtils.readFileContent(filePath);
-        this.contentType = RouteManager.getContentType(filePath); // 변경된 부분
+        this.contentType = RouteManager.getContentType(filePath);
         sendResponse();
     }
 
@@ -35,5 +34,12 @@ public class HttpResponse {
     private void responseBody(DataOutputStream dos, byte[] body) throws IOException {
         dos.write(body, 0, body.length);
         dos.flush();
+    }
+
+    public static void sendRedirect(HttpResponseWriter out, String location) throws IOException{
+        DataOutputStream dos = new DataOutputStream(out);
+        dos.writeBytes("HTTP/1.1 302 Found \r\n");
+        dos.writeBytes("Location: " + location + "\r\n");
+        dos.writeBytes("\r\n");
     }
 }

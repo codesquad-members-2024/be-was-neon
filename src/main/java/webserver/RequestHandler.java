@@ -9,8 +9,7 @@ import java.net.Socket;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
-    private Socket connection;
+    private final Socket connection;
 
     public RequestHandler(Socket connectionSocket) {
         this.connection = connectionSocket;
@@ -19,20 +18,36 @@ public class RequestHandler implements Runnable {
     @Override
     public void run() {
         try {
-            HttpRequest request = new HttpRequest(connection);
-            String firstPath = RouteManager.getFilePath(request.getPath());
-            new HttpResponse(connection.getOutputStream(), firstPath);
+            processRequest();
+        } finally {
+            closeConnection();
+        }
+    }
+
+    private void processRequest() {
+        try {
+            HttpRequestReader requestReader = new HttpRequestReader(connection);
+            HttpRequest request = new HttpRequest(requestReader);
+
+            if(request.getPath().equals("/create")){
+                HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
+                HttpResponse.sendRedirect(responseWriter, "/index.html");
+            }else {
+                String firstPath = RouteManager.getFilePath(request.getPath());
+                HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
+                new HttpResponse(responseWriter, firstPath);
+            }
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } finally {
-            // 모든 처리가 끝난 후에 Socket을 안전하게 닫습니다.
-            try {
-                if (connection != null && !connection.isClosed()) {
-                    connection.close();
-                }
-            } catch (IOException e) {
-                logger.error("Error closing socket: " + e.getMessage());
-            }
+        }
+    }
+
+    private void closeConnection() {
+        try {
+            connection.close();
+        } catch (IOException e) {
+            logger.error("Error closing socket: " + e.getMessage());
         }
     }
 }
+
