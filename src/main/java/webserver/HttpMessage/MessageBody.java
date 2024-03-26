@@ -44,6 +44,11 @@ public class MessageBody {
         }
     }
 
+    public MessageBody(byte[] content , FileType fileType){
+        this.body = content;
+        this.contentType = fileType;
+    }
+
     public MessageBody(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             body = new byte[(int) file.length()];

@@ -1,9 +1,20 @@
 package application.handler.utils;
 
 import application.db.Database;
+import application.model.Article;
 import application.model.User;
+import webserver.HttpHandler.ResourceHandler;
+import webserver.HttpMessage.Request;
 
 public class HtmlMaker {
+
+
+    public static String getArticlePage(Article article , String template){
+        // template 에서 이미지소스 ,  글 내용 바꿈
+
+
+        return "";
+    }
 
     public static String getListHtml(){
         StringBuilder sb = new StringBuilder();
@@ -29,4 +40,6 @@ public class HtmlMaker {
 
         return sb.toString();
     }
+
+
 }

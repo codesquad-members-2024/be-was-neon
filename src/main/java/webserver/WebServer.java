@@ -9,8 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);

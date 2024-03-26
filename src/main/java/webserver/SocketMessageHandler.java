@@ -48,37 +48,57 @@ public class SocketMessageHandler implements Runnable {
     }
 
     private static Request getRequest(InputStream in) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        BufferedInputStream bi = new BufferedInputStream(in);
+
         // start -line
-        String startLine = br.readLine();
-        if (startLine == null) throw new IOException("null request message");
+        String startLine = biReadLine(bi);
+        log.info(startLine);
+
+        if (startLine.isEmpty()) throw new IOException("Empty request message");
         Request request = new Request(startLine);
 
         //header
         MessageHeader.HeaderBuilder builder = MessageHeader.builder();
         String reqLine;
-        while ((reqLine = br.readLine()) != null && !reqLine.isEmpty()) {
+        while (!(reqLine = biReadLine(bi)).isEmpty()) {
             String[] headerField = reqLine.split(HEADER_DELIM);
+
             builder.field(headerField[0], headerField[1]);
         }
         request.header(builder.build());
 
         // body
-        char[] body;
+        byte[] body;
         if (request.getHeader().hasContent()) {
-            body = new char[Integer.parseInt(request.getHeaderValue(CONTENT_LEN))];
-            br.read(body);
+            body = new byte[Integer.parseInt(request.getHeaderValue(CONTENT_LEN))];
+            bi.read(body);
 
             String[] contentType = request.getHeaderValue(CONTENT_TYPE).split(";");
             FileType fileType = FileType.of(contentType[0]);
 
-            if(fileType.equals(FileType.MULTIPART)){
-                MultiMessageBody multiMessageBody = new MultiMessageBody(new String(body) , contentType[1].split("=")[1]);
+            if (fileType.equals(FileType.MULTIPART)) {
+                MultiMessageBody multiMessageBody = new MultiMessageBody(body, "--" + contentType[1].split("=")[1]);
             }
 
             request.body(new MessageBody(new String(body), fileType));
         }
 
         return request;
+    }
+
+    public static String biReadLine(BufferedInputStream in) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        int previousByte = -1;
+        int currentByte;
+        while ((currentByte = in.read()) != -1) {
+            if (previousByte == '\r' && currentByte == '\n') {
+                break;
+            }
+
+            sb.append((char) currentByte);
+            previousByte = currentByte;
+        }
+        return sb.substring(0, sb.length() - 1); // \r 삭제
     }
 }
