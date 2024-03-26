@@ -3,7 +3,7 @@ package response;
 
 import java.io.*;
 
-public class HttpFileHandler {
+public class HttpFileReader {
     public static byte[] htmlToByte(String fileName) throws IOException {
         // 파일에서 바이트 단위로 읽기 위한 스트림을 제공합니다.
         FileInputStream fis = new FileInputStream(new File(fileName));

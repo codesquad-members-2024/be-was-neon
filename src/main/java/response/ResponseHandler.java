@@ -1,48 +1,69 @@
 package response;
 
+import enums.FilePath;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.HttpRequest;
 import session.SessionManager;
+import userservice.LoginHandler;
+import userservice.RegistrationHandler;
+import userservice.UserDataParser;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
+
+import static enums.FilePath.*;
 
 public class ResponseHandler {
-    private final String RELATIVE_PATH = "./src/main/resources/static";
-    private static final String MAIN_PAGE_URL = "/index.html";
-    private static final String LOGIN_FAIL_PAGE_URL = "/login/login_failed.html";
     private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     private final HttpRequest httpRequest;
+    HttpResponse httpResponse;
+
     public ResponseHandler(HttpRequest httpRequest){
         this.httpRequest = httpRequest;
     }
 
     public void sendResponseDependOnRequest(DataOutputStream dos) throws IOException {
-        HttpResponse httpResponse = new HttpResponse();
-
         if (httpRequest.getMethod().equals("GET")) {
-            responseWhenMethodIsGet(dos,httpResponse);
+            responseToGetMethod();
         } else if (httpRequest.getMethod().equals("POST")) {
-            if (httpRequest.getPath().startsWith("/create")) {
-                httpResponse.handleRegistrationRequest(dos, httpRequest.getRequestBody(),MAIN_PAGE_URL);
-            }
+            responseToPostMethod();
         }
+        httpResponse.sendResponse(dos);
     }
 
-    public void responseWhenMethodIsGet(DataOutputStream dos, HttpResponse httpResponse) throws IOException {
+    private void responseToGetMethod() throws IOException {
+        GetResponseHandler getResponseHandler = new GetResponseHandler();
+        LoginHandler loginHandler = new LoginHandler();
+
         if (httpRequest.getPath().startsWith("/user")) {
-            String sessionId = SessionManager.createSession(httpRequest.getQueryParam());
+            String sessionId = "";
+            Map<String, String> UserData = UserDataParser.extractUserData(httpRequest.getQueryParam());
+            if (loginHandler.isLoginDataValid(UserData)){
+                sessionId = SessionManager.createSession(loginHandler.getLoginUser());
+            }
+
             if (!sessionId.isEmpty()){
-                httpResponse.handleLoginRequest(dos,sessionId, MAIN_PAGE_URL);
+                httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId, LOGIN_HOME_PAGE.getPath());
                 logger.debug("Login Completed");
             }else{
-                httpResponse.handleLoginRequest(dos,sessionId, LOGIN_FAIL_PAGE_URL);
+                httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId, LOGIN_FAILED_PAGE.getPath());
                 logger.debug("Login Failed");
             }
         } else {
-            httpResponse.respondToHtmlFile(dos,RELATIVE_PATH + httpRequest.getPath(), httpRequest.getMimeType());
+            httpResponse = getResponseHandler.respondToHtmlFile(httpRequest);
+        }
+    }
+    private void responseToPostMethod() throws IOException{
+        PostResponseHandler postResponseHandler = new PostResponseHandler();
+        RegistrationHandler registrationHandler = new RegistrationHandler();
+
+        if (httpRequest.getPath().startsWith("/create")) {
+            registrationHandler.registerNewUser(UserDataParser.extractUserData(httpRequest.getRequestBody()));
+            httpResponse = postResponseHandler.respondToRegistration(httpRequest, HOME_PAGE.getPath());
         }
     }
 }

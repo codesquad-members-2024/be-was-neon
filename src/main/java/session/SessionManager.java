@@ -1,6 +1,7 @@
 package session;
 
 import model.User;
+import userservice.LoginHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -11,14 +12,10 @@ public class SessionManager {
     private static final int SESSION_ID_LENGTH = 6;
     private static final Map<String, User> sessions = new ConcurrentHashMap<>();
 
-    public static String createSession(String loginData) throws UnsupportedEncodingException {
-        if (LoginHandler.isLoginDataValid(loginData)) {
-            String sessionId = generateSessionId();
-            User user = LoginHandler.getLoginUser();
-            sessions.put(sessionId, user);
-            return sessionId;
-        }
-        return "";
+    public static String createSession(User user){
+        String sessionId = generateSessionId();
+        sessions.put(sessionId, user);
+        return sessionId;
     }
 
     public static User getUserBySessionId(String sessionId) {
