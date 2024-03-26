@@ -26,7 +26,7 @@ class HttpRequestParserTest {
     @Test
     void testMakePath() {
         String expectedPath = "src/main/resources/static/index.html";
-        assertThat(PathMaker.makePath(expectedPath)).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
+        assertThat(PathMaker.makeURLPath(expectedPath)).isEqualTo(expectedPath).withFailMessage("파일 경로 생성이 정확하지 않습니다.");
     }
 
     @Test
