@@ -1,6 +1,6 @@
-package db;
+package application.db;
 
-import model.User;
+import application.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

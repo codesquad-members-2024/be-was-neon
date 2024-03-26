@@ -7,8 +7,8 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static webserver.WebServerConst.QUERY_DELIM;
-import static webserver.WebServerConst.STARTLINE_DELIM;
+import static webserver.HttpMessage.constants.WebServerConst.QUERY_VALUE_DELIM;
+import static webserver.HttpMessage.constants.WebServerConst.STARTLINE_DELIM;
 
 public class RequestStartLine {
     private final String method;
@@ -30,7 +30,7 @@ public class RequestStartLine {
         Map<String, String> createParameters = new HashMap<>();
 
         while (matcher.find()) {
-            String[] param = matcher.group().substring(1).split(QUERY_DELIM);
+            String[] param = matcher.group().substring(1).split(QUERY_VALUE_DELIM);
             createParameters.put(param[0], param[1]); // '=' 제거
         }
         query = createParameters;

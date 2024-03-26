@@ -1,6 +1,7 @@
 package webserver.HttpHandler;
 
-import db.SessionStore;
+import application.db.SessionStore;
+import application.model.User;
 import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.MessageHeader;
 import webserver.HttpMessage.Request;
@@ -17,12 +18,16 @@ public interface Handler {
 
     default boolean verifySession(Request request) {
         try {
-            if(SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]) != null){
+            if(getCookie(request) != null){
                 return true;
             }
         } catch (NullPointerException | ArrayIndexOutOfBoundsException noCookieSid) {
             return false;
         }
         return false;
+    }
+
+    default User getCookie(Request request) {
+        return SessionStore.getSession(request.getHeaderValue("Cookie").split("sid=")[1]);
     }
 }

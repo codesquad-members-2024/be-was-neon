@@ -1,20 +1,23 @@
-package webserver.HttpHandler;
+package application.handler;
 
-import db.Database;
-import model.User;
+import application.db.Database;
+import application.handler.utils.HtmlMaker;
+import application.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HttpHandler.Handler;
+import webserver.HttpHandler.ResourceHandler;
 import webserver.HttpMessage.*;
-import webserver.Mapping.GetMapping;
-import webserver.Mapping.PostMapping;
-import webserver.eums.FileType;
+import webserver.HttpHandler.Mapping.GetMapping;
+import webserver.HttpHandler.Mapping.PostMapping;
+import webserver.HttpMessage.constants.eums.FileType;
 
-import static webserver.WebServerConst.HTTP_VERSION;
-import static webserver.WebServerConst.LOCATION;
-import static webserver.eums.ResponseStatus.FOUND;
-import static webserver.eums.ResponseStatus.OK;
+import static webserver.HttpMessage.constants.WebServerConst.HTTP_VERSION;
+import static webserver.HttpMessage.constants.WebServerConst.LOCATION;
+import static webserver.HttpMessage.constants.eums.ResponseStatus.FOUND;
+import static webserver.HttpMessage.constants.eums.ResponseStatus.OK;
 
-public class UserHandler implements Handler{
+public class UserHandler implements Handler {
 
     private ResponseStartLine startLine;
     private MessageHeader responseHeader;
@@ -22,7 +25,7 @@ public class UserHandler implements Handler{
 
     private static final Logger log = LoggerFactory.getLogger(ResourceHandler.class);
 
-    @PostMapping(path = "/create")
+    @PostMapping(path = "/registration")
     public Response createUser(Request request) {
         MessageBody reqBody = request.getBody();
 

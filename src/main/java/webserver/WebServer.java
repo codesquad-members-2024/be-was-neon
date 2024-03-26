@@ -2,18 +2,26 @@ package webserver;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HttpHandler.Handler;
+import webserver.HttpHandler.Mapping.MappingMatcher;
 
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
     public static final String staticSourcePath = "./src/main/resources/static";
+    private final MappingMatcher mappingMatcher;
 
-    public static void main(String[] args) throws Exception {
+    public WebServer(List<Handler> appHandlers){
+        this.mappingMatcher =  new MappingMatcher(appHandlers);
+    }
+
+    public void startServer(String[] args) throws Exception {
         int port = 0;
         if (args == null || args.length == 0) {
             port = DEFAULT_PORT;
@@ -24,18 +32,13 @@ public class WebServer {
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
         try (ServerSocket listenSocket = new ServerSocket(port)) {
             logger.info("Web Application Server started {} port.", port);
-            ExecutorService executorService = Executors.newFixedThreadPool(16);
+            ExecutorService executorService = Executors.newFixedThreadPool(16); 
 
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executorService.execute(new SocketMessageHandler(connection));
+                executorService.execute(new SocketMessageHandler(connection , mappingMatcher));
             }
         }
-
-        /* ResourceHandler , SocketMessageHandler , MappingMatcher 모두 하나만 있으면 되지 않을까?
-         * WebServer 객체의 멤버로 두고 사용 , addHandler 등으로 핸들러 추가 가능하게 변경?
-         */
-
     }
 }

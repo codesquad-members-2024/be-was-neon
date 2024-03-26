@@ -2,7 +2,7 @@ package webserver.HttpMessage;
 
 import java.util.StringJoiner;
 
-import static webserver.WebServerConst.CRLF;
+import static webserver.HttpMessage.constants.WebServerConst.CRLF;
 
 public class Response {
     private final ResponseStartLine startLine;

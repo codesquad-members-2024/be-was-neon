@@ -1,6 +1,7 @@
 package webserver.HttpHandler;
 
-import db.Database;
+import application.handler.UserHandler;
+import application.db.Database;
 import org.junit.jupiter.api.*;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;

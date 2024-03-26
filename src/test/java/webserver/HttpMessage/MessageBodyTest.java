@@ -3,7 +3,7 @@ package webserver.HttpMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.WebServer;
-import webserver.eums.FileType;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import java.io.File;
 import java.io.IOException;

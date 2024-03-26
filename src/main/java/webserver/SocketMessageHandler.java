@@ -6,20 +6,22 @@ import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.MessageHeader;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
-import webserver.Mapping.MappingMatcher;
-import webserver.eums.FileType;
+import webserver.HttpHandler.Mapping.MappingMatcher;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import java.io.*;
 import java.net.Socket;
 
-import static webserver.WebServerConst.*;
+import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class SocketMessageHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SocketMessageHandler.class);
     private final Socket connection;
+    private final MappingMatcher matcher;
 
-    public SocketMessageHandler(Socket connectionSocket) {
+    public SocketMessageHandler(Socket connectionSocket , MappingMatcher mappingMatcher) {
         this.connection = connectionSocket;
+        this.matcher = mappingMatcher;
     }
 
     public void run() {
@@ -31,8 +33,7 @@ public class SocketMessageHandler implements Runnable {
             Request request = getRequest(in);
             log.debug(request.toString());
 
-            MappingMatcher matcher = new MappingMatcher(request);
-            Response response = matcher.getResponse();
+            Response response = matcher.getResponse(request);
 
             dos.writeBytes(response.toString());
             if(response.getBody() != null) dos.write(response.getBody());

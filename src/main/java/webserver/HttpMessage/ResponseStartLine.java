@@ -1,8 +1,8 @@
 package webserver.HttpMessage;
 
-import webserver.eums.ResponseStatus;
+import webserver.HttpMessage.constants.eums.ResponseStatus;
 
-import static webserver.WebServerConst.STARTLINE_DELIM;
+import static webserver.HttpMessage.constants.WebServerConst.STARTLINE_DELIM;
 
 public class ResponseStartLine {
     private final String version;

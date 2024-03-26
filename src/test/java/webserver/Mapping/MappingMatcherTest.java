@@ -1,18 +1,21 @@
 package webserver.Mapping;
 
+import application.handler.LoginHandler;
+import application.handler.UserHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import webserver.HttpHandler.Mapping.MappingMatcher;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
 import webserver.TestUtils;
-import webserver.eums.ResponseStatus;
+import webserver.HttpMessage.constants.eums.ResponseStatus;
 
-import java.util.Map;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 class MappingMatcherTest {
+    final MappingMatcher matcher = new MappingMatcher(List.of(new UserHandler() , new LoginHandler()));
     @Test
     @DisplayName("resource GET 요청이 들어오면 resourceHandler 의 메서드를 실행해 Response 를 반환한다")
     void getResourceResponse() throws Exception {
@@ -20,7 +23,7 @@ class MappingMatcherTest {
         Request request = TestUtils.getIndexRequest;
 
         //when
-        Response response = new MappingMatcher(request).getResponse();
+        Response response = matcher.getResponse(request);
 
         //then
         assertThat(response.getStartLine().getStatus()).isEqualTo(ResponseStatus.OK);
@@ -34,7 +37,7 @@ class MappingMatcherTest {
         Request request = TestUtils.createUserRequest;
 
         //when
-        Response response = new MappingMatcher(request).getResponse();
+        Response response = matcher.getResponse(request);
 
         //then
         assertThat(response.getStartLine().getStatus()).isEqualTo(ResponseStatus.FOUND);
@@ -42,14 +45,15 @@ class MappingMatcherTest {
     }
 
     @Test
-    @DisplayName("등록되지 않은 메서드의 요청이 들어오면 예외를 던진다")
+    @DisplayName("등록되지 않은 메서드의 요청이 들어오면 405 응답을 보낸다")
     void getInvalidMethodResponse() throws Exception {
         // given
         Request request = new Request("PUT / HTTP/1.1");
 
         //when
+        Response response = matcher.getResponse(request);
+
         //then
-        assertThatThrownBy(() -> new MappingMatcher(request).getResponse())
-                .isInstanceOf(IllegalAccessException.class).hasMessage("설정되어 있지 않은 http 메소드입니다.");
+        assertThat(response.getStartLine().toString()).contains("405 Method Not Allowed");
     }
 }

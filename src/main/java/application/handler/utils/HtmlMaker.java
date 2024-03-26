@@ -1,7 +1,7 @@
-package webserver.HttpHandler;
+package application.handler.utils;
 
-import db.Database;
-import model.User;
+import application.db.Database;
+import application.model.User;
 
 public class HtmlMaker {
 

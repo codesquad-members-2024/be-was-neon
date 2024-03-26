@@ -1,17 +1,18 @@
 package webserver.HttpHandler;
 
-import db.Database;
-import db.SessionStore;
-import org.junit.jupiter.api.AfterEach;
+import application.handler.LoginHandler;
+import application.db.Database;
+import application.db.SessionStore;
+import application.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import webserver.HttpMessage.MessageBody;
 import webserver.HttpMessage.Request;
 import webserver.HttpMessage.Response;
-import webserver.Mapping.MappingMatcher;
+import webserver.HttpHandler.Mapping.MappingMatcher;
 import webserver.TestUtils;
-import webserver.eums.FileType;
+import webserver.HttpMessage.constants.eums.FileType;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -30,8 +31,7 @@ class LoginHandlerTest {
     @Test
     void login() throws Exception {
         // given
-        MappingMatcher matcher = new MappingMatcher(TestUtils.createUserRequest);
-        matcher.getResponse();
+        Database.addUser(new User("test" , "test", "test", "test@naver.com"));
 
         // when
         Response response = loginHandler.login(new Request("POST /login HTTP/1.1")
@@ -48,9 +48,7 @@ class LoginHandlerTest {
     @Test
     void loginFail() throws Exception {
         // given
-        MappingMatcher matcher = new MappingMatcher(TestUtils.createUserRequest);
-        matcher.getResponse();
-
+        Database.addUser(new User("test" , "test", "test", "test@naver.com"));
 
         // when
         Response response = loginHandler.login(new Request("POST /login HTTP/1.1")
