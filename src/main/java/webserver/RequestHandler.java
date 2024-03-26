@@ -1,5 +1,6 @@
 package webserver;
 
+import Utils.RedirectManager;
 import Utils.RouteManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,18 +30,19 @@ public class RequestHandler implements Runnable {
             HttpRequestReader requestReader = new HttpRequestReader(connection);
             HttpRequest request = new HttpRequest(requestReader);
 
-            if(request.getPath().equals("/create")){
-                HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
-                HttpResponse.sendRedirect(responseWriter, "/index.html");
-            }else {
+            String redirectUrl = RedirectManager.getRedirectUrl(request.getPath());
+            HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
+            if (redirectUrl != null) {
+                HttpResponse.sendRedirect(responseWriter, redirectUrl);
+            } else {
                 String firstPath = RouteManager.getFilePath(request.getPath());
-                HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
                 new HttpResponse(responseWriter, firstPath);
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
+
 
     private void closeConnection() {
         try {
@@ -50,4 +52,3 @@ public class RequestHandler implements Runnable {
         }
     }
 }
-
