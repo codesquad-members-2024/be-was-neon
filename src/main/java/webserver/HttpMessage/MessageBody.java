@@ -2,11 +2,15 @@ package webserver.HttpMessage;
 
 import webserver.HttpMessage.constants.eums.FileType;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MessageBody {
@@ -27,30 +31,35 @@ public class MessageBody {
         this.contentType = contentType;
 
         if (contentType == FileType.URLENCODED) {
-            // tokenizer
-            StringTokenizer st = new StringTokenizer(body, QUERY_START + QUERY_DELIM);
+            parseUrlEncoded(body);
+        }
+    }
 
-            while (st.hasMoreTokens()) {
-                String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
-                content.put(token[0], token[1]);
-            }
+    private void parseUrlEncoded(String body) {
+        StringTokenizer st = new StringTokenizer(URLDecoder.decode(body, UTF_8), QUERY_START + QUERY_DELIM);
+
+        while (st.hasMoreTokens()) {
+            String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
+            content.put(token[0], token[1]);
         }
     }
 
     public MessageBody(File file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        fileReader.lines().forEach(string -> {
-                    sb.append(string).append("\r\n");
-        });
+        try (FileInputStream fis = new FileInputStream(file)) {
+            body = new byte[(int) file.length()];
+            fis.read(body);
+        }
 
-        this.body = sb.toString().getBytes();
         String[] fileName = file.getName().split(EXTENDER_START);
         this.contentType = FileType.valueOf(fileName[fileName.length - 1].toUpperCase());
     }
 
-    public byte[] getBody() {
-        return body;
+
+    public String getContentByKey(String key) throws IllegalArgumentException {
+        String value = content.get(key);
+
+        if (value == null) throw new IllegalArgumentException("not exists key :" + key);
+        return content.get(key);
     }
 
     public long getContentLength() {
@@ -61,11 +70,8 @@ public class MessageBody {
         return contentType;
     }
 
-    public String getContentByKey(String key) throws IllegalArgumentException {
-        String value = content.get(key);
-
-        if (value == null) throw new IllegalArgumentException("not exists key :" + key);
-        return content.get(key);
+    public byte[] getBody() {
+        return body;
     }
 
     public String toString() {
