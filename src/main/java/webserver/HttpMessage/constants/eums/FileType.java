@@ -11,8 +11,8 @@ public enum FileType {
     TXT("text/plain"),
     NONE("none"),
     JS("Application/javascript"),
-    URLENCODED("application/x-www-form-urlencoded");
-
+    URLENCODED("application/x-www-form-urlencoded"),
+    MULTIPART("multipart/form-data");
 
     private final String mimeType;
 

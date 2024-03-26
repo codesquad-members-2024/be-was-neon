@@ -2,11 +2,8 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.HttpMessage.MessageBody;
-import webserver.HttpMessage.MessageHeader;
-import webserver.HttpMessage.Request;
-import webserver.HttpMessage.Response;
 import webserver.HttpHandler.Mapping.MappingMatcher;
+import webserver.HttpMessage.*;
 import webserver.HttpMessage.constants.eums.FileType;
 
 import java.io.*;
@@ -19,7 +16,7 @@ public class SocketMessageHandler implements Runnable {
     private final Socket connection;
     private final MappingMatcher matcher;
 
-    public SocketMessageHandler(Socket connectionSocket , MappingMatcher mappingMatcher) {
+    public SocketMessageHandler(Socket connectionSocket, MappingMatcher mappingMatcher) {
         this.connection = connectionSocket;
         this.matcher = mappingMatcher;
     }
@@ -36,10 +33,14 @@ public class SocketMessageHandler implements Runnable {
             Response response = matcher.getResponse(request);
 
             dos.writeBytes(response.toString());
-            if(response.getBody() != null) dos.write(response.getBody());
+
+            byte[] responseBody;
+            if ((responseBody = response.getBody()) != null) {
+                dos.write(responseBody);
+                dos.flush();
+            }
             log.debug("Send : " + response.getStartLine().toString() + " for " + request.getStartLine().toString());
 
-            dos.flush();
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
@@ -64,11 +65,17 @@ public class SocketMessageHandler implements Runnable {
 
         // body
         char[] body;
-        if (request.getHeader().hasContent()){
+        if (request.getHeader().hasContent()) {
             body = new char[Integer.parseInt(request.getHeaderValue(CONTENT_LEN))];
             br.read(body);
 
-            FileType fileType = FileType.of(request.getHeaderValue(CONTENT_TYPE));
+            String[] contentType = request.getHeaderValue(CONTENT_TYPE).split(";");
+            FileType fileType = FileType.of(contentType[0]);
+
+            if(fileType.equals(FileType.MULTIPART)){
+                MultiMessageBody multiMessageBody = new MultiMessageBody(new String(body) , contentType[1].split("=")[1]);
+            }
+
             request.body(new MessageBody(new String(body), fileType));
         }
 
