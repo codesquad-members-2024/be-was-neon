@@ -51,7 +51,7 @@ public class MessageHeader {
                         .append(headerFields.get(key))
                         .append(CRLF);
         });
-        return sb + CRLF;
+        return sb.toString();
     }
 
     public String addCookie(int length , String cookieName){

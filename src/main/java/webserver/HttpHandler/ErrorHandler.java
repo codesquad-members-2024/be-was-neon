@@ -15,7 +15,7 @@ public class ErrorHandler implements Handler {
     public Response getErrorResponse(ResponseStatus status) {
         startLine = new ResponseStartLine(HTTP_VERSION , status);
         responseBody = new MessageBody(status.getMessage() , FileType.TXT);
-        writeContentResponseHeader(responseBody);
+        responseHeader = writeContentResponseHeader(responseBody);
 
         return new Response(startLine).header(responseHeader).body(responseBody);
     }

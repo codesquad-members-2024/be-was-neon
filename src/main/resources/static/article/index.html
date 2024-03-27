@@ -1,47 +1,97 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../reset.css" rel="stylesheet" />
-    <link href="../global.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <a href="/main"><img src="../img/signiture.svg" /></a>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="../reset.css" rel="stylesheet"/>
+    <link href="../global.css" rel="stylesheet"/>
+
+    <style>
+        .addImage {
+            width: 664px;
+            height: 664px;
+            background-color: lightgray;
+            border-radius: 20px 20px / 20px 20px;
+            overflow: hidden;
+            margin: 8px 16px 8px 16px;
+            padding: 8px;
+        }
+
+        .inputImg {
+            width: 664px;
+            height: 664px;
+            background: #d9d9d9;
+        }
+    </style>
+
+    <script>
+        function loadFile(input) {
+            let file = input.files[0]; // 선택파일 가져오기
+
+            let newImage = document.createElement("img"); //새 이미지 태그 생성
+
+            //이미지 source 가져오기
+            newImage.src = URL.createObjectURL(file);
+
+            newImage.style.width = "6px"; //div에 꽉차게 넣으려고
+            newImage.style.width = "100%";
+            newImage.style.height = "100%";
+            newImage.style.objectFit = "cover"; // div에 넘치지 않고 들어가게
+
+            //이미지를 image-show div에 추가
+            let container = document.getElementById('image-show');
+            container.appendChild(newImage);
+        }
+
+
+
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <a href="/main"><img src="../img/signiture.svg"/></a>
         <ul class="header__menu">
-          <li class="header__menu__item">
-            <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
-          </li>
-          <li class="header__menu__item">
-            <button id="logout-btn" class="btn btn_ghost btn_size_s">
-              로그아웃
-            </button>
-          </li>
+            <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
+            </li>
+            <li class="header__menu__item">
+                <button id="logout-btn" class="btn btn_ghost btn_size_s">
+                    로그아웃
+                </button>
+            </li>
         </ul>
-      </header>
-      <div class="page">
+    </header>
+    <div class="post">
         <h2 class="page-title">게시글 작성</h2>
-        <form class="form">
-          <div class="textfield textfield_size_m">
-            <p class="title_textfield">내용</p>
-            <textarea
-              class="input_textfield"
-              placeholder="글의 내용을 입력하세요"
-              autocomplete="username"
-            ></textarea>
-          </div>
-          <button
-            id="registration-btn"
-            class="btn btn_contained btn_size_m"
-            style="margin-top: 24px"
-            type="button"
-          >
-            작성 완료
-          </button>
+        <form class="form" method="post" action="/article" enctype="multipart/form-data">
+
+            <div class="addImage" id="image-show"> <!-- 이미지 띄울 공간 -->
+            </div>
+            <input type="file" name="image" id="fileToUpload" accept="image/*" onchange="loadFile(this)">
+
+            <div class="textfield textfield_size_m">
+                <p class="title_textfield">내용</p>
+                <textarea
+                        class="input_textfield"
+                        name="textfield"
+                        placeholder="글의 내용을 입력하세요"
+                        autocomplete="username"
+                ></textarea>
+            </div>
+
+
+            <button
+                    id="registration-btn"
+                    class="btn btn_contained btn_size_m"
+                    style="margin-top: 24px"
+                    type="submit"
+            >
+                작성 완료
+            </button>
         </form>
-      </div>
     </div>
-  </body>
+</div>
+</body>
 </html>

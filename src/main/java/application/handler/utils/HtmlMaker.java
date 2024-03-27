@@ -1,9 +1,18 @@
 package application.handler.utils;
 
 import application.db.Database;
+import application.model.Article;
 import application.model.User;
+import webserver.HttpHandler.ResourceHandler;
+import webserver.HttpMessage.Request;
 
 public class HtmlMaker {
+    public static String getArticlePage(Article article , String template){
+        return template
+                .replace("article_image" , "\"data:image/;base64," + article.getEncodedImg()+"\"")
+                .replace("writer_account" , article.getWriter())
+                .replace("article_content" , article.getContent());
+    }
 
     public static String getListHtml(){
         StringBuilder sb = new StringBuilder();
@@ -29,4 +38,6 @@ public class HtmlMaker {
 
         return sb.toString();
     }
+
+
 }

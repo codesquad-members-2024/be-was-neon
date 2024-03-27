@@ -1,12 +1,18 @@
 package webserver.HttpMessage;
 
 import webserver.HttpMessage.constants.eums.FileType;
+import webserver.HttpMessage.utils.MultiTypeParser;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static webserver.HttpMessage.constants.WebServerConst.*;
 
 public class MessageBody {
@@ -16,7 +22,9 @@ public class MessageBody {
     /**
      * Key - Value 형식의 내용일 경우 HashMap 에 저장
      */
-    private final Map<String, String> content = new HashMap<>();
+    private Map<String, String> content = new ConcurrentHashMap<>();
+
+    private Map<FileType , String> multiContents;
 
     /**
      * @param body        HTTP Message body 문자열
@@ -27,30 +35,40 @@ public class MessageBody {
         this.contentType = contentType;
 
         if (contentType == FileType.URLENCODED) {
-            // tokenizer
-            StringTokenizer st = new StringTokenizer(body, QUERY_START + QUERY_DELIM);
-
-            while (st.hasMoreTokens()) {
-                String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
-                content.put(token[0], token[1]);
-            }
+            parseUrlEncoded(body);
         }
     }
 
-    public MessageBody(File file) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        fileReader.lines().forEach(string -> {
-                    sb.append(string).append("\r\n");
-        });
+    public MessageBody(byte[] content , FileType contentType){
+        this.body = content;
+        this.contentType = contentType;
+    }
 
-        this.body = sb.toString().getBytes();
+    public MessageBody(byte[] content , String boundary) throws IOException {
+        this.body = content;
+        this.contentType = FileType.MULTIPART;
+        this.multiContents = new MultiTypeParser(content , boundary).getParsed();
+    }
+
+    public MessageBody(File file) throws IOException {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            body = new byte[(int) file.length()];
+            fis.read(body);
+        }
+
         String[] fileName = file.getName().split(EXTENDER_START);
         this.contentType = FileType.valueOf(fileName[fileName.length - 1].toUpperCase());
     }
 
-    public byte[] getBody() {
-        return body;
+    public String getContentByKey(String key) throws IllegalArgumentException {
+        String value = content.get(key);
+
+        if (value == null) throw new IllegalArgumentException("not exists key :" + key);
+        return content.get(key);
+    }
+
+    public String getMultiContent(FileType fileType){
+        return this.multiContents.get(fileType);
     }
 
     public long getContentLength() {
@@ -61,14 +79,16 @@ public class MessageBody {
         return contentType;
     }
 
-    public String getContentByKey(String key) throws IllegalArgumentException {
-        String value = content.get(key);
-
-        if (value == null) throw new IllegalArgumentException("not exists key :" + key);
-        return content.get(key);
+    public byte[] getBody() {
+        return body;
     }
 
-    public String toString() {
-        return new String(body);
+    private void parseUrlEncoded(String body) {
+        StringTokenizer st = new StringTokenizer(URLDecoder.decode(body, UTF_8), QUERY_START + QUERY_DELIM);
+
+        while (st.hasMoreTokens()) {
+            String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
+            content.put(token[0], token[1]);
+        }
     }
 }

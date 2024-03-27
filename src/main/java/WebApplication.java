@@ -1,3 +1,4 @@
+import application.handler.ArticleHandler;
 import application.handler.LoginHandler;
 import application.handler.UserHandler;
 import webserver.HttpHandler.Handler;
@@ -9,7 +10,8 @@ public class WebApplication {
     public static void main(String[] args) throws Exception {
         List<Handler> codeStargramHandlers = List.of(
                 new LoginHandler(),
-                new UserHandler()
+                new UserHandler(),
+                new ArticleHandler()
         );
 
         WebServer webApplicationServer = new WebServer(codeStargramHandlers);
