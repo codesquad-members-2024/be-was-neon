@@ -53,7 +53,10 @@ public class LoginHandler implements Handler {
         log.info("logout");
 
         startLine = new ResponseStartLine(HTTP_VERSION, FOUND);
-        responseHeader = MessageHeader.builder().field(LOCATION, "/").build();
+        responseHeader = MessageHeader.builder()
+                .field(LOCATION, "/")
+                .field("Set-Cookie" , "name=sid; max-age=1")
+                .build();
         return new Response(startLine).header(responseHeader);
     }
 
@@ -68,7 +71,7 @@ public class LoginHandler implements Handler {
 
             String loginUserIndexPage = new String(mainIndex.getBody()).replace("<!--UserName-->", user.getName());
             responseBody = new MessageBody(loginUserIndexPage, FileType.HTML);
-            writeContentResponseHeader(responseBody);
+            responseHeader = writeContentResponseHeader(responseBody);
             log.info("welcome Logged-in user : " + user.getName());
 
             return mainIndex.header(responseHeader).body(responseBody);
