@@ -1,30 +1,30 @@
 package application.model;
 
 public class Article {
-    private String imagePath;
+    private String encodedImg;
     private final String content;
-    private final User writer;
+    private final String writer;
 
-    public Article(String content , User writer){
+    public Article(String content , String writer){
         this.content = content;
         this.writer = writer;
     }
 
-    public Article(String content , String imagePath, User writer){
-        this.imagePath = imagePath;
+    public Article(String content , String encodedImg, String writer){
+        this.encodedImg = encodedImg;
         this.content = content;
         this.writer = writer;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getEncodedImg() {
+        return encodedImg;
     }
 
     public String getContent() {
         return content;
     }
 
-    public User getWriter() {
+    public String getWriter() {
         return writer;
     }
 }

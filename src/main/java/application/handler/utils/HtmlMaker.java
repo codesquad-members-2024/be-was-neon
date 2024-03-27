@@ -7,13 +7,11 @@ import webserver.HttpHandler.ResourceHandler;
 import webserver.HttpMessage.Request;
 
 public class HtmlMaker {
-
-
     public static String getArticlePage(Article article , String template){
-        // template 에서 이미지소스 ,  글 내용 바꿈
-
-
-        return "";
+        return template
+                .replace("article_image" , "\"data:image/;base64," + article.getEncodedImg()+"\"")
+                .replace("writer_account" , article.getWriter())
+                .replace("article_content" , article.getContent());
     }
 
     public static String getListHtml(){

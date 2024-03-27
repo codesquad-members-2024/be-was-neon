@@ -1,6 +1,7 @@
 package webserver.HttpMessage;
 
 import webserver.HttpMessage.constants.eums.FileType;
+import webserver.HttpMessage.utils.MultiTypeParser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static webserver.HttpMessage.constants.WebServerConst.*;
@@ -20,7 +22,9 @@ public class MessageBody {
     /**
      * Key - Value 형식의 내용일 경우 HashMap 에 저장
      */
-    private final Map<String, String> content = new HashMap<>();
+    private Map<String, String> content = new ConcurrentHashMap<>();
+
+    private Map<FileType , String> multiContents;
 
     /**
      * @param body        HTTP Message body 문자열
@@ -35,18 +39,15 @@ public class MessageBody {
         }
     }
 
-    private void parseUrlEncoded(String body) {
-        StringTokenizer st = new StringTokenizer(URLDecoder.decode(body, UTF_8), QUERY_START + QUERY_DELIM);
-
-        while (st.hasMoreTokens()) {
-            String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
-            content.put(token[0], token[1]);
-        }
+    public MessageBody(byte[] content , FileType contentType){
+        this.body = content;
+        this.contentType = contentType;
     }
 
-    public MessageBody(byte[] content , FileType fileType){
+    public MessageBody(byte[] content , String boundary) throws IOException {
         this.body = content;
-        this.contentType = fileType;
+        this.contentType = FileType.MULTIPART;
+        this.multiContents = new MultiTypeParser(content , boundary).getParsed();
     }
 
     public MessageBody(File file) throws IOException {
@@ -59,12 +60,15 @@ public class MessageBody {
         this.contentType = FileType.valueOf(fileName[fileName.length - 1].toUpperCase());
     }
 
-
     public String getContentByKey(String key) throws IllegalArgumentException {
         String value = content.get(key);
 
         if (value == null) throw new IllegalArgumentException("not exists key :" + key);
         return content.get(key);
+    }
+
+    public String getMultiContent(FileType fileType){
+        return this.multiContents.get(fileType);
     }
 
     public long getContentLength() {
@@ -79,7 +83,12 @@ public class MessageBody {
         return body;
     }
 
-    public String toString() {
-        return new String(body);
+    private void parseUrlEncoded(String body) {
+        StringTokenizer st = new StringTokenizer(URLDecoder.decode(body, UTF_8), QUERY_START + QUERY_DELIM);
+
+        while (st.hasMoreTokens()) {
+            String[] token = st.nextToken().split(QUERY_VALUE_DELIM);
+            content.put(token[0], token[1]);
+        }
     }
 }
