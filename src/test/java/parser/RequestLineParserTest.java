@@ -1,11 +1,10 @@
-package Parser;
+package parser;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import webserver.HttpRequest;
-import webserver.RequestLine;
+import http.HttpRequest;
+import http.RequestLine;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -66,6 +65,6 @@ class RequestLineParserTest {
         RequestParser requestParser = new RequestParser();
         HttpRequest httpRequest = requestParser.parse(inputStream);
 
-        assertThat(new String(httpRequest.getBody(), "UTF-8")).isEqualTo("StringBody");
+        assertThat(new String(httpRequest.getBodyContent(), "UTF-8")).isEqualTo("StringBody");
     }
 }
