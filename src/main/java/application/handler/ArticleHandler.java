@@ -3,6 +3,7 @@ package application.handler;
 import application.handler.utils.HtmlMaker;
 import application.model.Article;
 import application.model.User;
+import webserver.HttpHandler.ErrorHandler;
 import webserver.HttpHandler.Handler;
 import webserver.HttpHandler.Mapping.GetMapping;
 import webserver.HttpHandler.Mapping.PostMapping;
@@ -16,8 +17,7 @@ import java.util.List;
 
 import static webserver.HttpMessage.constants.WebServerConst.*;
 import static webserver.HttpMessage.constants.eums.FileType.*;
-import static webserver.HttpMessage.constants.eums.ResponseStatus.FOUND;
-import static webserver.HttpMessage.constants.eums.ResponseStatus.OK;
+import static webserver.HttpMessage.constants.eums.ResponseStatus.*;
 
 public class ArticleHandler implements Handler {
     private ResponseStartLine startLine;
@@ -26,6 +26,7 @@ public class ArticleHandler implements Handler {
 
 
     private static final ResourceHandler resourceHandler = new ResourceHandler();
+    private static final ErrorHandler errorHandler = new ErrorHandler();
     private final List<Article> articleList = new ArrayList<>();
 
     @PostMapping(path = "/article")
@@ -58,6 +59,10 @@ public class ArticleHandler implements Handler {
     public Response getArticle(Request request) {
         Request mainReq = new Request(GET + " /main " + HTTP_VERSION);
         int index = Integer.parseInt(request.getRequestQuery("index")) - 1;
+
+        if (index>=articleList.size()){
+            return errorHandler.getErrorResponse(NotFound);
+        }
 
         startLine = new ResponseStartLine(HTTP_VERSION, OK);
         responseBody = new MessageBody(
