@@ -8,13 +8,12 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public class WebServer {
     private static final Logger logger = LoggerFactory.getLogger(WebServer.class);
 
     // 서버 기본 포트와 쓰레드 풀 크기 설정
     private static final int DEFAULT_PORT = 8080;
-    private static final int THREAD_POOL_SIZE = 11;
+    private static final int THREAD_POOL_SIZE = 10;
 
     public static void main(String[] args) throws Exception {
         int port = determinePort(args);
