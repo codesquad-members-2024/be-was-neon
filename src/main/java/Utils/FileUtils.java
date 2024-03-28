@@ -8,7 +8,7 @@ import java.io.*;
 public class FileUtils {
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-    private File file;
+    private final File file;
 
     public FileUtils(File file) {
         this.file = file;

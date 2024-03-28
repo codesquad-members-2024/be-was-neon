@@ -8,28 +8,17 @@ import java.io.IOException;
 
 public class HttpRequest {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
-    private final HttpRequestReader reader;
     private String path;
 
-    public HttpRequest(HttpRequestReader reader) throws IOException {
-        this.reader = reader;
-        parseRequest();
+    public HttpRequest(String httpRequest) throws IOException {
+        parseRequest(httpRequest);
     }
 
-    private void parseRequest() throws IOException {
-        StringBuilder requestBuilder = new StringBuilder();
-        String line;
-        boolean isFirstLine = true;
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
-            if (isFirstLine) {
-                logger.info("요청 라인: {}", line);
-                isFirstLine = false;
-            }
-            requestBuilder.append(line).append("\r\n");
-        }
-        String httpRequest = requestBuilder.toString();
+    // 요청 문자열을 파싱하는 메소드
+    private void parseRequest(String httpRequest) throws IOException {
         HttpRequestParser httpRequestParser = new HttpRequestParser(httpRequest);
         path = httpRequestParser.extractPath();
+        logger.info("요청 경로: {}", path);
     }
 
     public String getPath() {
