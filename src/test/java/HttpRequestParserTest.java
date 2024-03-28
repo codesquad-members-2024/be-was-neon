@@ -1,81 +1,38 @@
-package Utils;
-
+import Utils.HttpRequestParser;
 import model.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-/**
- * HTTP 요청을 파싱하여 다양한 정보를 추출하고, 요청된 URL의 경로에 따른 파일 경로를 생성하는 클래스
- */
-public class HttpRequestParser {
-    private String requestLine;
-    private Map<String, String> headers;
-    private String body;
+import static org.assertj.core.api.Assertions.assertThat;
 
-    public HttpRequestParser(String httpRequest) {
-        this.headers = new HashMap<>();
-        String[] requestParts = httpRequest.split("\r\n", 2);
-        parseRequestLineAndHeaders(requestParts[0]);
+class HttpRequestParserTest {
+
+    private HttpRequestParser parserWithUser;
+
+    @BeforeEach
+    void setUp() throws UnsupportedEncodingException {
+        // 사용자 정보가 포함된 POST 요청 바디를 시뮬레이션
+        String httpRequestWithUser = "POST /create HTTP/1.1\r\n" +
+                "Content-Type: application/x-www-form-urlencoded\r\n" +
+                "Content-Length: 57\r\n" +
+                "\r\n" +
+                "userId=123&password=123&name=123&email=123@123";
+        parserWithUser = new HttpRequestParser(httpRequestWithUser);
     }
 
-    private void parseRequestLineAndHeaders(String requestHeaders) {
-        String[] lines = requestHeaders.split("\r\n");
-        this.requestLine = lines[0];
+    @Test
+    void testParseUserFromBodyWithUserInfo() {
+        Optional<User> userOptional = parserWithUser.parseUserFromBody();
 
-        for (int i = 1; i < lines.length; i++) {
-            String[] headerParts = lines[i].split(": ", 2);
-            this.headers.put(headerParts[0], headerParts[1]);
-        }
-    }
-
-    public String extractPath() {
-        String[] tokens = this.requestLine.split(" ");
-        if (tokens.length < 3) {
-            throw new IllegalArgumentException("잘못된 요청 라인 형식입니다.");
-        }
-        return tokens[1];
-    }
-
-    public Optional<User> parseUserFromGetRequest() {
-        try {
-            String path = extractPath();
-            if (!path.startsWith("/create")) {
-                return Optional.empty();
-            }
-
-            String query = path.split("\\?", 2).length > 1 ? path.split("\\?", 2)[1] : "";
-            if (query.isEmpty()) {
-                return Optional.empty();
-            }
-
-            Map<String, String> queryParams = new HashMap<>();
-            String[] params = query.split("&");
-
-            for (String param : params) {
-                String[] keyValue = param.split("=", 2);
-                if (keyValue.length < 2) {
-                    continue; // 값이 없는 파라미터는 무시
-                }
-                String key = keyValue[0];
-                String value = URLDecoder.decode(keyValue[1], "UTF-8");
-                queryParams.put(key, value);
-            }
-
-            User user = new User(
-                    queryParams.getOrDefault("userId", ""),
-                    queryParams.getOrDefault("password", ""),
-                    queryParams.getOrDefault("name", ""),
-                    queryParams.getOrDefault("email", "")
-            );
-
-            return Optional.of(user);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
+        assertThat(userOptional).isPresent().withFailMessage("사용자 정보가 포함된 요청에서 사용자 객체가 생성되어야 합니다.");
+        userOptional.ifPresent(user -> {
+            assertThat(user.getUserId()).isEqualTo("123").withFailMessage("사용자 ID가 일치하지 않습니다.");
+            assertThat(user.getPassword()).isEqualTo("123").withFailMessage("비밀번호가 일치하지 않습니다.");
+            assertThat(user.getName()).isEqualTo("123").withFailMessage("이름이 일치하지 않습니다.");
+            assertThat(user.getEmail()).isEqualTo("123@123").withFailMessage("이메일이 일치하지 않습니다.");
+        });
     }
 }

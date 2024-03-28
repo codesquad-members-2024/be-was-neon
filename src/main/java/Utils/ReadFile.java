@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class FileUtils {
-    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
-    private File file;
+public class ReadFile {
+    private static final Logger logger = LoggerFactory.getLogger(ReadFile.class);
+    private final File file;
 
-    public FileUtils(File file) {
+
+    public ReadFile(File file) {
         this.file = file;
     }
     /**
@@ -42,7 +43,7 @@ public class FileUtils {
     }
     public static byte[] readFileContent(String filePath) throws IOException {
         File file = new File(filePath);
-        FileUtils fileUtils = new FileUtils(file);
+        ReadFile fileUtils = new ReadFile(file);
         byte[] data = fileUtils.readFileToByteArray();
         if (data.length == 0) { // 파일 내용이 비어있거나 파일을 읽을 수 없는 경우
             logger.error("Requested file not found or empty: {}", filePath);
