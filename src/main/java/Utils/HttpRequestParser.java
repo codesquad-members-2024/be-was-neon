@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 public class HttpRequestParser {
     private String requestLine;
-    private Map<String, String> headers;
+    private final Map<String, String> headers;
     private String body;
 
     /**
