@@ -6,17 +6,18 @@ public class HttpRequest {
     private RequestLine requestLine;
     private Map<String, String> requestHeader;
     private String requestBody;
-    private String cookie;
 
     public HttpRequest(RequestLine requestLine, Map<String,String> requestHeader,String requestBody){
         this.requestLine = requestLine;
         this.requestHeader = requestHeader;
         this.requestBody = requestBody;
-        setCookie();
-
     }
-    public void setCookie(){
-        cookie = requestHeader.get("Cookie");
+    public String getSessionId(){
+        if (requestHeader.containsKey("Cookie")){
+            String sessionId = requestHeader.get("Cookie");
+            return sessionId.substring(sessionId.indexOf("SID=")+4);
+        }
+        return "";
     }
     public RequestLine getRequestLine(){
         return requestLine;
@@ -39,8 +40,5 @@ public class HttpRequest {
     }
     public String getRequestBody() {
         return requestBody;
-    }
-    public String getCookie() {
-        return cookie;
     }
 }

@@ -39,7 +39,7 @@ public class ResponseHandler {
         GetResponseHandler getResponseHandler = new GetResponseHandler();
         LoginHandler loginHandler = new LoginHandler();
 
-        if (httpRequest.getPath().startsWith("/user")) {
+        if (httpRequest.getPath().startsWith("/loginAction")) {
             String sessionId = "";
             Map<String, String> UserData = UserDataParser.extractUserData(httpRequest.getQueryParam());
             if (loginHandler.isLoginDataValid(UserData)){
@@ -50,10 +50,10 @@ public class ResponseHandler {
                 httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId, LOGIN_HOME_PAGE.getPath());
                 logger.debug("Login Completed");
             }else{
-                httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId, LOGIN_FAILED_PAGE.getPath());
+                httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId + ";Max-Age=0", LOGIN_FAILED_PAGE.getPath());
                 logger.debug("Login Failed");
             }
-        } else {
+        } else{
             httpResponse = getResponseHandler.respondToHtmlFile(httpRequest);
         }
     }
@@ -61,9 +61,14 @@ public class ResponseHandler {
         PostResponseHandler postResponseHandler = new PostResponseHandler();
         RegistrationHandler registrationHandler = new RegistrationHandler();
 
-        if (httpRequest.getPath().startsWith("/create")) {
+        if (httpRequest.getPath().startsWith("/registrationAction")) {
             registrationHandler.registerNewUser(UserDataParser.extractUserData(httpRequest.getRequestBody()));
             httpResponse = postResponseHandler.respondToRegistration(httpRequest, HOME_PAGE.getPath());
+
+        }else if(httpRequest.getPath().startsWith("/logoutAction")){
+            SessionManager.removeSession(httpRequest.getSessionId());
+            httpResponse = postResponseHandler.respondToLogout(httpRequest, HOME_PAGE.getPath());
         }
+
     }
 }
