@@ -1,6 +1,7 @@
 package webserver;
 
-import Utils.RouteManager;
+import Redirect.RedirectSelector;
+import Redirect.RequestProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,28 +25,25 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    // HttpRequestReader를 사용하여 요청을 읽고, 해당 요청을 처리하기 위해 HttpRequest와 HttpResponseWriter를 활용
     private void processRequest() {
         try {
             HttpRequestReader requestReader = new HttpRequestReader(connection);
             String httpRequest = requestReader.readRequest();
             HttpRequest request = new HttpRequest(httpRequest);
-            HttpResponseWriter responseWriter = new HttpResponseWriter(connection);
+            HttpResponseWriter responseWriter = new HttpResponseWriter(connection); // 응답 작성을 위한 객체
 
-            // 예시: 로그인 경로에 대한 요청 처리
-            if ("/create".equals(request.getPath())) {
-                responseWriter.sendRedirect("/index.html");
-                return; // 리디렉션 후에는 더 이상의 처리를 중단
+            // RedirectManager를 통해 요청 경로에 적합한 RequestProcessor를 찾아 요청 처리
+            RequestProcessor processor = RedirectSelector.getProcessor(request.getPath());
+            if (processor != null) {
+                processor.handleFilerequest(request, responseWriter);
+            } else {
+                responseWriter.sendError404();
             }
-
-            String firstPath = RouteManager.getFilePath(request.getPath());
-            new HttpResponse(responseWriter, firstPath);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
-
-
-
 
     private void closeConnection() {
         try {
