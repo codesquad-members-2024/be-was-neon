@@ -108,5 +108,28 @@
 - 결과적으로 java.util.Random이 중요한 응용 프로그램이나 중요한 데이터를 보호하기 위해
   랜덤 클래스를 사용해서는 안됩니다. 
 
-출처: https://interconnection.tistory.com/74 [RyanGomdoriPooh , Ryan Server:티스토리]
+출처: https://interconnection.tistory.com/74 [RyanGomdoriPooh , Ryan Server:티스토리]   
 출처: https://kdhyo98.tistory.com/48 [Hyo Kim, 일단은 내 이야기:티스토리]
+
+# Step6
+## 추가 및 변경 내용
+- Response의 구조를 Request가 Get인 경우와 Post인 경우로 나눠서 만들어주었습니다.
+- Html 파일들의 action 이름이나 구조를 코드에서 사용하기 쉽게 변경해주었습니다.
+- 로그아웃 요청을 처리할수었는 코드를 추가해주었습니다.
+- 요청에 따라 동적으로 변환된 Html를 내보내주는 메서드를 추가해주었습니다.
+- 세션에 sessionId가 중복되는지 확인하는 코드를 추가하였습니다.
+
+## 공부한 내용
+### 객체지향 개발 5대 원리: SOLID
+- SRP(Single Responsibility Principle): 단일 책임 원칙
+    - 작성된 클래스는 하나의 기능만 가지며 클래스가 제공하는 모든 서비스는 그 하나의 책임을 수행하는데 집중되어야 한다는 원칙
+- OCP(Open Closed Priciple): 개방 폐쇄 원칙
+    - 소프트웨어의 구성요소(컴포넌트, 클래스, 모듈, 함수)는 확장에는 열려있고, 변경에는 닫혀있어 한다는 원칙
+- LSP(Listov Substitution Priciple): 리스코프 치환 원칙
+    - 서브 타입은 언제나 기반(부모) 타입과 호환될 수 있어야 하는 원칙
+- ISP(Interface Segregation Principle): 인터페이스 분리 원칙
+  - 인터페이스를 각각 사용에 맞게 끔 잘게 분리해야한다는 설계 원칙
+- DIP(Dependency Inversion Principle): 의존 역전 원칙
+  - 어떤 Class를 참조해서 사용해야하는 상황이 생긴다면, 그 Class를 직접 참조하는 것이 아니라 그 대상의 상위 요소(추상 클래스 or 인터페이스)로 참조하라는 원칙
+
+출처: https://inpa.tistory.com/entry/OOP-💠-객체-지향-설계의-5가지-원칙-SOLID [Inpa Dev 👨‍💻:티스토리]
