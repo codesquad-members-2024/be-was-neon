@@ -17,11 +17,10 @@ sequenceDiagram
     participant B as WebServer
     participant C as ConnectionHandler
     participant D as HttpRequestReader
-    participant E as HttpRequestHandler
-    participant F as StaticFileHandler
-    participant G as UrlHandlerFactory
-    participant H as UrlHandler
-    participant I as HttpResponseHandler
+    participant E as HttpRequestHandlerRouter
+    participant F as HttpRequestHandler
+    participant G as HttpResponse
+    participant H as HttpRequestHandler
     A ->> B : 웹 서버 접속
     B ->> C : Connection 소켓 생성
     C ->> D : RequestReader 생성
@@ -29,21 +28,13 @@ sequenceDiagram
     D ->> C : HttpRequest 객체 반환
     C ->> E : HttpRequest 객체 전달
     alt is 스태틱 파일 요청
-        E ->> F : HttpRequest 객체 전달
-        F ->> F : HttpRequest 처리 후, HttpResponse 객체 생성
-        F ->> C : HttpResponse 객체 반환
+        E ->> F : StaticFileHandler 반환
     else is Url 요청
-        E ->> G : HttpRequest 객체 전달
-        G ->> G : HttpRequest의 requestLine Url 조회
-        alt is 존재하는 Url
-            G ->> H : HttpRequest 객체 전달
-            H ->> C : HttpResponse 객체 전달
-        else 존재하지 않는 Url
-            G ->> C : HttpResponse [404] 전달
-        end
+        E ->> F : 각각의 url에 대한 Handler 반환
     end
-    C ->> I : HttpResponse 객체 전달
-    I ->> B : WebServer에게 Http Response 응답 반환
+    F ->> G : HttpResponse 객체 생성
+    G ->> H : HttpResposne 객체 전달
+    H ->> B : HttpResponse 읽은 후, 전달
     B ->> A : 웹 응답 반환
 ```
 
@@ -130,4 +121,6 @@ public UrlHandler createUrlHandler(Url url) {
 - 이 값들이 여기저기서 필요하게 되면서, config 객체를 지속적으로 넘겨주어야 하는 문제가 발생하였다.
 - config을 static으로 관리하여 config의 정보가 필요한 객체에서 바로 가져올 수 있도록 하는 방법을 생각해보아야겠다.
 
+### 해결
+- Config 클래스의 메소드를 static으로 선언하여 config 객체를 넘겨주지 않도록 수정
 ---

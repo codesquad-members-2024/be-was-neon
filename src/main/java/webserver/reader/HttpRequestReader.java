@@ -12,21 +12,22 @@ import java.util.Map;
 import config.Config;
 
 /* 웹 서버의 HTTP 요청 객체 및 관련 클래스 */
-import webserver.request.HttpRequest;
-import webserver.request.message.*;
+import webserver.http.request.HttpRequest;
+import webserver.http.request.message.HttpMethod;
+import webserver.http.request.message.HttpRequestBody;
+import webserver.http.request.message.HttpRequestHeader;
+import webserver.http.request.message.HttpRequestStartLine;
 import webserver.utils.HeaderUtils;
 
 public class HttpRequestReader {
     private static final String NONE = "";
-    private static final String POST = "POST";
-    private static final String GET = "GET";
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestReader.class);
 
     private BufferedReader br;
 
-    public HttpRequestReader(InputStream in, Config config) {
+    public HttpRequestReader(InputStream in) {
         try {
-            this.br = new BufferedReader(new InputStreamReader(in, config.getEncoding()));
+            this.br = new BufferedReader(new InputStreamReader(in, Config.getEncoding()));
         } catch (UnsupportedEncodingException e) {
             logger.error("[ERROR] 지원되지 않는 인코딩 에러 발생");
             this.br = new BufferedReader(new InputStreamReader(in));

@@ -3,16 +3,21 @@ package webserver.utils;
 import config.Config;
 import webserver.ContentType;
 import webserver.StatusCode;
-import webserver.request.HttpRequest;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
 
 import java.io.*;
 
-import static webserver.constants.Constants.*;
 
 public class HttpResponseUtils {
+    private static final String SPACE = " ";
+    private static final String CRLF = "\r\n";
+    private static final String HTTP_VERSION = "HTTP/1.1";
 
-    public static byte[] generateStaticResponseBody(HttpRequest httpRequest, Config config) {
-        File file = new File(config.getStaticRoute() + httpRequest.getRequestLine());
+
+
+    public static byte[] generateStaticResponseBody(HttpRequest httpRequest) {
+        File file = new File(Config.getStaticRoute() + httpRequest.getRequestLine());
 
         // 404 error
         if (!file.exists() || !file.isFile()) {
@@ -55,8 +60,21 @@ public class HttpResponseUtils {
         return header + "Set-Cookie:" + SPACE + "sid=" + sid + ";" + SPACE + "Path=/" + CRLF + CRLF;
     }
 
-
     public static String generateResponseStartLine(StatusCode statusCode) {
         return HTTP_VERSION + SPACE + statusCode.getCode() + SPACE + statusCode.getDescription() + CRLF;
+    }
+
+    public static HttpResponse get404Response() {
+        byte[] responseBody = "<h1>404 Not Found</h1>".getBytes(); // 404 오류 페이지 반환
+        String responseHeader = HttpResponseUtils.generateErrorResponseHeader(responseBody.length);
+        String startLine = HttpResponseUtils.generateResponseStartLine(StatusCode.NOT_FOUND);
+        return new HttpResponse(startLine, responseHeader, responseBody);
+    }
+
+    public static HttpResponse get500Response() {
+        byte[] responseBody = "<h1>500 Internal Server Error</h1>".getBytes(); // 서버 오류 페이지 반환
+        String responseHeader = HttpResponseUtils.generateErrorResponseHeader(responseBody.length);
+        String startLine = HttpResponseUtils.generateResponseStartLine(StatusCode.INTERNAL_SERVER_ERROR);
+        return new HttpResponse(startLine, responseHeader, responseBody);
     }
 }

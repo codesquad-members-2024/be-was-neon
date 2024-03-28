@@ -11,19 +11,7 @@ public class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
     private static final String YAML_FILE = "config.yaml";
 
-    private String encoding;
-    private int port;
-    private String staticRoute;
-
-    public Config() {
-        Map<String, Object> yamlConfigs = getYamlConfigs();
-
-        setEncoding(yamlConfigs);
-        setPort(yamlConfigs);
-        setStaticRoute(yamlConfigs);
-    }
-
-    private Map<String, Object> getYamlConfigs() {
+    private static Map<String, Object> getYamlConfigs() {
         try (InputStream inputStream = new FileInputStream(YAML_FILE)) {
             Yaml yaml = new Yaml();
             return yaml.load(inputStream);
@@ -36,44 +24,36 @@ public class Config {
         }
     }
 
-    private void setEncoding(Map<String, Object> yamlConfigs) {
+    public static String getEncoding() {
+        Map<String, Object> yamlConfigs = getYamlConfigs();
         Object encoding = yamlConfigs.get("encoding");
         if (encoding == null) {
             logger.error("[ERROR] yaml.file의 encoding 라인 읽기 에러");
             throw new IllegalArgumentException();
         }
-        this.encoding = (String) encoding;
+        return (String) encoding;
     }
 
-    private void setPort(Map<String, Object> yamlConfigs) {
+    public static int getPort() {
+        Map<String, Object> yamlConfigs = getYamlConfigs();
         Object port = yamlConfigs.get("port");
         if (port == null) {
             logger.error("[ERROR] yaml.file의 port 라인 읽기 에러");
             throw new IllegalArgumentException();
         }
-        this.port = (int) port;
+        return (int) port;
     }
 
-    private void setStaticRoute(Map<String, Object> yamlConfigs) {
+    public static String getStaticRoute() {
+        Map<String, Object> yamlConfigs = getYamlConfigs();
         Object staticRoute = yamlConfigs.get("static_route");
         if (staticRoute == null) {
             logger.error("[ERROR] yaml.file의 static_route 라인 읽기 에러");
             throw new IllegalArgumentException();
         }
-        this.staticRoute = (String) staticRoute;
+        return  (String) staticRoute;
     }
 
-    public int getPort() {
-        return port;
-    }
-
-    public String getEncoding() {
-        return encoding;
-    }
-
-    public String getStaticRoute() {
-        return staticRoute;
-    }
 
 
 }

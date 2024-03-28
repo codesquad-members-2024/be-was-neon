@@ -26,6 +26,17 @@
   align-items: center;
 }
 
+.user-name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 8px; /* border-radius를 더 둥글게 조정 */
+  background-color: #f0f0f0; /* 배경색 추가 */
+  padding: 10px; /* 내부 여백 추가 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+}
+
 .page {
   display: flex;
   flex-direction: column;
@@ -36,6 +47,23 @@
   font-size: 32px;
   line-height: 38.19px;
   padding: 64px 0;
+  text-align: center;
+}
+
+.fail-title {
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 38.19px;
+  padding: 10px 0;
+  color: red;
+  text-align: center;
+}
+
+.ul-user{
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 38.19px;
+  padding: 64px;
   text-align: center;
 }
 

@@ -21,11 +21,7 @@ public class SessionStore {
         sessions.put(sessionId, user);
     }
 
-    public static String getSessionByUser(User user) {
-        return sessions.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(user))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
+    public static User getUserBySid(String sid) {
+        return sessions.get(sid);
     }
 }

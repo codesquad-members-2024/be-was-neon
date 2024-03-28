@@ -1,11 +1,9 @@
-package webserver.request;
+package webserver.http.request;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import webserver.request.message.HttpMethod;
-import webserver.request.message.HttpRequestBody;
-import webserver.request.message.HttpRequestHeader;
-import webserver.request.message.HttpRequestStartLine;
+import webserver.http.request.message.HttpMethod;
+import webserver.http.request.message.HttpRequestBody;
+import webserver.http.request.message.HttpRequestHeader;
+import webserver.http.request.message.HttpRequestStartLine;
 
 public class HttpRequest {
 

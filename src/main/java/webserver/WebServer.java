@@ -17,17 +17,9 @@ public class WebServer {
 
 
     public static void main(String args[]) throws Exception {
-        Config config;
-
-        try {
-            config = new Config();
-        } catch (Exception e) {
-            return;
-        }
-
         int port = 0;
         if (args == null || args.length == 0) {
-            port = config.getPort();
+            port = Config.getPort();
         } else {
             port = Integer.parseInt(args[0]);
         }
@@ -47,7 +39,7 @@ public class WebServer {
             // 클라이언트가 연결될때까지 대기한다.
             Socket connection;
             while ((connection = listenSocket.accept()) != null) {
-                executor.execute(new ConnectionHandler(connection, config));
+                executor.execute(new ConnectionHandler(connection));
             }
 
             // 서버가 종료되면 executor을 shutdown

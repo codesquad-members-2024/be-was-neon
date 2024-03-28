@@ -1,4 +1,4 @@
-package webserver.response;
+package webserver.http.response;
 
 public class HttpResponse {
     private String startLine;

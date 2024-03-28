@@ -1,8 +1,7 @@
-package webserver.request.message;
+package webserver.http.request.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.request.HttpRequest;
 
 public class HttpRequestStartLine {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestStartLine.class);

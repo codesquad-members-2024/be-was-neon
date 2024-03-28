@@ -7,18 +7,17 @@ import config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.reader.HttpRequestReader;
-import webserver.request.HttpRequest;
-import webserver.response.HttpResponse;
+import webserver.http.request.HttpRequest;
+import webserver.http.response.HttpResponse;
+import webserver.router.HttpRequestHandlerRouter;
 
 public class ConnectionHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
 
     private Socket connection;
-    private Config config;
 
-    public ConnectionHandler(Socket connection, Config config) {
+    public ConnectionHandler(Socket connection) {
         this.connection = connection;
-        this.config = config;
     }
 
 
@@ -31,12 +30,21 @@ public class ConnectionHandler implements Runnable {
         // Request Handler 생성
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
-            HttpRequestReader requestReader = new HttpRequestReader(in, config);    // InputStream의 값을 모두 읽음
+            // InputStream을 읽어 HttpRequest 객체를 만들어내는 클래스
+            HttpRequestReader requestReader = new HttpRequestReader(in);
 
+            // HttpRequest 객체 생성
             HttpRequest httpRequest = requestReader.getRequest();   // 읽은 후, HttpRequest 객체를 생성함
-            HttpRequestHandler requestHandler = new HttpRequestHandler(httpRequest);
 
-            HttpResponse httpResponse = requestHandler.handleRequest(config);
+            // HttpRequestHandler를 생성하기 위한 Router 생성
+            HttpRequestHandlerRouter handlerRouter = new HttpRequestHandlerRouter();
+
+            // router를 통해 HttpRequestHandler 생성
+            HttpRequestHandler httpRequestHandler = handlerRouter.getRequestHandler(httpRequest);
+
+            // httpReuqestHandler가 동작 -> HttpResponse 객체를 생성한다.
+            HttpResponse httpResponse = httpRequestHandler.handleRequest(httpRequest);
+
             HttpResponseHandler httpResponseHandler = new HttpResponseHandler(out);
 
             httpResponseHandler.handleResponse(httpResponse);
