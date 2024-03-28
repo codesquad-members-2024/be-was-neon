@@ -6,6 +6,7 @@ import http.RequestManager;
 import http.ResponseManager;
 import http.request.FilePath;
 import http.response.ContentType;
+import http.response.Status;
 
 public abstract class CommandHandler {
     protected RequestManager requestManager;
@@ -16,21 +17,37 @@ public abstract class CommandHandler {
         this.responseManager = responseManager;
     }
 
-    public abstract void handleGetRequest();
+    public void handleGetRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handlePostRequest();
+    public void handlePostRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handlePutRequest();
+    public void handlePutRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handleDeleteRequest();
+    public void handleDeleteRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handleHeadRequest();
+    public void handleHeadRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handleConnectRequest();
+    public void handleConnectRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handleTraceRequest();
+    public void handleTraceRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
-    public abstract void handlePatchRequest();
+    public void handlePatchRequest() {
+        responseManager.setErrorResponse(Status.BAD_REQUEST);
+    }
 
     protected ContentType getContentType(FilePath filePath) {
         String[] parts = filePath.getFilePathUrl().split(CONTENT_TYPE_DELIMITER);

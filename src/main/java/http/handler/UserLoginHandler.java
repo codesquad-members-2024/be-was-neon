@@ -5,7 +5,6 @@ import static utils.Constant.BASE_PATH;
 import static utils.Constant.LOGIN_FAILED_PATH;
 
 import db.UserDatabase;
-import http.response.Status;
 import model.User;
 import session.SessionManager;
 import session.SidGenerator;
@@ -13,11 +12,6 @@ import utils.UserGenerator;
 
 public class UserLoginHandler extends CommandHandler {
     private static final String COOKIE_SETTING_FORMAT = "sid=%s; Path=%s; Max-Age=3600";
-
-    @Override
-    public void handleGetRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
 
     @Override
     public void handlePostRequest() {
@@ -33,35 +27,5 @@ public class UserLoginHandler extends CommandHandler {
             return;
         }
         responseManager.setRedirectResponse(LOGIN_FAILED_PATH);
-    }
-
-    @Override
-    public void handlePutRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
-
-    @Override
-    public void handleDeleteRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
-
-    @Override
-    public void handleHeadRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
-
-    @Override
-    public void handleConnectRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
-
-    @Override
-    public void handleTraceRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
-    }
-
-    @Override
-    public void handlePatchRequest() {
-        responseManager.setErrorResponse(Status.BAD_REQUEST);
     }
 }
