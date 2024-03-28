@@ -8,16 +8,11 @@ import java.io.IOException;
 
 public class HttpRequest {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
-    private String path;
+    private final String path;
 
     public HttpRequest(String httpRequest) throws IOException {
-        parseRequest(httpRequest);
-    }
-
-    // 요청 문자열을 파싱하는 메소드
-    private void parseRequest(String httpRequest) throws IOException {
         HttpRequestParser httpRequestParser = new HttpRequestParser(httpRequest);
-        path = httpRequestParser.extractPath();
+        path = httpRequestParser.extractPath(); // HttpRequestParser를 사용하여 요청 경로 추출
         logger.info("요청 경로: {}", path);
     }
 
