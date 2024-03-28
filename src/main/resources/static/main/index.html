@@ -13,12 +13,20 @@
         <a href="/main"><img src="../img/signiture.svg" /></a>
         <ul class="header__menu">
           <li class="header__menu__item">
-            <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
+            <a class="btn btn_ghost btn_size_s"> %replace_username% </a>
           </li>
           <li class="header__menu__item">
-            <button id="logout-btn" class="btn btn_ghost btn_size_s">
-              로그아웃
-            </button>
+            <a class="btn btn_contained btn_size_s" href="/user/index.html">유저 리스트</a>
+          </li>
+          <li class="header__menu__item">
+            <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
+          </li>
+          <li class="header__menu__item" >
+            <form id="logoutForm" action="/logoutAction" method="post">
+              <button id="logout-btn" class="btn btn_ghost btn_size_s" type="submit">
+                로그아웃
+              </button>
+            </form>
           </li>
         </ul>
       </header>
