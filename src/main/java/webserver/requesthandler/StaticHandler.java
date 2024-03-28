@@ -31,9 +31,13 @@ public class StaticHandler implements Handler {
                 return new HttpResponse(createHeader.generate200((int) file.length(), type), body);
             } catch (Exception e) {
                 logger.error(e.getMessage());
+                // 파일을 읽다가 오류 발생하면 500 응답 반환
+                return new HttpResponse(createHeader.serverError500());
             }
-        }// 요청된 파일이 존재하지 않는 경우 404 응답 반환
-        return new HttpResponse(createHeader.notFound404());
+        } else {
+            // 요청된 파일이 존재하지 않는 경우 404 응답 반환
+            return new HttpResponse(createHeader.notFound404());
+        }
     }
 
     @Override

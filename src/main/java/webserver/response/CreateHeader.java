@@ -42,4 +42,14 @@ public class CreateHeader {
         return headers;
     }
 
+    public List<String> loginSuccessWithCookie(String cookieValue) {
+        List<String> headers = new ArrayList<>();
+        headers.add(REDIRECTION_302);
+        headers.add("Location: /main/index.html\r\n");
+        headers.add("Set-Cookie: session=" + cookieValue+ "; Path=/\r\n");
+        headers.add("Content-Type: text/html;charset=utf-8\r\n");
+        headers.add("\r\n");
+        return headers;
+    }
+
 }

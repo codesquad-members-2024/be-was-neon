@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import webserver.request.HttpRequest;
 import webserver.request.RequestManager;
+import webserver.requesthandler.Handler;
 import webserver.response.HttpResponse;
 import webserver.response.ResponseManager;
 
@@ -26,10 +27,13 @@ public class RequestHandler implements Runnable {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             RequestManager requestManager = new RequestManager();
+            HandlerMapping handlerMapping = new HandlerMapping();
             ResponseManager responseManager = new ResponseManager();
 
             HttpRequest httpRequest = requestManager.parseInputStream(in);
-            HttpResponse httpResponse = responseManager.findHandler(httpRequest);
+
+            Handler handler = handlerMapping.findHandler(httpRequest);
+            HttpResponse httpResponse = responseManager.processResponse(httpRequest, handler);
             httpResponse.send(out);
 
         } catch (IOException e) {

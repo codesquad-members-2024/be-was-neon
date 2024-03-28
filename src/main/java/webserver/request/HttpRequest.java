@@ -31,6 +31,10 @@ public class HttpRequest {
         return requestTarget;
     }
 
+    public String getHeaderValue(String data) {
+        return headers.get(data);
+    }
+
     public Map<String, String> parseData() throws IOException {
         Map<String, String> parsedData = new HashMap<>();
 

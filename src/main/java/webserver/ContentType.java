@@ -1,39 +1,29 @@
 package webserver;
 
+import java.util.Arrays;
+
 public enum ContentType {
-    CSS("text/css"),
-    JS("application/javascript"),
-    PNG("image/png"),
-    JPG("image/jpeg"),
-    ICO("image/x-icon"),
-    SVG("image/svg+xml"),
-    HTML("text/html");
+    CSS("text/css", ".css"),
+    JS("application/javascript", ".js"),
+    PNG("image/png", ".png"),
+    JPG("image/jpeg", ".jpg"),
+    ICO("image/x-icon", ".ico"),
+    SVG("image/svg+xml", ".svg"),
+    HTML("text/html", ".html");
 
     private final String type;
+    private final String extension;
 
-    ContentType(String type) {
+    ContentType(String type, String extension) {
         this.type = type;
+        this.extension = extension;
     }
 
-    public static String getType(String path) {
-        String type = "text/html";
-        if (path.endsWith(".css")) {
-            type = "text/css";
-        } else if (path.endsWith(".js")) {
-            type = "application/javascript";
-        } else if (path.endsWith(".png")) {
-            type = "image/png";
-        } else if (path.endsWith(".jpg")) {
-            type = "image/jpeg";
-        } else if (path.endsWith(".ico")) {
-            type = "image/x-icon";
-        } else if (path.endsWith(".svg")) {
-            type = "image/svg+xml";
-        }
-        return type;
-    }
-
-    public String getType() {
-        return type;
+    public static String getType(String requestTarget) {
+        return Arrays.stream(ContentType.values())
+                .filter(contentType -> requestTarget.endsWith(contentType.extension))
+                .findFirst()
+                .map(contentType -> contentType.type)
+                .orElse(HTML.type);
     }
 }

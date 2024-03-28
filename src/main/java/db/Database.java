@@ -20,4 +20,12 @@ public class Database {
     public static Collection<User> findAll() {
         return users.values();
     }
+
+    public static User authenticateUser(String userId, String password) {
+        User user = findUserById(userId);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 }

@@ -4,7 +4,9 @@ import db.Database;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.*;
+import webserver.FileReader;
+import webserver.SessionManager;
+import webserver.UrlConvertor;
 import webserver.request.HttpRequest;
 import webserver.response.CreateHeader;
 import webserver.response.HttpResponse;
@@ -12,13 +14,13 @@ import webserver.response.HttpResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
-public class RegistrationHandler implements Handler {
-
-    private static final Logger logger = LoggerFactory.getLogger(RegistrationHandler.class);
+public class LoginHandler implements Handler{
+    private static final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
 
     @Override
-    public HttpResponse getRequest(HttpRequest httpRequest) {
+    public HttpResponse getRequest(HttpRequest httpRequest) throws IOException {
         String requestTarget = httpRequest.getRequestTarget();
         CreateHeader createHeader = new CreateHeader();
         UrlConvertor urlConvertor = new UrlConvertor();
@@ -46,17 +48,34 @@ public class RegistrationHandler implements Handler {
 
     @Override
     public HttpResponse postRequest(HttpRequest httpRequest) throws IOException {
-        addUser(httpRequest);
-        CreateHeader createHeader = new CreateHeader();
+        Map<String, String> dataMap = httpRequest.parseData();
+        String userId = dataMap.get("userId");
+        String password = dataMap.get("password");
 
-        return new HttpResponse(createHeader.redirect302(UrlConvertor.INDEX_URL));
+        User user = loginSuccess(userId, password);
+
+        if (user != null) {
+            CreateHeader createHeader = new CreateHeader();
+            // sid 생성 후 저장
+            String sessionId = SessionManager.createSessionId();
+            SessionManager.saveSession(sessionId, user);
+            logger.debug("seesionId SAVE: {}", sessionId);
+
+            Optional<User> findUser = SessionManager.findUser(sessionId);
+            findUser.ifPresent(data -> logger.debug("seesion SAVE : {}", data));
+
+            return new HttpResponse(createHeader.loginSuccessWithCookie(sessionId));
+        } else {
+            // 회원 정보가 없을 시
+            CreateHeader createHeader = new CreateHeader();
+            String redirectLocation = UrlConvertor.LOGIN_FAIL_URL;
+            return new HttpResponse(createHeader.redirect302(redirectLocation));
+        }
     }
 
-    private void addUser(HttpRequest httpRequest) throws IOException {
-        Map<String, String> parsedData = httpRequest.parseData();
-        User user = new User(parsedData.get("userId"), parsedData.get("password"), parsedData.get("name"), parsedData.get("email"));
 
-        Database.addUser(user);
-        logger.debug("유저 등록 완료!! : {}", Database.findAll());
+    private User loginSuccess(String userId, String password) {
+        return Database.authenticateUser(userId, password);
     }
+
 }
