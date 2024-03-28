@@ -11,6 +11,7 @@ public class RequestLineParser {
         String requestProtocol = getRequestTokens[2];
         return new RequestLine(requestMethod,requestPath,queryParam,requestProtocol);
     }
+
     private String parsePath(String path, String method) {
         if (path.contains("?")) {
             return path.substring(0, path.indexOf("?"));
@@ -20,6 +21,7 @@ public class RequestLineParser {
         }
         return path;
     }
+
     private String parseQueryParam(String path) {
         if (path.contains("?"))
             return path.substring(path.indexOf("?") + 1);

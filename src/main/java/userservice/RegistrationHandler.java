@@ -9,6 +9,7 @@ public class RegistrationHandler {
     public void registerNewUser(Map<String, String> paramMap){
         addUserToDataBase(createUserFromData(paramMap));
     }
+
     private User createUserFromData(Map<String, String> paramMap){
         return new User(paramMap.get("userId"), paramMap.get("password"), paramMap.get("nickname"));
     }

@@ -28,6 +28,7 @@ public class GetResponseHandler {
             return response404Error(httpRequest);
         }
     }
+
     public HttpResponse respondToLogin(HttpRequest httpRequest, String sessionId, String redirectPath) {
         try {
             httpResponse.setResponseLine(httpRequest.getProtocol(),302);
@@ -39,11 +40,15 @@ public class GetResponseHandler {
             return response404Error(httpRequest);
         }
     }
+
+    // 애러 반환
     private HttpResponse response404Error(HttpRequest httpRequest) {
         HttpResponse errorResponse = new HttpResponse();
         errorResponse.setResponseLine(httpRequest.getProtocol(), 404);
         return errorResponse;
     }
+
+    // 경로와 상태에 따라 body를 바꿔줍니다.
     public byte[] setUpBody(HttpRequest httpRequest){
         try{
             if (!httpRequest.getSessionId().isEmpty() && httpRequest.getPath().equals("/main/index.html")){

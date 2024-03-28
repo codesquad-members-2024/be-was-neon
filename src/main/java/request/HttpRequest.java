@@ -12,6 +12,7 @@ public class HttpRequest {
         this.requestHeader = requestHeader;
         this.requestBody = requestBody;
     }
+
     public String getSessionId(){
         if (requestHeader.containsKey("Cookie")){
             String sessionId = requestHeader.get("Cookie");
@@ -19,25 +20,33 @@ public class HttpRequest {
         }
         return "";
     }
+
     public RequestLine getRequestLine(){
         return requestLine;
     }
+
     public String getMethod() {
         return requestLine.getMethod();
     }
+
     public String getPath() {
         return requestLine.getPath();
     }
+
     public String getQueryParam(){return requestLine.getQueryParam();}
+
     public String getProtocol() {
         return requestLine.getProtocol();
     }
+
     public String getMimeType() {
         return requestLine.getMimeType();
     }
+
     public Map<String,String> getRequestHeader() {
         return requestHeader;
     }
+
     public String getRequestBody() {
         return requestBody;
     }

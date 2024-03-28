@@ -14,6 +14,7 @@ public class HttpResponse {
     private List<String> responseHeaders = new ArrayList<>();
     private byte[] body = null;
 
+    // 응답을 클라이언트로 보내준다.
     public void sendResponse(DataOutputStream dos){
         try{
             dos.writeBytes(responseLine.toString());
@@ -31,9 +32,11 @@ public class HttpResponse {
     public void setResponseLine(String version, int statusCode){
         this.responseLine = new ResponseLine(version, statusCode);
     }
+
     public void addHeader(String header){
         responseHeaders.add(header);
     }
+
     private void writeHeaders(DataOutputStream out) {
         try {
             for (String header: responseHeaders) {
@@ -44,6 +47,7 @@ public class HttpResponse {
             logger.error(e.getMessage());
         }
     }
+
     public void setBody(byte[] body){
         this.body = body;
     }

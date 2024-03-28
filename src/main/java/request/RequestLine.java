@@ -32,6 +32,7 @@ public class RequestLine {
     public String getPath() {
         return requestPath;
     }
+
     public String getQueryParam() {
         return queryParam;
     }

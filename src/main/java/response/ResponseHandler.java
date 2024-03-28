@@ -39,21 +39,27 @@ public class ResponseHandler {
         GetResponseHandler getResponseHandler = new GetResponseHandler();
         LoginHandler loginHandler = new LoginHandler();
 
+        // 로그인인 경우
         if (httpRequest.getPath().startsWith("/loginAction")) {
             String sessionId = "";
             Map<String, String> UserData = UserDataParser.extractUserData(httpRequest.getQueryParam());
+            // Database 에 있는 유저와 아이디 비번이 같은 경우 sessionId 를 반환한다.
             if (loginHandler.isLoginDataValid(UserData)){
                 sessionId = SessionManager.createSession(loginHandler.getLoginUser());
             }
-
+            // 세션 아이디가 있는 경우 로그인 성공
             if (!sessionId.isEmpty()){
                 httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId, LOGIN_HOME_PAGE.getPath());
                 logger.debug("Login Completed");
-            }else{
+            }
+            // 세션 아이디가 비어있는 경우 로그인 실패
+            else{
                 httpResponse = getResponseHandler.respondToLogin(httpRequest,sessionId + ";Max-Age=0", LOGIN_FAILED_PAGE.getPath());
                 logger.debug("Login Failed");
             }
-        } else{
+        }
+        // 다른 모든 경우
+        else{
             httpResponse = getResponseHandler.respondToHtmlFile(httpRequest);
         }
     }
@@ -61,14 +67,15 @@ public class ResponseHandler {
         PostResponseHandler postResponseHandler = new PostResponseHandler();
         RegistrationHandler registrationHandler = new RegistrationHandler();
 
+        // 회원가입인 경우
         if (httpRequest.getPath().startsWith("/registrationAction")) {
             registrationHandler.registerNewUser(UserDataParser.extractUserData(httpRequest.getRequestBody()));
             httpResponse = postResponseHandler.respondToRegistration(httpRequest, HOME_PAGE.getPath());
-
-        }else if(httpRequest.getPath().startsWith("/logoutAction")){
+        }
+        // 로그아웃인 경우
+        else if(httpRequest.getPath().startsWith("/logoutAction")){
             SessionManager.removeSession(httpRequest.getSessionId());
             httpResponse = postResponseHandler.respondToLogout(httpRequest, HOME_PAGE.getPath());
         }
-
     }
 }
