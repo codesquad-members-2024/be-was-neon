@@ -1,23 +1,62 @@
 package response;
 
+import model.User;
 
 import java.io.*;
+import java.util.Collection;
 
 public class HttpFileReader {
-    public static byte[] htmlToByte(String fileName) throws IOException {
-        // 파일에서 바이트 단위로 읽기 위한 스트림을 제공합니다.
-        FileInputStream fis = new FileInputStream(new File(fileName));
-        //FileInputStream 의 성능을 개선하기 위한 보조 스트림으로, 버퍼링된 입력 스트림입니다.
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        //바이트 배열에 데이터를 쓰기 위한 스트림입니다.
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        //read()는 파일의 끝에 도달하면 -1을 반환합니다.
-        while ((bytesRead = bis.read(buffer)) != -1) {
-            baos.write(buffer, 0, bytesRead);
+    public static byte[] setBodyDefault(String filePath) throws IOException {
+        StringBuilder contentBuilder = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                contentBuilder.append(line).append("\n");
+            }
         }
-        // 파일 데이터를 fileBytes 배열로 읽어옵니다.
-        return baos.toByteArray();
+        return contentBuilder.toString().getBytes("UTF-8");
+    }
+    public static byte[] setBodyLoginSuccess(String filePath, String userName) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("%replace_username%")){
+                    sb.append(line.replace("%replace_username%",userName)).append("\n");
+                }else {
+                    sb.append(line).append("\n");
+                }
+            }
+        }
+        return sb.toString().getBytes("UTF-8");
+    }
+    public static byte[] setBodyUserList(String filePath, Collection<User> users) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("%user_list%")){
+                    appendUsers(users,sb);
+                }else {
+                    sb.append(line).append("\n");
+                }
+            }
+        }
+        return sb.toString().getBytes("UTF-8");
+    }
+    private static void appendUsers(Collection<User> users, StringBuilder sb) {
+        for (User user : users) {
+            sb.append("<tr>" + "\n");
+            sb.append("<td>").append(user.getUserId()).append("</td>" + "\n");
+            sb.append("<td>").append(user.getName()).append("</td>" + "\n");
+            sb.append("</tr>" + "\n");
+        }
+    }
+    public static byte[] stringToBytes(String htmlString) {
+        try {
+            return htmlString.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,8 +1,13 @@
 package response;
 
+import db.Database;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.HttpRequest;
+import session.SessionManager;
+
+import java.io.IOException;
 
 import static enums.FilePath.*;
 
@@ -13,7 +18,7 @@ public class GetResponseHandler {
     public HttpResponse respondToHtmlFile(HttpRequest httpRequest) {
         try {
             httpResponse.setResponseLine(httpRequest.getProtocol(),200);
-            byte[] fileBytes = HttpFileReader.htmlToByte(STATIC_PATH.getPath() + httpRequest.getPath());
+            byte[] fileBytes = setUpBody(httpRequest);
             httpResponse.addHeader("Content-Type: " + httpRequest.getMimeType() + ";charset=utf-8");
             httpResponse.addHeader("Content-Length: " + fileBytes.length);
             httpResponse.setBody(fileBytes);
@@ -38,5 +43,20 @@ public class GetResponseHandler {
         HttpResponse errorResponse = new HttpResponse();
         errorResponse.setResponseLine(httpRequest.getProtocol(), 404);
         return errorResponse;
+    }
+    public byte[] setUpBody(HttpRequest httpRequest){
+        try{
+            if (!httpRequest.getSessionId().isEmpty() && httpRequest.getPath().equals("/main/index.html")){
+                User user = SessionManager.getUserBySessionId(httpRequest.getSessionId());
+                return HttpFileReader.setBodyLoginSuccess(STATIC_PATH.getPath() + httpRequest.getPath(),user.getName());
+            }else if(httpRequest.getPath().equals("/user/index.html")){
+                System.out.println(Database.findAll());
+                return HttpFileReader.setBodyUserList(STATIC_PATH.getPath() + httpRequest.getPath(), Database.findAll());
+            }else{
+                return HttpFileReader.setBodyDefault(STATIC_PATH.getPath() + httpRequest.getPath());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

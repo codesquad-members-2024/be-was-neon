@@ -17,7 +17,7 @@ public enum FilePath {
     public String getPath() {
         return filePath;
     }
-    public String getRelativePathPath() {
+    public String getRelativePath() {
         return RELATIVE_PATH + filePath;
     }
 }
