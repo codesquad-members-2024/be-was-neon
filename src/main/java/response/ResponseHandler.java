@@ -1,7 +1,5 @@
 package response;
 
-import enums.FilePath;
-import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import request.HttpRequest;
@@ -12,7 +10,6 @@ import userservice.UserDataParser;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static enums.FilePath.*;
